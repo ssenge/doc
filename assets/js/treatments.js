@@ -50,10 +50,6 @@ const TREATMENTS = {
     }
 };
 
-// Stripe configuration
-const STRIPE_PUBLIC_KEY = 'pk_test_51RUrRKQr7jYlppyzyYiZWo3UiOSddHlj7UsHNkHmK0yzIjRhS3iS5FK0C3E2DF8ASg7eOsY2NGx5l9AvXdw7Ovbc00YUP2wQYq';
-const stripe = Stripe(STRIPE_PUBLIC_KEY);
-
 // DOM elements
 let loadingOverlay;
 let treatmentCards;
@@ -65,21 +61,27 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function initializeTreatments() {
+    console.log('Initializing treatments page...');
+    
     // Get DOM elements
     loadingOverlay = document.getElementById('loadingOverlay');
     treatmentCards = document.querySelectorAll('.treatment-card');
     selectButtons = document.querySelectorAll('.select-treatment-btn');
 
+    console.log('Found', selectButtons.length, 'treatment buttons');
+
     // Add event listeners to all select buttons
-    selectButtons.forEach(button => {
+    selectButtons.forEach((button, index) => {
+        console.log('Adding listener to button', index);
         button.addEventListener('click', handleTreatmentSelection);
     });
 
-    console.log('Treatments page initialized');
+    console.log('Treatments page initialized successfully');
 }
 
-async function handleTreatmentSelection(event) {
+function handleTreatmentSelection(event) {
     event.preventDefault();
+    console.log('Button clicked!');
     
     const button = event.target;
     const treatmentCard = button.closest('.treatment-card');
@@ -96,7 +98,7 @@ async function handleTreatmentSelection(event) {
     }
 
     // Show loading state
-    showLoading();
+    showLoading(button);
     
     try {
         // Redirect to Payment Link
@@ -109,7 +111,7 @@ async function handleTreatmentSelection(event) {
 }
 
 function redirectToPaymentLink(treatment, treatmentId) {
-    console.log('Redirecting to payment link for:', treatment);
+    console.log('Redirecting to payment link for:', treatment.name);
 
     // Get the payment link for this treatment
     const baseUrl = treatment.paymentLink;
@@ -118,29 +120,31 @@ function redirectToPaymentLink(treatment, treatmentId) {
         throw new Error('Payment link not configured for this treatment');
     }
 
-    // Add success and cancel URLs as parameters
-    const successUrl = encodeURIComponent(`${window.location.origin}/success.html?treatment=${treatmentId}&amount=${(treatment.price / 100).toFixed(2)}&product=${encodeURIComponent(treatment.name)}`);
-    const cancelUrl = encodeURIComponent(`${window.location.origin}/treatments.html`);
+    // Create success and cancel URLs
+    const currentOrigin = window.location.origin;
+    const successUrl = `${currentOrigin}/success.html?treatment=${treatmentId}&amount=${(treatment.price / 100).toFixed(2)}&product=${encodeURIComponent(treatment.name)}`;
+    const cancelUrl = `${currentOrigin}/treatments.html`;
     
-    // Create the full URL with parameters
-    const urlWithParams = `${baseUrl}?success_url=${successUrl}&cancel_url=${cancelUrl}`;
-    
-    console.log('Redirecting to:', urlWithParams);
+    console.log('Success URL:', successUrl);
+    console.log('Cancel URL:', cancelUrl);
+    console.log('Payment Link:', baseUrl);
     
     // Redirect to Stripe Payment Link
-    window.location.href = urlWithParams;
+    // Note: Payment Links don't support URL parameters for success/cancel URLs
+    // These need to be configured when creating the Payment Link
+    window.location.href = baseUrl;
 }
 
-function showLoading() {
+function showLoading(button) {
+    if (button) {
+        button.disabled = true;
+        button.textContent = 'Processing...';
+        button.classList.add('opacity-50', 'cursor-not-allowed');
+    }
+    
     if (loadingOverlay) {
         loadingOverlay.classList.remove('hidden');
     }
-    
-    // Disable all select buttons
-    selectButtons.forEach(button => {
-        button.disabled = true;
-        button.classList.add('opacity-50', 'cursor-not-allowed');
-    });
 }
 
 function hideLoading() {
@@ -152,6 +156,11 @@ function hideLoading() {
     selectButtons.forEach(button => {
         button.disabled = false;
         button.classList.remove('opacity-50', 'cursor-not-allowed');
+        // Reset button text based on language
+        const buttonText = button.getAttribute('data-translate');
+        if (buttonText === 'treatments.selectButton') {
+            button.textContent = 'Select Treatment'; // Default English
+        }
     });
 }
 
