@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRT Treatments - Select Your Treatment</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://js.stripe.com/v3/"></script>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white border-gray-200 px-4 lg:px-6 py-2.5">
+        <div class="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl">
+            <a href="index.html" class="flex items-center">
+                <span class="self-center text-xl font-semibold whitespace-nowrap">TRT Clinic</span>
+            </a>
+            <div class="flex items-center lg:order-2">
+                <select id="languageSelector" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5">
+                    <option value="en">English</option>
+                    <option value="de">Deutsch</option>
+                </select>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-900 mb-4" data-translate="treatments.title">
+                Choose Your TRT Treatment
+            </h1>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto" data-translate="treatments.subtitle">
+                Select the testosterone replacement therapy option that best fits your lifestyle and preferences. All treatments are physician-prescribed and delivered discreetly to your door.
+            </p>
+        </div>
+
+        <!-- Treatment Options Grid -->
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+            <!-- Testosterone Gel -->
+            <div class="treatment-card bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" data-treatment="testo-gel">
+                <div class="h-48 bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+                    <div class="text-white text-center">
+                        <div class="text-6xl mb-2">💊</div>
+                        <h3 class="text-xl font-semibold" data-translate="treatments.gel.name">Testosterone Gel</h3>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="text-3xl font-bold text-blue-600">€89</span>
+                        <span class="text-sm text-gray-500" data-translate="treatments.perMonth">/month</span>
+                    </div>
+                    <p class="text-gray-600 mb-4" data-translate="treatments.gel.description">
+                        Daily topical application. Easy to use, steady hormone levels throughout the day. Perfect for those who prefer non-invasive treatment.
+                    </p>
+                    <ul class="text-sm text-gray-600 mb-6 space-y-2">
+                        <li class="flex items-center">
+                            <span class="text-green-500 mr-2">✓</span>
+                            <span data-translate="treatments.gel.feature1">Daily application</span>
+                        </li>
+                        <li class="flex items-center">
+                            <span class="text-green-500 mr-2">✓</span>
+                            <span data-translate="treatments.gel.feature2">Steady hormone levels</span>
+                        </li>
+                        <li class="flex items-center">
+                            <span class="text-green-500 mr-2">✓</span>
+                            <span data-translate="treatments.gel.feature3">Non-invasive</span>
+                        </li>
+                        <li class="flex items-center">
+                            <span class="text-green-500 mr-2">✓</span>
+                            <span data-translate="treatments.gel.feature4">30-day supply</span>
+                        </li>
+                    </ul>
+                    <button class="select-treatment-btn w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors duration-200 font-semibold" data-translate="treatments.selectButton">
+                        Select Treatment
+                    </button>
+                </div>
+            </div>
+
+            <!-- Testosterone Injections -->
+            <div class="treatment-card bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" data-treatment="injections">
+                <div class="h-48 bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center">
+                    <div class="text-white text-center">
+                        <div class="text-6xl mb-2">💉</div>
+                        <h3 class="text-xl font-semibold" data-translate="treatments.injections.name">Testosterone Injections</h3>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="text-3xl font-bold text-green-600">€129</span>
+                        <span class="text-sm text-gray-500" data-translate="treatments.perMonth">/month</span>
+                    </div>
+                    <p class="text-gray-600 mb-4" data-translate="treatments.injections.description">
+                        Weekly intramuscular injections. Most effective method with peak hormone optimization. Includes all supplies and detailed instructions.
+                    </p>
+                    <ul class="text-sm text-gray-600 mb-6 space-y-2">
+                        <li class="flex items-center">
+                            <span class="text-green-500 mr-2">✓</span>
+                            <span data-translate="treatments.injections.feature1">Weekly injections</span>
+                        </li>
+                        <li class="flex items-center">
+                            <span class="text-green-500 mr-2">✓</span>
+                            <span data-translate="treatments.injections.feature2">Peak effectiveness</span>
+                        </li>
+                        <li class="flex items-center">
+                            <span class="text-green-500 mr-2">✓</span>
+                            <span data-translate="treatments.injections.feature3">Complete kit included</span>
+                        </li>
+                        <li class="flex items-center">
+                            <span class="text-green-500 mr-2">✓</span>
+                            <span data-translate="treatments.injections.feature4">4-week supply</span>
+                        </li>
+                    </ul>
+                    <button class="select-treatment-btn w-full bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700 transition-colors duration-200 font-semibold" data-translate="treatments.selectButton">
+                        Select Treatment
+                    </button>
+                </div>
+            </div>
+
+            <!-- Testosterone Patches -->
+            <div class="treatment-card bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" data-treatment="patches">
+                <div class="h-48 bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center">
+                    <div class="text-white text-center">
+                        <div class="text-6xl mb-2">🩹</div>
+                        <h3 class="text-xl font-semibold" data-translate="treatments.patches.name">Testosterone Patches</h3>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="text-3xl font-bold text-purple-600">€109</span>
+                        <span class="text-sm text-gray-500" data-translate="treatments.perMonth">/month</span>
+                    </div>
+                    <p class="text-gray-600 mb-4" data-translate="treatments.patches.description">
+                        Daily transdermal patches. Convenient and discreet with consistent hormone delivery. Simply apply and forget.
+                    </p>
+                    <ul class="text-sm text-gray-600 mb-6 space-y-2">
+                        <li class="flex items-center">
+                            <span class="text-green-500 mr-2">✓</span>
+                            <span data-translate="treatments.patches.feature1">Daily patches</span>
+                        </li>
+                        <li class="flex items-center">
+                            <span class="text-green-500 mr-2">✓</span>
+                            <span data-translate="treatments.patches.feature2">Discreet application</span>
+                        </li>
+                        <li class="flex items-center">
+                            <span class="text-green-500 mr-2">✓</span>
+                            <span data-translate="treatments.patches.feature3">Consistent delivery</span>
+                        </li>
+                        <li class="flex items-center">
+                            <span class="text-green-500 mr-2">✓</span>
+                            <span data-translate="treatments.patches.feature4">30-day supply</span>
+                        </li>
+                    </ul>
+                    <button class="select-treatment-btn w-full bg-purple-600 text-white py-3 px-4 rounded-lg hover:bg-purple-700 transition-colors duration-200 font-semibold" data-translate="treatments.selectButton">
+                        Select Treatment
+                    </button>
+                </div>
+            </div>
+
+            <!-- Testosterone Pellets -->
+            <div class="treatment-card bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" data-treatment="pellets">
+                <div class="h-48 bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center">
+                    <div class="text-white text-center">
+                        <div class="text-6xl mb-2">⚪</div>
+                        <h3 class="text-xl font-semibold" data-translate="treatments.pellets.name">Testosterone Pellets</h3>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="text-3xl font-bold text-orange-600">€299</span>
+                        <span class="text-sm text-gray-500" data-translate="treatments.per3Months">/3 months</span>
+                    </div>
+                    <p class="text-gray-600 mb-4" data-translate="treatments.pellets.description">
+                        Long-lasting subcutaneous pellets. Inserted once every 3-4 months for ultimate convenience. No daily routine required.
+                    </p>
+                    <ul class="text-sm text-gray-600 mb-6 space-y-2">
+                        <li class="flex items-center">
+                            <span class="text-green-500 mr-2">✓</span>
+                            <span data-translate="treatments.pellets.feature1">3-4 month duration</span>
+                        </li>
+                        <li class="flex items-center">
+                            <span class="text-green-500 mr-2">✓</span>
+                            <span data-translate="treatments.pellets.feature2">No daily routine</span>
+                        </li>
+                        <li class="flex items-center">
+                            <span class="text-green-500 mr-2">✓</span>
+                            <span data-translate="treatments.pellets.feature3">Professional insertion</span>
+                        </li>
+                        <li class="flex items-center">
+                            <span class="text-green-500 mr-2">✓</span>
+                            <span data-translate="treatments.pellets.feature4">Steady hormone levels</span>
+                        </li>
+                    </ul>
+                    <button class="select-treatment-btn w-full bg-orange-600 text-white py-3 px-4 rounded-lg hover:bg-orange-700 transition-colors duration-200 font-semibold" data-translate="treatments.selectButton">
+                        Select Treatment
+                    </button>
+                </div>
+            </div>
+
+            <!-- Testosterone Nasal Gel -->
+            <div class="treatment-card bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" data-treatment="nasal-gel">
+                <div class="h-48 bg-gradient-to-br from-teal-500 to-teal-600 flex items-center justify-center">
+                    <div class="text-white text-center">
+                        <div class="text-6xl mb-2">👃</div>
+                        <h3 class="text-xl font-semibold" data-translate="treatments.nasal.name">Testosterone Nasal Gel</h3>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="text-3xl font-bold text-teal-600">€149</span>
+                        <span class="text-sm text-gray-500" data-translate="treatments.perMonth">/month</span>
+                    </div>
+                    <p class="text-gray-600 mb-4" data-translate="treatments.nasal.description">
+                        Innovative nasal application. Fast absorption with no skin transfer risk. Perfect for those with sensitive skin or active lifestyles.
+                    </p>
+                    <ul class="text-sm text-gray-600 mb-6 space-y-2">
+                        <li class="flex items-center">
+                            <span class="text-green-500 mr-2">✓</span>
+                            <span data-translate="treatments.nasal.feature1">3x daily application</span>
+                        </li>
+                        <li class="flex items-center">
+                            <span class="text-green-500 mr-2">✓</span>
+                            <span data-translate="treatments.nasal.feature2">Fast absorption</span>
+                        </li>
+                        <li class="flex items-center">
+                            <span class="text-green-500 mr-2">✓</span>
+                            <span data-translate="treatments.nasal.feature3">No skin transfer</span>
+                        </li>
+                        <li class="flex items-center">
+                            <span class="text-green-500 mr-2">✓</span>
+                            <span data-translate="treatments.nasal.feature4">30-day supply</span>
+                        </li>
+                    </ul>
+                    <button class="select-treatment-btn w-full bg-teal-600 text-white py-3 px-4 rounded-lg hover:bg-teal-700 transition-colors duration-200 font-semibold" data-translate="treatments.selectButton">
+                        Select Treatment
+                    </button>
+                </div>
+            </div>
+
+            <!-- Custom Compound -->
+            <div class="treatment-card bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" data-treatment="custom">
+                <div class="h-48 bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center">
+                    <div class="text-white text-center">
+                        <div class="text-6xl mb-2">🧪</div>
+                        <h3 class="text-xl font-semibold" data-translate="treatments.custom.name">Custom Compound</h3>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="text-3xl font-bold text-indigo-600">€189</span>
+                        <span class="text-sm text-gray-500" data-translate="treatments.perMonth">/month</span>
+                    </div>
+                    <p class="text-gray-600 mb-4" data-translate="treatments.custom.description">
+                        Personalized testosterone formulation. Tailored to your specific needs and preferences based on your assessment and lab results.
+                    </p>
+                    <ul class="text-sm text-gray-600 mb-6 space-y-2">
+                        <li class="flex items-center">
+                            <span class="text-green-500 mr-2">✓</span>
+                            <span data-translate="treatments.custom.feature1">Personalized formula</span>
+                        </li>
+                        <li class="flex items-center">
+                            <span class="text-green-500 mr-2">✓</span>
+                            <span data-translate="treatments.custom.feature2">Lab-based dosing</span>
+                        </li>
+                        <li class="flex items-center">
+                            <span class="text-green-500 mr-2">✓</span>
+                            <span data-translate="treatments.custom.feature3">Multiple delivery options</span>
+                        </li>
+                        <li class="flex items-center">
+                            <span class="text-green-500 mr-2">✓</span>
+                            <span data-translate="treatments.custom.feature4">Ongoing optimization</span>
+                        </li>
+                    </ul>
+                    <button class="select-treatment-btn w-full bg-indigo-600 text-white py-3 px-4 rounded-lg hover:bg-indigo-700 transition-colors duration-200 font-semibold" data-translate="treatments.selectButton">
+                        Select Treatment
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Information Section -->
+        <div class="bg-blue-50 rounded-lg p-8 mb-8">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4" data-translate="treatments.info.title">
+                What's Included with Every Treatment
+            </h2>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                    <ul class="space-y-3 text-gray-700">
+                        <li class="flex items-center">
+                            <span class="text-blue-500 mr-3">✓</span>
+                            <span data-translate="treatments.info.item1">Physician consultation and prescription</span>
+                        </li>
+                        <li class="flex items-center">
+                            <span class="text-blue-500 mr-3">✓</span>
+                            <span data-translate="treatments.info.item2">Regular blood work monitoring</span>
+                        </li>
+                        <li class="flex items-center">
+                            <span class="text-blue-500 mr-3">✓</span>
+                            <span data-translate="treatments.info.item3">24/7 medical support</span>
+                        </li>
+                    </ul>
+                </div>
+                <div>
+                    <ul class="space-y-3 text-gray-700">
+                        <li class="flex items-center">
+                            <span class="text-blue-500 mr-3">✓</span>
+                            <span data-translate="treatments.info.item4">Discreet home delivery</span>
+                        </li>
+                        <li class="flex items-center">
+                            <span class="text-blue-500 mr-3">✓</span>
+                            <span data-translate="treatments.info.item5">Detailed usage instructions</span>
+                        </li>
+                        <li class="flex items-center">
+                            <span class="text-blue-500 mr-3">✓</span>
+                            <span data-translate="treatments.info.item6">Cancel or modify anytime</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Back to Assessment -->
+        <div class="text-center">
+            <a href="consultation.html" class="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+                <span data-translate="treatments.backToAssessment">Back to Assessment</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg p-8 text-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p class="text-gray-700" data-translate="treatments.processing">Processing your order...</p>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.js"></script>
+    <script src="assets/js/language.js"></script>
+    <script src="assets/js/treatments.js"></script>
+</body>
+</html> 

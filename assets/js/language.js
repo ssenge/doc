@@ -48,7 +48,78 @@ const translations = {
         'Address and billing details will be collected securely by Stripe during checkout.': 'Address and billing details will be collected securely by Stripe during checkout.',
         'Secure Checkout Process': 'Secure Checkout Process',
         'Your personal details, billing address, and payment information will be collected securely by Stripe during the next step. No sensitive information is stored on our servers.': 'Your personal details, billing address, and payment information will be collected securely by Stripe during the next step. No sensitive information is stored on our servers.',
-        'Proceed to Secure Checkout': 'Proceed to Secure Checkout'
+        'Proceed to Secure Checkout': 'Proceed to Secure Checkout',
+        
+        // Treatments page
+        'treatments.title': 'Choose Your TRT Treatment',
+        'treatments.subtitle': 'Select the testosterone replacement therapy option that best fits your lifestyle and preferences. All treatments are physician-prescribed and delivered discreetly to your door.',
+        'treatments.perMonth': '/month',
+        'treatments.per3Months': '/3 months',
+        'treatments.selectButton': 'Select Treatment',
+        'treatments.processing': 'Processing your order...',
+        'treatments.backToAssessment': 'Back to Assessment',
+        
+        // Treatment types
+        'treatments.gel.name': 'Testosterone Gel',
+        'treatments.gel.description': 'Daily topical application. Easy to use, steady hormone levels throughout the day. Perfect for those who prefer non-invasive treatment.',
+        'treatments.gel.feature1': 'Daily application',
+        'treatments.gel.feature2': 'Steady hormone levels',
+        'treatments.gel.feature3': 'Non-invasive',
+        'treatments.gel.feature4': '30-day supply',
+        
+        'treatments.injections.name': 'Testosterone Injections',
+        'treatments.injections.description': 'Weekly intramuscular injections. Most effective method with peak hormone optimization. Includes all supplies and detailed instructions.',
+        'treatments.injections.feature1': 'Weekly injections',
+        'treatments.injections.feature2': 'Peak effectiveness',
+        'treatments.injections.feature3': 'Complete kit included',
+        'treatments.injections.feature4': '4-week supply',
+        
+        'treatments.patches.name': 'Testosterone Patches',
+        'treatments.patches.description': 'Daily transdermal patches. Convenient and discreet with consistent hormone delivery. Simply apply and forget.',
+        'treatments.patches.feature1': 'Daily patches',
+        'treatments.patches.feature2': 'Discreet application',
+        'treatments.patches.feature3': 'Consistent delivery',
+        'treatments.patches.feature4': '30-day supply',
+        
+        'treatments.pellets.name': 'Testosterone Pellets',
+        'treatments.pellets.description': 'Long-lasting subcutaneous pellets. Inserted once every 3-4 months for ultimate convenience. No daily routine required.',
+        'treatments.pellets.feature1': '3-4 month duration',
+        'treatments.pellets.feature2': 'No daily routine',
+        'treatments.pellets.feature3': 'Professional insertion',
+        'treatments.pellets.feature4': 'Steady hormone levels',
+        
+        'treatments.nasal.name': 'Testosterone Nasal Gel',
+        'treatments.nasal.description': 'Innovative nasal application. Fast absorption with no skin transfer risk. Perfect for those with sensitive skin or active lifestyles.',
+        'treatments.nasal.feature1': '3x daily application',
+        'treatments.nasal.feature2': 'Fast absorption',
+        'treatments.nasal.feature3': 'No skin transfer',
+        'treatments.nasal.feature4': '30-day supply',
+        
+        'treatments.custom.name': 'Custom Compound',
+        'treatments.custom.description': 'Personalized testosterone formulation. Tailored to your specific needs and preferences based on your assessment and lab results.',
+        'treatments.custom.feature1': 'Personalized formula',
+        'treatments.custom.feature2': 'Lab-based dosing',
+        'treatments.custom.feature3': 'Multiple delivery options',
+        'treatments.custom.feature4': 'Ongoing optimization',
+        
+        // What's included section
+        'treatments.info.title': 'What\'s Included with Every Treatment',
+        'treatments.info.item1': 'Physician consultation and prescription',
+        'treatments.info.item2': 'Regular blood work monitoring',
+        'treatments.info.item3': '24/7 medical support',
+        'treatments.info.item4': 'Discreet home delivery',
+        'treatments.info.item5': 'Detailed usage instructions',
+        'treatments.info.item6': 'Cancel or modify anytime',
+        
+        // Treatment success page
+        'Treatment Order Confirmed!': 'Treatment Order Confirmed!',
+        'Your treatment order has been confirmed! We will prepare your medication and ship it discreetly to your address. You will receive tracking information via email.': 'Your treatment order has been confirmed! We will prepare your medication and ship it discreetly to your address. You will receive tracking information via email.',
+        'Order Confirmation': 'Order Confirmation',
+        'Treatment:': 'Treatment:',
+        'Order ID:': 'Order ID:',
+        'Your medication will be prepared within 24 hours': 'Your medication will be prepared within 24 hours',
+        'Discreet shipping within 2-3 business days': 'Discreet shipping within 2-3 business days',
+        '24/7 medical support available anytime': '24/7 medical support available anytime'
     },
     de: {
         // Navigation
@@ -95,7 +166,78 @@ const translations = {
         'Address and billing details will be collected securely by Stripe during checkout.': 'Adresse und Rechnungsdetails werden sicher von Stripe während des Checkouts erfasst.',
         'Secure Checkout Process': 'Sicherer Checkout-Prozess',
         'Your personal details, billing address, and payment information will be collected securely by Stripe during the next step. No sensitive information is stored on our servers.': 'Ihre persönlichen Daten, Rechnungsadresse und Zahlungsinformationen werden sicher von Stripe während des nächsten Schritts erfasst. Keine sensiblen Informationen werden auf unseren Servern gespeichert.',
-        'Proceed to Secure Checkout': 'Zur sicheren Bezahlung fortfahren'
+        'Proceed to Secure Checkout': 'Zur sicheren Bezahlung fortfahren',
+        
+        // Treatments page
+        'treatments.title': 'Wählen Sie Ihre TRT-Behandlung',
+        'treatments.subtitle': 'Wählen Sie die Testosteronersatztherapie-Option, die am besten zu Ihrem Lebensstil und Ihren Vorlieben passt. Alle Behandlungen sind ärztlich verschrieben und werden diskret zu Ihnen nach Hause geliefert.',
+        'treatments.perMonth': '/Monat',
+        'treatments.per3Months': '/3 Monate',
+        'treatments.selectButton': 'Behandlung auswählen',
+        'treatments.processing': 'Ihre Bestellung wird verarbeitet...',
+        'treatments.backToAssessment': 'Zurück zum Assessment',
+        
+        // Treatment types
+        'treatments.gel.name': 'Testosteron-Gel',
+        'treatments.gel.description': 'Tägliche topische Anwendung. Einfach zu verwenden, gleichmäßige Hormonspiegel den ganzen Tag. Perfekt für diejenigen, die eine nicht-invasive Behandlung bevorzugen.',
+        'treatments.gel.feature1': 'Tägliche Anwendung',
+        'treatments.gel.feature2': 'Gleichmäßige Hormonspiegel',
+        'treatments.gel.feature3': 'Nicht-invasiv',
+        'treatments.gel.feature4': '30-Tage-Vorrat',
+        
+        'treatments.injections.name': 'Testosteron-Injektionen',
+        'treatments.injections.description': 'Wöchentliche intramuskuläre Injektionen. Effektivste Methode mit optimaler Hormonoptimierung. Enthält alle Materialien und detaillierte Anweisungen.',
+        'treatments.injections.feature1': 'Wöchentliche Injektionen',
+        'treatments.injections.feature2': 'Höchste Wirksamkeit',
+        'treatments.injections.feature3': 'Komplettes Set enthalten',
+        'treatments.injections.feature4': '4-Wochen-Vorrat',
+        
+        'treatments.patches.name': 'Testosteron-Pflaster',
+        'treatments.patches.description': 'Tägliche transdermale Pflaster. Bequem und diskret mit konstanter Hormonabgabe. Einfach auftragen und vergessen.',
+        'treatments.patches.feature1': 'Tägliche Pflaster',
+        'treatments.patches.feature2': 'Diskrete Anwendung',
+        'treatments.patches.feature3': 'Konstante Abgabe',
+        'treatments.patches.feature4': '30-Tage-Vorrat',
+        
+        'treatments.pellets.name': 'Testosteron-Pellets',
+        'treatments.pellets.description': 'Langanhaltende subkutane Pellets. Einmal alle 3-4 Monate eingesetzt für ultimative Bequemlichkeit. Keine tägliche Routine erforderlich.',
+        'treatments.pellets.feature1': '3-4 Monate Wirkdauer',
+        'treatments.pellets.feature2': 'Keine tägliche Routine',
+        'treatments.pellets.feature3': 'Professionelle Einlage',
+        'treatments.pellets.feature4': 'Gleichmäßige Hormonspiegel',
+        
+        'treatments.nasal.name': 'Testosteron-Nasal-Gel',
+        'treatments.nasal.description': 'Innovative nasale Anwendung. Schnelle Absorption ohne Hautübertragungsrisiko. Perfekt für Menschen mit empfindlicher Haut oder aktivem Lebensstil.',
+        'treatments.nasal.feature1': '3x tägliche Anwendung',
+        'treatments.nasal.feature2': 'Schnelle Absorption',
+        'treatments.nasal.feature3': 'Keine Hautübertragung',
+        'treatments.nasal.feature4': '30-Tage-Vorrat',
+        
+        'treatments.custom.name': 'Individuelle Zusammensetzung',
+        'treatments.custom.description': 'Personalisierte Testosteronformulierung. Maßgeschneidert auf Ihre spezifischen Bedürfnisse und Vorlieben basierend auf Ihrem Assessment und Laborergebnissen.',
+        'treatments.custom.feature1': 'Personalisierte Formel',
+        'treatments.custom.feature2': 'Laborbasierte Dosierung',
+        'treatments.custom.feature3': 'Mehrere Verabreichungsoptionen',
+        'treatments.custom.feature4': 'Laufende Optimierung',
+        
+        // What's included section
+        'treatments.info.title': 'Was bei jeder Behandlung enthalten ist',
+        'treatments.info.item1': 'Ärztliche Beratung und Verschreibung',
+        'treatments.info.item2': 'Regelmäßige Blutuntersuchungen',
+        'treatments.info.item3': '24/7 medizinische Unterstützung',
+        'treatments.info.item4': 'Diskrete Lieferung nach Hause',
+        'treatments.info.item5': 'Detaillierte Anwendungshinweise',
+        'treatments.info.item6': 'Jederzeit kündbar oder änderbar',
+        
+        // Treatment success page
+        'Treatment Order Confirmed!': 'Behandlungsbestaetigung',
+        'Your treatment order has been confirmed! We will prepare your medication and ship it discreetly to your address. You will receive tracking information via email.': 'Ihre Bestellung wurde bestätigt! Wir werden Ihre Medikation vorbereiten und sie diskret zu Ihrer Adresse liefern. Sie erhalten Tracking-Informationen per E-Mail.',
+        'Order Confirmation': 'Bestellbestätigung',
+        'Treatment:': 'Behandlung:',
+        'Order ID:': 'Bestell-ID:',
+        'Your medication will be prepared within 24 hours': 'Ihre Medikation wird innerhalb von 24 Stunden vorbereitet',
+        'Discreet shipping within 2-3 business days': 'Versand innerhalb von 2-3 Geschäftstagen',
+        '24/7 medical support available anytime': '24/7 medizinische Unterstützung jederzeit verfügbar'
     }
 };
 

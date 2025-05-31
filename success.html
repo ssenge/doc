@@ -125,41 +125,64 @@
             const product = urlParams.get('product');
             const email = urlParams.get('email');
             const sessionId = urlParams.get('session_id');
+            const treatment = urlParams.get('treatment');
             
             // If we have payment parameters, show payment confirmation
-            if (amount || sessionId) {
-                showPaymentConfirmation(amount, product, email, sessionId);
+            if (amount || sessionId || treatment) {
+                showPaymentConfirmation(amount, product, email, sessionId, treatment);
             }
         }
         
-        function showPaymentConfirmation(amount, product, email, sessionId) {
+        function showPaymentConfirmation(amount, product, email, sessionId, treatment) {
+            // Determine if this is a treatment purchase
+            const isTreatmentPurchase = treatment || (product && product.toLowerCase().includes('testosterone'));
+            
             // Update the main heading
             const heading = document.querySelector('h1');
             if (heading) {
-                heading.setAttribute('data-en', 'Payment Successful!');
-                heading.setAttribute('data-de', 'Zahlung erfolgreich!');
-                heading.textContent = window.TRTLanguage?.t('Payment Successful!') || 'Payment Successful!';
+                if (isTreatmentPurchase) {
+                    heading.setAttribute('data-en', 'Treatment Order Confirmed!');
+                    heading.setAttribute('data-de', 'Behandlungsbestellung bestätigt!');
+                    heading.textContent = window.TRTLanguage?.t('Treatment Order Confirmed!') || 'Treatment Order Confirmed!';
+                } else {
+                    heading.setAttribute('data-en', 'Payment Successful!');
+                    heading.setAttribute('data-de', 'Zahlung erfolgreich!');
+                    heading.textContent = window.TRTLanguage?.t('Payment Successful!') || 'Payment Successful!';
+                }
             }
             
             // Update the description
             const description = document.querySelector('p.mb-8');
             if (description) {
-                description.setAttribute('data-en', 'Your payment has been processed successfully. Our doctor will now review your health data and we\'ll keep you posted with personalized recommendations.');
-                description.setAttribute('data-de', 'Ihre Zahlung wurde erfolgreich verarbeitet. Unser Arzt wird nun Ihre Gesundheitsdaten überprüfen und wir werden Sie mit personalisierten Empfehlungen auf dem Laufenden halten.');
-                description.textContent = window.TRTLanguage?.t('Your payment has been processed successfully. Our doctor will now review your health data and we\'ll keep you posted with personalized recommendations.') || 'Your payment has been processed successfully. Our doctor will now review your health data and we\'ll keep you posted with personalized recommendations.';
+                if (isTreatmentPurchase) {
+                    description.setAttribute('data-en', 'Your treatment order has been confirmed! We will prepare your medication and ship it discreetly to your address. You will receive tracking information via email.');
+                    description.setAttribute('data-de', 'Ihre Behandlungsbestellung wurde bestätigt! Wir werden Ihr Medikament vorbereiten und diskret an Ihre Adresse versenden. Sie erhalten Tracking-Informationen per E-Mail.');
+                    description.textContent = window.TRTLanguage?.t('Your treatment order has been confirmed! We will prepare your medication and ship it discreetly to your address. You will receive tracking information via email.') || 'Your treatment order has been confirmed! We will prepare your medication and ship it discreetly to your address. You will receive tracking information via email.';
+                } else {
+                    description.setAttribute('data-en', 'Your payment has been processed successfully. Our doctor will now review your health data and we\'ll keep you posted with personalized recommendations.');
+                    description.setAttribute('data-de', 'Ihre Zahlung wurde erfolgreich verarbeitet. Unser Arzt wird nun Ihre Gesundheitsdaten überprüfen und wir werden Sie mit personalisierten Empfehlungen auf dem Laufenden halten.');
+                    description.textContent = window.TRTLanguage?.t('Your payment has been processed successfully. Our doctor will now review your health data and we\'ll keep you posted with personalized recommendations.') || 'Your payment has been processed successfully. Our doctor will now review your health data and we\'ll keep you posted with personalized recommendations.';
+                }
             }
             
             // Add payment confirmation details
             const nextStepsSection = document.querySelector('.bg-blue-50');
-            if (nextStepsSection && amount) {
+            if (nextStepsSection && (amount || sessionId)) {
                 const paymentDetails = document.createElement('div');
                 paymentDetails.className = 'bg-green-50 rounded-lg p-6 mb-8';
+                
+                // Get treatment name if available
+                let treatmentName = product;
+                if (treatment && window.TreatmentsPage?.TREATMENTS[treatment]) {
+                    treatmentName = window.TreatmentsPage.TREATMENTS[treatment].name;
+                }
+                
                 paymentDetails.innerHTML = `
-                    <h2 class="text-xl font-semibold text-green-900 mb-4" data-en="Payment Confirmation" data-de="Zahlungsbestätigung">Payment Confirmation</h2>
+                    <h2 class="text-xl font-semibold text-green-900 mb-4" data-en="${isTreatmentPurchase ? 'Order Confirmation' : 'Payment Confirmation'}" data-de="${isTreatmentPurchase ? 'Bestellbestätigung' : 'Zahlungsbestätigung'}">${isTreatmentPurchase ? 'Order Confirmation' : 'Payment Confirmation'}</h2>
                     <div class="text-left text-green-800 space-y-2 max-w-md mx-auto">
                         <div class="flex justify-between">
-                            <span data-en="Service:" data-de="Service:">Service:</span>
-                            <span class="font-medium">${product || 'TRT Assessment'}</span>
+                            <span data-en="${isTreatmentPurchase ? 'Treatment:' : 'Service:'}" data-de="${isTreatmentPurchase ? 'Behandlung:' : 'Service:'}">${isTreatmentPurchase ? 'Treatment:' : 'Service:'}</span>
+                            <span class="font-medium">${treatmentName || 'TRT Assessment'}</span>
                         </div>
                         <div class="flex justify-between">
                             <span data-en="Amount:" data-de="Betrag:">Amount:</span>
@@ -173,11 +196,11 @@
                         ` : ''}
                         <div class="flex justify-between">
                             <span data-en="Status:" data-de="Status:">Status:</span>
-                            <span class="font-medium text-green-600" data-en="✅ Paid" data-de="✅ Bezahlt">✅ Paid</span>
+                            <span class="font-medium text-green-600" data-en="✅ ${isTreatmentPurchase ? 'Confirmed' : 'Paid'}" data-de="✅ ${isTreatmentPurchase ? 'Bestätigt' : 'Bezahlt'}">✅ ${isTreatmentPurchase ? 'Confirmed' : 'Paid'}</span>
                         </div>
                         ${sessionId ? `
                         <div class="flex justify-between text-xs">
-                            <span data-en="Transaction ID:" data-de="Transaktions-ID:">Transaction ID:</span>
+                            <span data-en="Order ID:" data-de="Bestell-ID:">Order ID:</span>
                             <span class="font-mono">${sessionId.substring(0, 20)}...</span>
                         </div>
                         ` : ''}
@@ -185,11 +208,46 @@
                 `;
                 
                 nextStepsSection.parentNode.insertBefore(paymentDetails, nextStepsSection);
+            }
+            
+            // Update next steps for treatment purchases
+            if (isTreatmentPurchase && nextStepsSection) {
+                const nextStepsTitle = nextStepsSection.querySelector('h2');
+                const nextStepsList = nextStepsSection.querySelector('ul');
                 
-                // Apply language translations to the new content
-                if (window.TRTLanguage) {
-                    window.TRTLanguage.updatePageContent();
+                if (nextStepsTitle) {
+                    nextStepsTitle.setAttribute('data-en', 'What happens next?');
+                    nextStepsTitle.setAttribute('data-de', 'Was passiert als nächstes?');
+                    nextStepsTitle.textContent = 'What happens next?';
                 }
+                
+                if (nextStepsList) {
+                    nextStepsList.innerHTML = `
+                        <li class="flex items-center">
+                            <svg class="w-5 h-5 mr-3 text-blue-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span data-en="Your medication will be prepared within 24 hours" data-de="Ihr Medikament wird innerhalb von 24 Stunden vorbereitet">Your medication will be prepared within 24 hours</span>
+                        </li>
+                        <li class="flex items-center">
+                            <svg class="w-5 h-5 mr-3 text-blue-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span data-en="Discreet shipping within 2-3 business days" data-de="Diskreter Versand innerhalb von 2-3 Werktagen">Discreet shipping within 2-3 business days</span>
+                        </li>
+                        <li class="flex items-center">
+                            <svg class="w-5 h-5 mr-3 text-blue-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span data-en="24/7 medical support available anytime" data-de="24/7 medizinische Unterstützung jederzeit verfügbar">24/7 medical support available anytime</span>
+                        </li>
+                    `;
+                }
+            }
+            
+            // Apply language translations to the new content
+            if (window.TRTLanguage) {
+                window.TRTLanguage.updatePageContent();
             }
         }
     </script>
