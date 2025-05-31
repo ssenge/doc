@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Zapier Integration - TRT Clinic</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css" rel="stylesheet" />
+    <style>
+        .test-section {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        .info { background-color: #d1ecf1; border-color: #bee5eb; }
+        pre { background: #f8f9fa; padding: 15px; border-radius: 4px; overflow-x: auto; }
+    </style>
+</head>
+<body class="bg-gray-50 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold text-gray-900 mb-8">TRT Clinic - Zapier Integration Test</h1>
+        
+        <!-- Test Controls -->
+        <div class="test-section">
+            <h2 class="text-xl font-semibold mb-4">Test Controls</h2>
+            <div class="space-x-4">
+                <button id="simulateAssessment" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                    1. Simulate Assessment
+                </button>
+                <button id="simulateTreatment" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+                    2. Simulate Treatment Selection
+                </button>
+                <button id="simulatePayment" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">
+                    3. Simulate Payment Success
+                </button>
+                <button id="sendToZapier" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
+                    4. Send to Zapier
+                </button>
+                <button id="clearData" class="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700">
+                    Clear Data
+                </button>
+            </div>
+        </div>
+
+        <!-- Status Display -->
+        <div id="statusDisplay" class="test-section info">
+            <h2 class="text-xl font-semibold mb-4">Status</h2>
+            <p>Ready to test. Click the buttons above in sequence.</p>
+        </div>
+
+        <!-- Data Preview -->
+        <div class="test-section">
+            <h2 class="text-xl font-semibold mb-4">Current Data in localStorage</h2>
+            <pre id="dataPreview">No data yet</pre>
+        </div>
+
+        <!-- Zapier Response -->
+        <div class="test-section">
+            <h2 class="text-xl font-semibold mb-4">Zapier Response</h2>
+            <pre id="zapierResponse">No response yet</pre>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="assets/js/data-collection.js"></script>
+    <script>
+        // Test data
+        const testAssessmentData = {
+            age: 35,
+            height: 180,
+            weight: 75,
+            email: 'test@example.com',
+            symptoms: {
+                lowEnergy: true,
+                reducedLibido: true,
+                moodChanges: false,
+                sleepIssues: true,
+                muscleWeakness: false,
+                weightGain: true
+            },
+            medicalHistory: {
+                diabetes: false,
+                heartDisease: false,
+                highBloodPressure: true,
+                previousTRT: false,
+                medications: 'Lisinopril'
+            },
+            lifestyle: {
+                exerciseFrequency: '3-4 times per week',
+                smokingStatus: 'never',
+                alcoholConsumption: 'moderate',
+                stressLevel: 'moderate'
+            }
+        };
+
+        const testTreatmentData = {
+            name: 'Testosterone Gel',
+            price: 8900, // cents
+            currency: 'EUR',
+            description: 'Daily topical application with steady hormone levels throughout the day.',
+            interval: 'month'
+        };
+
+        // DOM elements
+        const statusDisplay = document.getElementById('statusDisplay');
+        const dataPreview = document.getElementById('dataPreview');
+        const zapierResponse = document.getElementById('zapierResponse');
+
+        // Helper functions
+        function updateStatus(message, type = 'info') {
+            statusDisplay.className = `test-section ${type}`;
+            statusDisplay.innerHTML = `<h2 class="text-xl font-semibold mb-4">Status</h2><p>${message}</p>`;
+        }
+
+        function updateDataPreview() {
+            const allData = window.TRTDataCollection.getAllCollectedData();
+            dataPreview.textContent = JSON.stringify(allData, null, 2);
+        }
+
+        function updateZapierResponse(response) {
+            zapierResponse.textContent = JSON.stringify(response, null, 2);
+        }
+
+        // Event listeners
+        document.getElementById('simulateAssessment').addEventListener('click', () => {
+            window.TRTDataCollection.saveAssessmentData(testAssessmentData);
+            updateStatus('✅ Assessment data saved to localStorage', 'success');
+            updateDataPreview();
+        });
+
+        document.getElementById('simulateTreatment').addEventListener('click', () => {
+            window.TRTDataCollection.saveTreatmentData('testo-gel', testTreatmentData);
+            updateStatus('✅ Treatment selection saved to localStorage', 'success');
+            updateDataPreview();
+        });
+
+        document.getElementById('simulatePayment').addEventListener('click', () => {
+            // Simulate URL parameters that would come from Stripe
+            const currentUrl = new URL(window.location.href);
+            currentUrl.searchParams.set('treatment', 'testo-gel');
+            currentUrl.searchParams.set('amount', '89.00');
+            currentUrl.searchParams.set('product', 'Testosterone Gel');
+            currentUrl.searchParams.set('email', 'test@example.com');
+            currentUrl.searchParams.set('session_id', 'cs_test_' + Date.now());
+            
+            // Update the URL without reloading
+            window.history.replaceState({}, '', currentUrl.toString());
+            
+            updateStatus('✅ Payment parameters simulated in URL', 'success');
+            updateDataPreview();
+        });
+
+        document.getElementById('sendToZapier').addEventListener('click', async () => {
+            updateStatus('🚀 Sending data to Zapier...', 'info');
+            
+            try {
+                const result = await window.TRTDataCollection.sendToZapier({
+                    source: 'test_page',
+                    testMode: true
+                });
+                
+                if (result.success) {
+                    updateStatus('✅ Data sent to Zapier successfully!', 'success');
+                    updateZapierResponse(result);
+                } else {
+                    updateStatus('❌ Failed to send data to Zapier: ' + result.error, 'error');
+                    updateZapierResponse(result);
+                }
+            } catch (error) {
+                updateStatus('❌ Error sending data: ' + error.message, 'error');
+                updateZapierResponse({ error: error.message });
+            }
+        });
+
+        document.getElementById('clearData').addEventListener('click', () => {
+            window.TRTDataCollection.clearStoredData();
+            
+            // Clear URL parameters
+            const currentUrl = new URL(window.location.href);
+            currentUrl.search = '';
+            window.history.replaceState({}, '', currentUrl.toString());
+            
+            updateStatus('🗑️ All data cleared', 'info');
+            updateDataPreview();
+            zapierResponse.textContent = 'No response yet';
+        });
+
+        // Initial data preview
+        updateDataPreview();
+    </script>
+</body>
+</html> 
