@@ -87,8 +87,10 @@
         </div>
     </section>
 
+    <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.js"></script>
     <script src="assets/js/language.js"></script>
+    <script src="assets/js/data-collection.js"></script>
     <script>
         // Simple dropdown toggle for language selector
         document.addEventListener('DOMContentLoaded', function() {
@@ -115,11 +117,11 @@
                 });
             }
             
-            // Check for payment confirmation parameters
-            checkPaymentConfirmation();
+            // Check for payment confirmation parameters and send data to Zapier
+            checkPaymentConfirmationAndSendData();
         });
         
-        function checkPaymentConfirmation() {
+        async function checkPaymentConfirmationAndSendData() {
             const urlParams = new URLSearchParams(window.location.search);
             const amount = urlParams.get('amount');
             const product = urlParams.get('product');
@@ -130,7 +132,58 @@
             // If we have payment parameters, show payment confirmation
             if (amount || sessionId || treatment) {
                 showPaymentConfirmation(amount, product, email, sessionId, treatment);
+                
+                // Send data to Zapier if not already sent
+                if (window.TRTDataCollection && !window.TRTDataCollection.hasDataBeenSent()) {
+                    console.log('🚀 Sending data to Zapier...');
+                    
+                    try {
+                        const result = await window.TRTDataCollection.sendToZapier({
+                            source: 'success_page',
+                            paymentConfirmed: true,
+                            successPageUrl: window.location.href
+                        });
+                        
+                        if (result.success) {
+                            console.log('✅ Data successfully sent to Zapier!');
+                            
+                            // Show success indicator (optional)
+                            showDataSentIndicator();
+                        } else {
+                            console.error('❌ Failed to send data to Zapier:', result.error);
+                            
+                            // Try to retry after a delay
+                            setTimeout(async () => {
+                                console.log('🔄 Retrying data send...');
+                                await window.TRTDataCollection.retryFailedSend();
+                            }, 5000);
+                        }
+                    } catch (error) {
+                        console.error('❌ Error sending data to Zapier:', error);
+                    }
+                } else if (window.TRTDataCollection?.hasDataBeenSent()) {
+                    console.log('ℹ️ Data already sent to Zapier, skipping...');
+                }
             }
+        }
+        
+        function showDataSentIndicator() {
+            // Optional: Show a small indicator that data was sent
+            const indicator = document.createElement('div');
+            indicator.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg text-sm z-50';
+            indicator.innerHTML = '✅ Data processed successfully';
+            document.body.appendChild(indicator);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                indicator.remove();
+            }, 3000);
+        }
+        
+        function checkPaymentConfirmation() {
+            // This function is kept for backward compatibility
+            // The new function checkPaymentConfirmationAndSendData() handles both
+            checkPaymentConfirmationAndSendData();
         }
         
         function showPaymentConfirmation(amount, product, email, sessionId, treatment) {
@@ -199,55 +252,50 @@
                             <span class="font-medium text-green-600" data-en="✅ ${isTreatmentPurchase ? 'Confirmed' : 'Paid'}" data-de="✅ ${isTreatmentPurchase ? 'Bestätigt' : 'Bezahlt'}">✅ ${isTreatmentPurchase ? 'Confirmed' : 'Paid'}</span>
                         </div>
                         ${sessionId ? `
-                        <div class="flex justify-between text-xs">
-                            <span data-en="Order ID:" data-de="Bestell-ID:">Order ID:</span>
-                            <span class="font-mono">${sessionId.substring(0, 20)}...</span>
+                        <div class="flex justify-between">
+                            <span data-en="Transaction ID:" data-de="Transaktions-ID:">Transaction ID:</span>
+                            <span class="font-medium text-xs">${sessionId.substring(0, 20)}...</span>
                         </div>
                         ` : ''}
                     </div>
                 `;
                 
                 nextStepsSection.parentNode.insertBefore(paymentDetails, nextStepsSection);
-            }
-            
-            // Update next steps for treatment purchases
-            if (isTreatmentPurchase && nextStepsSection) {
-                const nextStepsTitle = nextStepsSection.querySelector('h2');
-                const nextStepsList = nextStepsSection.querySelector('ul');
                 
-                if (nextStepsTitle) {
-                    nextStepsTitle.setAttribute('data-en', 'What happens next?');
-                    nextStepsTitle.setAttribute('data-de', 'Was passiert als nächstes?');
-                    nextStepsTitle.textContent = 'What happens next?';
+                // Update next steps for treatment orders
+                if (isTreatmentPurchase) {
+                    const nextStepsTitle = nextStepsSection.querySelector('h2');
+                    const nextStepsList = nextStepsSection.querySelector('ul');
+                    
+                    if (nextStepsTitle) {
+                        nextStepsTitle.setAttribute('data-en', 'What happens next?');
+                        nextStepsTitle.setAttribute('data-de', 'Was passiert als nächstes?');
+                        nextStepsTitle.textContent = 'What happens next?';
+                    }
+                    
+                    if (nextStepsList) {
+                        nextStepsList.innerHTML = `
+                            <li class="flex items-center">
+                                <svg class="w-5 h-5 mr-3 text-blue-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span data-en="Your medication will be prepared within 24 hours" data-de="Ihre Medikation wird innerhalb von 24 Stunden vorbereitet">Your medication will be prepared within 24 hours</span>
+                            </li>
+                            <li class="flex items-center">
+                                <svg class="w-5 h-5 mr-3 text-blue-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span data-en="Discreet shipping within 2-3 business days" data-de="Versand innerhalb von 2-3 Geschäftstagen">Discreet shipping within 2-3 business days</span>
+                            </li>
+                            <li class="flex items-center">
+                                <svg class="w-5 h-5 mr-3 text-blue-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span data-en="24/7 medical support available anytime" data-de="24/7 medizinische Unterstützung jederzeit verfügbar">24/7 medical support available anytime</span>
+                            </li>
+                        `;
+                    }
                 }
-                
-                if (nextStepsList) {
-                    nextStepsList.innerHTML = `
-                        <li class="flex items-center">
-                            <svg class="w-5 h-5 mr-3 text-blue-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                            </svg>
-                            <span data-en="Your medication will be prepared within 24 hours" data-de="Ihr Medikament wird innerhalb von 24 Stunden vorbereitet">Your medication will be prepared within 24 hours</span>
-                        </li>
-                        <li class="flex items-center">
-                            <svg class="w-5 h-5 mr-3 text-blue-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                            </svg>
-                            <span data-en="Discreet shipping within 2-3 business days" data-de="Diskreter Versand innerhalb von 2-3 Werktagen">Discreet shipping within 2-3 business days</span>
-                        </li>
-                        <li class="flex items-center">
-                            <svg class="w-5 h-5 mr-3 text-blue-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                            </svg>
-                            <span data-en="24/7 medical support available anytime" data-de="24/7 medizinische Unterstützung jederzeit verfügbar">24/7 medical support available anytime</span>
-                        </li>
-                    `;
-                }
-            }
-            
-            // Apply language translations to the new content
-            if (window.TRTLanguage) {
-                window.TRTLanguage.updatePageContent();
             }
         }
     </script>

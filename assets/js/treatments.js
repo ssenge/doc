@@ -97,6 +97,12 @@ function handleTreatmentSelection(event) {
         return;
     }
 
+    // Save treatment data using data collection system
+    if (window.TRTDataCollection) {
+        window.TRTDataCollection.saveTreatmentData(treatmentId, treatment);
+        console.log('Treatment data saved to localStorage');
+    }
+
     // Show loading state
     showLoading(button);
     

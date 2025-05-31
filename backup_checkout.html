@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backup Checkout - TRT Treatments</title>
+    <script src="https://js.stripe.com/v3/"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .treatment-card {
+            background: white;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .checkout-button {
+            background: #635bff;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+        .checkout-button:hover {
+            background: #5a52e8;
+        }
+        .price {
+            font-size: 24px;
+            font-weight: bold;
+            color: #635bff;
+            margin: 10px 0;
+        }
+        .alert {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔄 Backup Checkout System</h1>
+    
+    <div class="alert">
+        <strong>⚠️ Backup Payment System</strong><br>
+        This is an alternative checkout method if Payment Links are not working.
+        Uses Stripe Checkout Sessions for reliable payment processing.
+    </div>
+
+    <div class="treatment-card">
+        <h3>💊 Testosterone Gel</h3>
+        <p>Daily topical application with steady hormone levels.</p>
+        <div class="price">€89.00</div>
+        <button class="checkout-button" onclick="createCheckout('testo-gel', 8900, 'Testosterone Gel')">
+            Purchase with Stripe Checkout
+        </button>
+    </div>
+
+    <div class="treatment-card">
+        <h3>💉 Testosterone Injections</h3>
+        <p>Weekly intramuscular injections for peak effectiveness.</p>
+        <div class="price">€129.00</div>
+        <button class="checkout-button" onclick="createCheckout('injections', 12900, 'Testosterone Injections')">
+            Purchase with Stripe Checkout
+        </button>
+    </div>
+
+    <div class="treatment-card">
+        <h3>🩹 Testosterone Patches</h3>
+        <p>Daily transdermal patches, convenient and discreet.</p>
+        <div class="price">€109.00</div>
+        <button class="checkout-button" onclick="createCheckout('patches', 10900, 'Testosterone Patches')">
+            Purchase with Stripe Checkout
+        </button>
+    </div>
+
+    <script>
+        // Initialize Stripe
+        const stripe = Stripe('pk_test_51RUrRKQr7jYlppyzyYiZWo3UiOSddHlj7UsHNkHmK0yzIjRhS3iS5FK0C3E2DF8ASg7eOsY2NGx5l9AvXdw7Ovbc00YUP2wQYq');
+
+        async function createCheckout(treatmentId, amount, name) {
+            try {
+                // Show loading state
+                event.target.disabled = true;
+                event.target.textContent = 'Loading...';
+
+                // Create checkout session
+                const { error } = await stripe.redirectToCheckout({
+                    lineItems: [{
+                        price_data: {
+                            currency: 'eur',
+                            product_data: {
+                                name: name,
+                                description: `TRT Treatment: ${name}`,
+                            },
+                            unit_amount: amount,
+                        },
+                        quantity: 1,
+                    }],
+                    mode: 'payment',
+                    successUrl: `${window.location.origin}/success.html?treatment=${treatmentId}&amount=${(amount/100).toFixed(2)}&product=${encodeURIComponent(name)}`,
+                    cancelUrl: `${window.location.origin}/treatments.html`,
+                    billingAddressCollection: 'required',
+                    shippingAddressCollection: {
+                        allowedCountries: ['DE', 'AT', 'CH', 'NL', 'BE', 'LU', 'FR', 'IT', 'ES', 'PT']
+                    },
+                    metadata: {
+                        treatment_id: treatmentId,
+                        source: 'backup_checkout'
+                    }
+                });
+
+                if (error) {
+                    console.error('Stripe error:', error);
+                    alert('Payment error: ' + error.message);
+                    
+                    // Reset button
+                    event.target.disabled = false;
+                    event.target.textContent = 'Purchase with Stripe Checkout';
+                }
+            } catch (err) {
+                console.error('Checkout error:', err);
+                alert('There was an error starting the checkout process. Please try again.');
+                
+                // Reset button
+                event.target.disabled = false;
+                event.target.textContent = 'Purchase with Stripe Checkout';
+            }
+        }
+
+        // Test connection to Stripe
+        console.log('Stripe initialized:', stripe);
+        console.log('Test mode active - use card 4242 4242 4242 4242');
+    </script>
+
+    <div style="margin-top: 30px; padding: 15px; background: #e8f5e8; border-radius: 6px;">
+        <h4>🧪 Test Card for Backup System:</h4>
+        <ul>
+            <li><strong>Card:</strong> 4242 4242 4242 4242</li>
+            <li><strong>Expiry:</strong> 12/34</li>
+            <li><strong>CVC:</strong> 123</li>
+            <li><strong>Email:</strong> test@example.com</li>
+        </ul>
+    </div>
+</body>
+</html> 
