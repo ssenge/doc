@@ -12,13 +12,29 @@
     <nav class="bg-white border-gray-200 px-4 lg:px-6 py-2.5">
         <div class="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl">
             <a href="index.html" class="flex items-center">
-                <span class="self-center text-xl font-semibold whitespace-nowrap">TRT Clinic</span>
+                <span class="self-center text-xl font-semibold whitespace-nowrap text-blue-600">TRT Clinic</span>
             </a>
             <div class="flex items-center lg:order-2">
-                <select id="languageSelector" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5">
-                    <option value="en">English</option>
-                    <option value="de">Deutsch</option>
-                </select>
+                <!-- Language Switcher -->
+                <div class="relative mr-4">
+                    <button id="languageDropdown" data-dropdown-toggle="languageMenu" class="text-gray-500 hover:text-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-4 py-2.5 text-center inline-flex items-center border border-gray-300 bg-white" type="button">
+                        <span id="currentFlag" class="mr-2">🇺🇸</span>
+                        <span id="currentLanguage" class="font-semibold">EN</span>
+                        <svg class="w-4 h-4 ml-2" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div id="languageMenu" class="z-50 hidden absolute right-0 mt-2 bg-white divide-y divide-gray-100 rounded-lg shadow-lg w-40 border border-gray-200">
+                        <ul class="py-2 text-sm text-gray-700">
+                            <li><a href="#" onclick="switchLanguage('en')" class="flex items-center px-4 py-2 hover:bg-gray-100 text-gray-900 font-medium">
+                                <span class="mr-2">🇺🇸</span>English
+                            </a></li>
+                            <li><a href="#" onclick="switchLanguage('de')" class="flex items-center px-4 py-2 hover:bg-gray-100 text-gray-900 font-medium">
+                                <span class="mr-2">🇩🇪</span>Deutsch
+                            </a></li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
     </nav>
