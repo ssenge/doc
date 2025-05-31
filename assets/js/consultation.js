@@ -379,29 +379,23 @@ function handleLegacyPayment(event) {
         submitBtn.textContent = window.TRTLanguage?.t('loading') || 'Processing...';
     }
     
-    // Prepare final booking data
-    const finalBookingData = {
-        ...bookingData,
-        bookingId: generateBookingId(),
-        timestamp: new Date().toISOString()
-    };
-    
-    // Send to Zapier (simulated)
-    sendBookingToZapier(finalBookingData)
-        .then(response => {
+    // Save consultation data to TRT Data Collection system
+    if (window.TRTDataCollection && selectedPackage) {
+        try {
+            window.TRTDataCollection.saveConsultationData(selectedPackage.type, selectedPackage.price);
+            console.log('Consultation data saved to TRT Data Collection system');
+            
             // Clear saved data
             localStorage.removeItem('trt-booking-data');
-            localStorage.removeItem('trt-assessment-data');
             
-            // Show success message
-            if (selectedPackage && selectedPackage.type === 'none') {
-                window.location.href = 'success.html';
+            // Redirect based on consultation type
+            if (selectedPackage.type === 'none') {
+                window.location.href = 'treatments.html';
             } else {
-                showSuccessPage(finalBookingData);
+                window.location.href = 'treatments.html';
             }
-        })
-        .catch(error => {
-            console.error('Booking submission error:', error);
+        } catch (error) {
+            console.error('Error saving consultation data:', error);
             showAlert(window.TRTLanguage?.t('error') || 'Booking failed. Please try again.', 'error');
             
             // Remove loading state
@@ -410,38 +404,18 @@ function handleLegacyPayment(event) {
                 submitBtn.disabled = false;
                 submitBtn.textContent = window.TRTLanguage?.t('Complete Booking') || 'Complete Booking';
             }
-        });
-}
-
-function generateBookingId() {
-    return 'TRT-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9).toUpperCase();
-}
-
-function sendBookingToZapier(data) {
-    // Simulated Zapier webhook call
-    return new Promise((resolve, reject) => {
-        setTimeout(() => {
-            console.log('Booking data:', data);
-            
-            // Simulate success/failure
-            if (Math.random() > 0.05) { // 95% success rate
-                resolve({ success: true, bookingId: data.bookingId });
-            } else {
-                reject(new Error('Payment processing failed'));
-            }
-        }, 3000);
-    });
-    
-    // Real implementation would be:
-    /*
-    return fetch('YOUR_ZAPIER_WEBHOOK_URL', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data)
-    });
-    */
+        }
+    } else {
+        console.error('TRTDataCollection not available or no package selected');
+        showAlert('System error. Please try again.', 'error');
+        
+        // Remove loading state
+        if (submitBtn) {
+            submitBtn.classList.remove('loading');
+            submitBtn.disabled = false;
+            submitBtn.textContent = window.TRTLanguage?.t('Complete Booking') || 'Complete Booking';
+        }
+    }
 }
 
 function showSuccessPage(bookingData) {

@@ -402,17 +402,21 @@ function handleSubmit(event) {
         submitBtn.disabled = true;
     }
     
-    // Send to Zapier (simulated)
-    sendToZapier(formData)
-        .then(response => {
-            // Clear saved data
+    // Save to TRT Data Collection system
+    if (window.TRTDataCollection) {
+        try {
+            // Process form data into the expected format
+            const processedData = processAssessmentData(formData);
+            window.TRTDataCollection.saveAssessmentData(processedData);
+            console.log('Assessment data saved to TRT Data Collection system');
+            
+            // Clear old saved data
             localStorage.removeItem('trt-assessment-data');
             
             // Redirect to consultation page
             window.location.href = 'consultation.html';
-        })
-        .catch(error => {
-            console.error('Submission error:', error);
+        } catch (error) {
+            console.error('Error saving assessment data:', error);
             showAlert(window.TRTLanguage.t('error'), 'error');
             
             // Remove loading state
@@ -420,34 +424,69 @@ function handleSubmit(event) {
                 submitBtn.classList.remove('loading');
                 submitBtn.disabled = false;
             }
-        });
+        }
+    } else {
+        console.error('TRTDataCollection not available');
+        showAlert('System error. Please try again.', 'error');
+        
+        // Remove loading state
+        if (submitBtn) {
+            submitBtn.classList.remove('loading');
+            submitBtn.disabled = false;
+        }
+    }
 }
 
-function sendToZapier(data) {
-    // Simulated Zapier webhook call
-    return new Promise((resolve, reject) => {
-        setTimeout(() => {
-            console.log('Assessment data:', data);
-            
-            // Simulate success/failure
-            if (Math.random() > 0.1) { // 90% success rate
-                resolve({ success: true });
-            } else {
-                reject(new Error('Network error'));
-            }
-        }, 2000);
-    });
-    
-    // Real implementation would be:
-    /*
-    return fetch('YOUR_ZAPIER_WEBHOOK_URL', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
+function processAssessmentData(rawData) {
+    // Convert form data to the expected structure
+    const processedData = {
+        // Basic info
+        age: parseInt(rawData.age) || null,
+        height: parseInt(rawData.height) || null,
+        weight: parseInt(rawData.weight) || null,
+        email: rawData.email || '',
+        phone: rawData.phone || '',
+        
+        // Symptoms (convert to boolean flags)
+        symptoms: {
+            lowEnergy: rawData.energy ? parseInt(rawData.energy) >= 3 : false,
+            reducedLibido: rawData.libido ? parseInt(rawData.libido) >= 3 : false,
+            moodChanges: rawData.mood ? parseInt(rawData.mood) >= 3 : false,
+            sleepIssues: rawData.sleep ? parseInt(rawData.sleep) >= 3 : false,
+            muscleWeakness: rawData.muscle ? parseInt(rawData.muscle) >= 3 : false,
+            weightGain: rawData.weight_gain === 'yes',
+            fatigue: rawData.fatigue === 'yes',
+            concentration: rawData.concentration === 'yes'
         },
-        body: JSON.stringify(data)
-    });
-    */
+        
+        // Medical history
+        medicalHistory: {
+            diabetes: rawData.diabetes === 'yes',
+            heartDisease: rawData.heart_disease === 'yes',
+            highBloodPressure: rawData.blood_pressure === 'yes',
+            thyroidIssues: rawData.thyroid === 'yes',
+            previousTRT: rawData.previous_trt === 'yes',
+            medications: rawData.medications || '',
+            allergies: rawData.allergies || '',
+            surgeries: rawData.surgeries || ''
+        },
+        
+        // Lifestyle
+        lifestyle: {
+            exerciseFrequency: rawData.exercise || '',
+            smokingStatus: rawData.smoking || '',
+            alcoholConsumption: rawData.alcohol || '',
+            stressLevel: rawData.stress || '',
+            sleepHours: rawData.sleep_hours || '',
+            diet: rawData.diet || ''
+        },
+        
+        // Assessment metadata
+        assessmentScore: rawData.assessmentScore || 0,
+        completedAt: rawData.timestamp || new Date().toISOString()
+    };
+    
+    return processedData;
 }
 
 function showAlert(message, type = 'info') {
