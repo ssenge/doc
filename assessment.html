@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en" id="html-root">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-en="TRT Assessment - Free Health Evaluation" data-de="TRT Assessment - Kostenlose Gesundheitsbewertung">TRT Assessment - Free Health Evaluation</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/css/custom.css">
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white border-gray-200 px-4 lg:px-6 py-2.5">
+        <div class="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl">
+            <a href="index.html" class="flex items-center">
+                <span class="self-center text-xl font-semibold whitespace-nowrap text-blue-600">TRT Clinic</span>
+            </a>
+            <div class="flex items-center">
+                <!-- Language Switcher -->
+                <div class="relative mr-4">
+                    <button id="languageDropdown" data-dropdown-toggle="languageMenu" class="text-gray-500 hover:text-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-4 py-2.5 text-center inline-flex items-center dark:text-gray-400 dark:hover:text-white border border-gray-300 bg-white" type="button">
+                        <span id="currentFlag" class="mr-2">🇺🇸</span>
+                        <span id="currentLanguage" class="font-semibold">EN</span>
+                        <svg class="w-4 h-4 ml-2" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div id="languageMenu" class="z-50 hidden absolute right-0 mt-2 bg-white divide-y divide-gray-100 rounded-lg shadow-lg w-40 border border-gray-200">
+                        <ul class="py-2 text-sm text-gray-700">
+                            <li><a href="#" onclick="switchLanguage('en')" class="flex items-center px-4 py-2 hover:bg-gray-100 text-gray-900 font-medium">
+                                <span class="mr-2">🇺🇸</span>English
+                            </a></li>
+                            <li><a href="#" onclick="switchLanguage('de')" class="flex items-center px-4 py-2 hover:bg-gray-100 text-gray-900 font-medium">
+                                <span class="mr-2">🇩🇪</span>Deutsch
+                            </a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Assessment Form -->
+    <section class="bg-white py-8 lg:py-16">
+        <div class="py-8 px-4 mx-auto max-w-screen-md">
+            <div class="mb-8 text-center">
+                <h1 class="mb-4 text-4xl tracking-tight font-extrabold text-gray-900" data-en="TRT Health Assessment" data-de="TRT Gesundheitsbewertung">TRT Health Assessment</h1>
+                <p class="mb-8 font-light text-gray-500 sm:text-xl" data-en="Complete this confidential assessment to determine if TRT is right for you. Takes 5-10 minutes." data-de="Füllen Sie diese vertrauliche Bewertung aus, um festzustellen, ob TRT das Richtige für Sie ist. Dauert 5-10 Minuten.">Complete this confidential assessment to determine if TRT is right for you. Takes 5-10 minutes.</p>
+            </div>
+
+            <!-- Progress Stepper -->
+            <ol class="flex items-center w-full mb-8 sm:mb-12">
+                <li class="flex w-full items-center text-blue-600 after:content-[''] after:w-full after:h-1 after:border-b after:border-blue-100 after:border-4 after:inline-block">
+                    <span class="flex items-center justify-center w-10 h-10 bg-blue-100 rounded-full lg:h-12 lg:w-12 shrink-0" id="step1-indicator">
+                        <span class="text-blue-800 font-bold">1</span>
+                    </span>
+                </li>
+                <li class="flex w-full items-center after:content-[''] after:w-full after:h-1 after:border-b after:border-gray-100 after:border-4 after:inline-block">
+                    <span class="flex items-center justify-center w-10 h-10 bg-gray-100 rounded-full lg:h-12 lg:w-12 shrink-0" id="step2-indicator">
+                        <span class="text-gray-500 font-bold">2</span>
+                    </span>
+                </li>
+                <li class="flex w-full items-center after:content-[''] after:w-full after:h-1 after:border-b after:border-gray-100 after:border-4 after:inline-block">
+                    <span class="flex items-center justify-center w-10 h-10 bg-gray-100 rounded-full lg:h-12 lg:w-12 shrink-0" id="step3-indicator">
+                        <span class="text-gray-500 font-bold">3</span>
+                    </span>
+                </li>
+                <li class="flex items-center">
+                    <span class="flex items-center justify-center w-10 h-10 bg-gray-100 rounded-full lg:h-12 lg:w-12 shrink-0" id="step4-indicator">
+                        <span class="text-gray-500 font-bold">4</span>
+                    </span>
+                </li>
+            </ol>
+
+            <form id="assessmentForm" class="space-y-6">
+                <!-- Step 1: Basic Information -->
+                <div id="step1" class="step-content">
+                    <h2 class="mb-6 text-2xl font-bold text-gray-900" data-en="Basic Information" data-de="Grundinformationen">Basic Information</h2>
+                    
+                    <div class="grid gap-6 mb-6 md:grid-cols-3">
+                        <div>
+                            <label for="age" class="block mb-2 text-sm font-medium text-gray-900" data-en="Age" data-de="Alter">Age</label>
+                            <input type="number" id="age" name="age" min="18" max="80" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" required>
+                        </div>
+                        <div>
+                            <label for="height" class="block mb-2 text-sm font-medium text-gray-900" data-en="Height (cm)" data-de="Größe (cm)">Height (cm)</label>
+                            <input type="number" id="height" name="height" min="150" max="220" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" required>
+                        </div>
+                        <div>
+                            <label for="weight" class="block mb-2 text-sm font-medium text-gray-900" data-en="Weight (kg)" data-de="Gewicht (kg)">Weight (kg)</label>
+                            <input type="number" id="weight" name="weight" min="50" max="200" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Symptoms Assessment -->
+                <div id="step2" class="step-content hidden">
+                    <h2 class="mb-6 text-2xl font-bold text-gray-900" data-en="Symptoms Assessment" data-de="Symptombewertung">Symptoms Assessment</h2>
+                    <p class="mb-6 text-gray-600" data-en="Rate how much each symptom affects you (1 = Not at all, 5 = Severely)" data-de="Bewerten Sie, wie stark jedes Symptom Sie betrifft (1 = Gar nicht, 5 = Stark)">Rate how much each symptom affects you (1 = Not at all, 5 = Severely)</p>
+
+                    <div class="space-y-6">
+                        <div class="symptom-rating">
+                            <label class="block mb-2 text-sm font-medium text-gray-900" data-en="Low Energy & Fatigue" data-de="Niedrige Energie & Müdigkeit">Low Energy & Fatigue</label>
+                            <div class="flex items-center space-x-4">
+                                <span class="text-sm text-gray-500" data-en="Not at all" data-de="Gar nicht">Not at all</span>
+                                <div class="flex space-x-2">
+                                    <input type="radio" id="energy1" name="energy" value="1" class="w-4 h-4 text-blue-600">
+                                    <input type="radio" id="energy2" name="energy" value="2" class="w-4 h-4 text-blue-600">
+                                    <input type="radio" id="energy3" name="energy" value="3" class="w-4 h-4 text-blue-600">
+                                    <input type="radio" id="energy4" name="energy" value="4" class="w-4 h-4 text-blue-600">
+                                    <input type="radio" id="energy5" name="energy" value="5" class="w-4 h-4 text-blue-600">
+                                </div>
+                                <span class="text-sm text-gray-500" data-en="Severely" data-de="Stark">Severely</span>
+                            </div>
+                        </div>
+
+                        <div class="symptom-rating">
+                            <label class="block mb-2 text-sm font-medium text-gray-900" data-en="Decreased Libido" data-de="Verminderte Libido">Decreased Libido</label>
+                            <div class="flex items-center space-x-4">
+                                <span class="text-sm text-gray-500" data-en="Not at all" data-de="Gar nicht">Not at all</span>
+                                <div class="flex space-x-2">
+                                    <input type="radio" id="libido1" name="libido" value="1" class="w-4 h-4 text-blue-600">
+                                    <input type="radio" id="libido2" name="libido" value="2" class="w-4 h-4 text-blue-600">
+                                    <input type="radio" id="libido3" name="libido" value="3" class="w-4 h-4 text-blue-600">
+                                    <input type="radio" id="libido4" name="libido" value="4" class="w-4 h-4 text-blue-600">
+                                    <input type="radio" id="libido5" name="libido" value="5" class="w-4 h-4 text-blue-600">
+                                </div>
+                                <span class="text-sm text-gray-500" data-en="Severely" data-de="Stark">Severely</span>
+                            </div>
+                        </div>
+
+                        <div class="symptom-rating">
+                            <label class="block mb-2 text-sm font-medium text-gray-900" data-en="Muscle Loss" data-de="Muskelverlust">Muscle Loss</label>
+                            <div class="flex items-center space-x-4">
+                                <span class="text-sm text-gray-500" data-en="Not at all" data-de="Gar nicht">Not at all</span>
+                                <div class="flex space-x-2">
+                                    <input type="radio" id="muscle1" name="muscle" value="1" class="w-4 h-4 text-blue-600">
+                                    <input type="radio" id="muscle2" name="muscle" value="2" class="w-4 h-4 text-blue-600">
+                                    <input type="radio" id="muscle3" name="muscle" value="3" class="w-4 h-4 text-blue-600">
+                                    <input type="radio" id="muscle4" name="muscle" value="4" class="w-4 h-4 text-blue-600">
+                                    <input type="radio" id="muscle5" name="muscle" value="5" class="w-4 h-4 text-blue-600">
+                                </div>
+                                <span class="text-sm text-gray-500" data-en="Severely" data-de="Stark">Severely</span>
+                            </div>
+                        </div>
+
+                        <div class="symptom-rating">
+                            <label class="block mb-2 text-sm font-medium text-gray-900" data-en="Mood Changes" data-de="Stimmungsschwankungen">Mood Changes</label>
+                            <div class="flex items-center space-x-4">
+                                <span class="text-sm text-gray-500" data-en="Not at all" data-de="Gar nicht">Not at all</span>
+                                <div class="flex space-x-2">
+                                    <input type="radio" id="mood1" name="mood" value="1" class="w-4 h-4 text-blue-600">
+                                    <input type="radio" id="mood2" name="mood" value="2" class="w-4 h-4 text-blue-600">
+                                    <input type="radio" id="mood3" name="mood" value="3" class="w-4 h-4 text-blue-600">
+                                    <input type="radio" id="mood4" name="mood" value="4" class="w-4 h-4 text-blue-600">
+                                    <input type="radio" id="mood5" name="mood" value="5" class="w-4 h-4 text-blue-600">
+                                </div>
+                                <span class="text-sm text-gray-500" data-en="Severely" data-de="Stark">Severely</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Medical History -->
+                <div id="step3" class="step-content hidden">
+                    <h2 class="mb-6 text-2xl font-bold text-gray-900" data-en="Medical History" data-de="Krankengeschichte">Medical History</h2>
+
+                    <div class="mb-6">
+                        <label for="medications" class="block mb-2 text-sm font-medium text-gray-900" data-en="Current Medications" data-de="Aktuelle Medikamente">Current Medications</label>
+                        <textarea id="medications" name="medications" rows="3" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="List any medications you're currently taking..."></textarea>
+                    </div>
+
+                    <div class="mb-6">
+                        <label class="block mb-2 text-sm font-medium text-gray-900" data-en="Have you ever had hormone therapy before?" data-de="Hatten Sie schon einmal eine Hormontherapie?">Have you ever had hormone therapy before?</label>
+                        <div class="flex space-x-4">
+                            <div class="flex items-center">
+                                <input id="hormone-yes" type="radio" name="hormone_therapy" value="yes" class="w-4 h-4 text-blue-600">
+                                <label for="hormone-yes" class="ml-2 text-sm font-medium text-gray-900" data-en="Yes" data-de="Ja">Yes</label>
+                            </div>
+                            <div class="flex items-center">
+                                <input id="hormone-no" type="radio" name="hormone_therapy" value="no" class="w-4 h-4 text-blue-600">
+                                <label for="hormone-no" class="ml-2 text-sm font-medium text-gray-900" data-en="No" data-de="Nein">No</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-6">
+                        <label for="conditions" class="block mb-2 text-sm font-medium text-gray-900" data-en="Medical Conditions" data-de="Medizinische Erkrankungen">Medical Conditions</label>
+                        <div class="space-y-2">
+                            <div class="flex items-center">
+                                <input id="diabetes" type="checkbox" name="conditions" value="diabetes" class="w-4 h-4 text-blue-600">
+                                <label for="diabetes" class="ml-2 text-sm text-gray-900" data-en="Diabetes" data-de="Diabetes">Diabetes</label>
+                            </div>
+                            <div class="flex items-center">
+                                <input id="heart" type="checkbox" name="conditions" value="heart_disease" class="w-4 h-4 text-blue-600">
+                                <label for="heart" class="ml-2 text-sm text-gray-900" data-en="Heart Disease" data-de="Herzkrankheit">Heart Disease</label>
+                            </div>
+                            <div class="flex items-center">
+                                <input id="hypertension" type="checkbox" name="conditions" value="hypertension" class="w-4 h-4 text-blue-600">
+                                <label for="hypertension" class="ml-2 text-sm text-gray-900" data-en="High Blood Pressure" data-de="Bluthochdruck">High Blood Pressure</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 4: Lifestyle & Goals -->
+                <div id="step4" class="step-content hidden">
+                    <h2 class="mb-6 text-2xl font-bold text-gray-900" data-en="Lifestyle & Goals" data-de="Lebensstil & Ziele">Lifestyle & Goals</h2>
+
+                    <div class="mb-6">
+                        <label for="exercise" class="block mb-2 text-sm font-medium text-gray-900" data-en="Exercise Frequency" data-de="Trainingshäufigkeit">Exercise Frequency</label>
+                        <select id="exercise" name="exercise" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                            <option value="none" data-en="No exercise" data-de="Kein Training">No exercise</option>
+                            <option value="1-2" data-en="1-2 times per week" data-de="1-2 mal pro Woche">1-2 times per week</option>
+                            <option value="3-4" data-en="3-4 times per week" data-de="3-4 mal pro Woche">3-4 times per week</option>
+                            <option value="5+" data-en="5+ times per week" data-de="5+ mal pro Woche">5+ times per week</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-6">
+                        <label for="goals" class="block mb-2 text-sm font-medium text-gray-900" data-en="Treatment Goals" data-de="Behandlungsziele">Treatment Goals</label>
+                        <textarea id="goals" name="goals" rows="3" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="What do you hope to achieve with TRT?"></textarea>
+                    </div>
+                </div>
+
+                <!-- Navigation Buttons -->
+                <div class="flex justify-between pt-6">
+                    <button type="button" id="prevBtn" class="hidden text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5" data-en="Previous" data-de="Zurück">Previous</button>
+                    <button type="button" id="nextBtn" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5" data-en="Next" data-de="Weiter">Next</button>
+                    <button type="submit" id="submitBtn" class="hidden text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5" data-en="Complete Assessment" data-de="Assessment abschließen">Complete Assessment</button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.js"></script>
+    <script src="assets/js/language.js"></script>
+    <script src="assets/js/assessment.js"></script>
+    <script>
+        // Simple dropdown toggle for language selector
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropdownButton = document.getElementById('languageDropdown');
+            const dropdownMenu = document.getElementById('languageMenu');
+            
+            if (dropdownButton && dropdownMenu) {
+                dropdownButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dropdownMenu.classList.toggle('hidden');
+                });
+                
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!dropdownButton.contains(e.target) && !dropdownMenu.contains(e.target)) {
+                        dropdownMenu.classList.add('hidden');
+                    }
+                });
+                
+                // Close dropdown when selecting a language
+                dropdownMenu.addEventListener('click', function() {
+                    dropdownMenu.classList.add('hidden');
+                });
+            }
+        });
+    </script>
+</body>
+</html> 

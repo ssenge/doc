@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en" id="html-root">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-en="Assessment Submitted - TRT Clinic" data-de="Assessment eingereicht - TRT Clinic">Assessment Submitted - TRT Clinic</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/css/custom.css">
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white border-gray-200 px-4 lg:px-6 py-2.5">
+        <div class="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl">
+            <a href="index.html" class="flex items-center">
+                <span class="self-center text-xl font-semibold whitespace-nowrap text-blue-600">TRT Clinic</span>
+            </a>
+            <div class="flex items-center">
+                <!-- Language Switcher -->
+                <div class="relative mr-4">
+                    <button id="languageDropdown" data-dropdown-toggle="languageMenu" class="text-gray-500 hover:text-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-4 py-2.5 text-center inline-flex items-center dark:text-gray-400 dark:hover:text-white border border-gray-300 bg-white" type="button">
+                        <span id="currentFlag" class="mr-2">🇺🇸</span>
+                        <span id="currentLanguage" class="font-semibold">EN</span>
+                        <svg class="w-4 h-4 ml-2" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div id="languageMenu" class="z-50 hidden absolute right-0 mt-2 bg-white divide-y divide-gray-100 rounded-lg shadow-lg w-40 border border-gray-200">
+                        <ul class="py-2 text-sm text-gray-700">
+                            <li><a href="#" onclick="switchLanguage('en')" class="flex items-center px-4 py-2 hover:bg-gray-100 text-gray-900 font-medium">
+                                <span class="mr-2">🇺🇸</span>English
+                            </a></li>
+                            <li><a href="#" onclick="switchLanguage('de')" class="flex items-center px-4 py-2 hover:bg-gray-100 text-gray-900 font-medium">
+                                <span class="mr-2">🇩🇪</span>Deutsch
+                            </a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Success Content -->
+    <section class="bg-gray-50 py-8 lg:py-16">
+        <div class="py-8 px-4 mx-auto max-w-screen-md text-center">
+            <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-6">
+                <svg class="h-8 w-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+            </div>
+            
+            <h1 class="mb-4 text-4xl tracking-tight font-extrabold text-gray-900" data-en="Assessment Submitted!" data-de="Assessment eingereicht!">Assessment Submitted!</h1>
+            
+            <p class="mb-8 text-lg text-gray-600" data-en="Thank you for your submission. Our doctor will now review your health data and we'll keep you posted with personalized recommendations." data-de="Vielen Dank für Ihre Einreichung. Unser Arzt wird nun Ihre Gesundheitsdaten überprüfen und wir werden Sie mit personalisierten Empfehlungen auf dem Laufenden halten.">Thank you for your submission. Our doctor will now review your health data and we'll keep you posted with personalized recommendations.</p>
+            
+            <div class="bg-blue-50 rounded-lg p-6 mb-8">
+                <h2 class="text-xl font-semibold text-blue-900 mb-4" data-en="What happens next?" data-de="Was passiert als nächstes?">What happens next?</h2>
+                <ul class="text-left text-blue-800 space-y-3 max-w-md mx-auto">
+                    <li class="flex items-center">
+                        <svg class="w-5 h-5 mr-3 text-blue-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span data-en="Dr. Daniel Gloga will review your health data" data-de="Dr. Daniel Gloga wird Ihre Gesundheitsdaten überprüfen">Dr. Daniel Gloga will review your health data</span>
+                    </li>
+                    <li class="flex items-center">
+                        <svg class="w-5 h-5 mr-3 text-blue-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span data-en="You'll receive personalized recommendations within 24 hours" data-de="Sie erhalten innerhalb von 24 Stunden personalisierte Empfehlungen">You'll receive personalized recommendations within 24 hours</span>
+                    </li>
+                    <li class="flex items-center">
+                        <svg class="w-5 h-5 mr-3 text-blue-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span data-en="Book a consultation anytime for personalized guidance" data-de="Buchen Sie jederzeit eine Beratung für persönliche Beratung">Book a consultation anytime for personalized guidance</span>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="space-y-4 max-w-sm mx-auto">
+                <a href="consultation.html" class="w-full inline-flex justify-center items-center py-3 px-6 text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 font-medium rounded-lg text-sm transition-colors">
+                    <span data-en="Book Consultation Now" data-de="Beratung jetzt buchen">Book Consultation Now</span>
+                </a>
+                <a href="index.html" class="w-full inline-flex justify-center items-center py-3 px-6 text-blue-600 bg-white hover:bg-gray-50 focus:ring-4 focus:ring-blue-200 font-medium rounded-lg border border-blue-600 text-sm transition-colors">
+                    <span data-en="Return to Home" data-de="Zur Startseite">Return to Home</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.js"></script>
+    <script src="assets/js/language.js"></script>
+    <script>
+        // Simple dropdown toggle for language selector
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropdownButton = document.getElementById('languageDropdown');
+            const dropdownMenu = document.getElementById('languageMenu');
+            
+            if (dropdownButton && dropdownMenu) {
+                dropdownButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dropdownMenu.classList.toggle('hidden');
+                });
+                
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!dropdownButton.contains(e.target) && !dropdownMenu.contains(e.target)) {
+                        dropdownMenu.classList.add('hidden');
+                    }
+                });
+                
+                // Close dropdown when selecting a language
+                dropdownMenu.addEventListener('click', function() {
+                    dropdownMenu.classList.add('hidden');
+                });
+            }
+            
+            // Check for payment confirmation parameters
+            checkPaymentConfirmation();
+        });
+        
+        function checkPaymentConfirmation() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const amount = urlParams.get('amount');
+            const product = urlParams.get('product');
+            const email = urlParams.get('email');
+            const sessionId = urlParams.get('session_id');
+            
+            // If we have payment parameters, show payment confirmation
+            if (amount || sessionId) {
+                showPaymentConfirmation(amount, product, email, sessionId);
+            }
+        }
+        
+        function showPaymentConfirmation(amount, product, email, sessionId) {
+            // Update the main heading
+            const heading = document.querySelector('h1');
+            if (heading) {
+                heading.setAttribute('data-en', 'Payment Successful!');
+                heading.setAttribute('data-de', 'Zahlung erfolgreich!');
+                heading.textContent = window.TRTLanguage?.t('Payment Successful!') || 'Payment Successful!';
+            }
+            
+            // Update the description
+            const description = document.querySelector('p.mb-8');
+            if (description) {
+                description.setAttribute('data-en', 'Your payment has been processed successfully. Our doctor will now review your health data and we\'ll keep you posted with personalized recommendations.');
+                description.setAttribute('data-de', 'Ihre Zahlung wurde erfolgreich verarbeitet. Unser Arzt wird nun Ihre Gesundheitsdaten überprüfen und wir werden Sie mit personalisierten Empfehlungen auf dem Laufenden halten.');
+                description.textContent = window.TRTLanguage?.t('Your payment has been processed successfully. Our doctor will now review your health data and we\'ll keep you posted with personalized recommendations.') || 'Your payment has been processed successfully. Our doctor will now review your health data and we\'ll keep you posted with personalized recommendations.';
+            }
+            
+            // Add payment confirmation details
+            const nextStepsSection = document.querySelector('.bg-blue-50');
+            if (nextStepsSection && amount) {
+                const paymentDetails = document.createElement('div');
+                paymentDetails.className = 'bg-green-50 rounded-lg p-6 mb-8';
+                paymentDetails.innerHTML = `
+                    <h2 class="text-xl font-semibold text-green-900 mb-4" data-en="Payment Confirmation" data-de="Zahlungsbestätigung">Payment Confirmation</h2>
+                    <div class="text-left text-green-800 space-y-2 max-w-md mx-auto">
+                        <div class="flex justify-between">
+                            <span data-en="Service:" data-de="Service:">Service:</span>
+                            <span class="font-medium">${product || 'TRT Assessment'}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span data-en="Amount:" data-de="Betrag:">Amount:</span>
+                            <span class="font-medium">€${amount || '29.00'}</span>
+                        </div>
+                        ${email ? `
+                        <div class="flex justify-between">
+                            <span data-en="Email:" data-de="E-Mail:">Email:</span>
+                            <span class="font-medium">${email}</span>
+                        </div>
+                        ` : ''}
+                        <div class="flex justify-between">
+                            <span data-en="Status:" data-de="Status:">Status:</span>
+                            <span class="font-medium text-green-600" data-en="✅ Paid" data-de="✅ Bezahlt">✅ Paid</span>
+                        </div>
+                        ${sessionId ? `
+                        <div class="flex justify-between text-xs">
+                            <span data-en="Transaction ID:" data-de="Transaktions-ID:">Transaction ID:</span>
+                            <span class="font-mono">${sessionId.substring(0, 20)}...</span>
+                        </div>
+                        ` : ''}
+                    </div>
+                `;
+                
+                nextStepsSection.parentNode.insertBefore(paymentDetails, nextStepsSection);
+                
+                // Apply language translations to the new content
+                if (window.TRTLanguage) {
+                    window.TRTLanguage.updatePageContent();
+                }
+            }
+        }
+    </script>
+</body>
+</html> 

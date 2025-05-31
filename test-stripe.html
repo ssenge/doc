@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stripe Test - TRT Clinic</title>
+    <script src="https://js.stripe.com/v3/"></script>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; padding: 20px; }
+        .payment-form { background: #f8f9fa; padding: 30px; border-radius: 8px; margin: 20px 0; }
+        #payment-element { margin: 20px 0; }
+        button { background: #0066cc; color: white; padding: 12px 24px; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #0052a3; }
+        .error { color: #dc3545; margin: 10px 0; }
+        .success { color: #28a745; margin: 10px 0; }
+        .test-info { background: #fff3cd; padding: 15px; border-radius: 4px; margin: 20px 0; border-left: 4px solid #ffc107; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Stripe Payment Test</h1>
+    
+    <div class="test-info">
+        <h3>Test Mode - No Real Money!</h3>
+        <p><strong>Test Card:</strong> 4242424242424242</p>
+        <p><strong>Expiry:</strong> 12/25 | <strong>CVC:</strong> 123</p>
+        <p><strong>Amount:</strong> €29.00 (TRT Assessment)</p>
+    </div>
+
+    <div class="payment-form">
+        <h2>Payment Details</h2>
+        <form id="payment-form">
+            <div id="payment-element">
+                <!-- Stripe Elements will create form elements here -->
+            </div>
+            <div id="payment-errors" class="error"></div>
+            <button type="submit" id="submit-button">
+                Pay €29.00
+            </button>
+        </form>
+    </div>
+
+    <div id="payment-status"></div>
+
+    <script>
+        // ✅ TEST MODE - Safe testing with no real money charged!
+        const STRIPE_PUBLISHABLE_KEY = 'pk_test_51RUrRKQr7jYlppyzyYiZWo3UiOSddHlj7UsHNkHmK0yzIjRhS3iS5FK0C3E2DF8ASg7eOsY2NGx5l9AvXdw7Ovbc00YUP2wQYq';
+        
+        // Initialize Stripe (will show error if key not set)
+        let stripe, elements, paymentElement;
+        
+        if (STRIPE_PUBLISHABLE_KEY === 'pk_test_PASTE_YOUR_KEY_HERE') {
+            document.getElementById('payment-status').innerHTML = `
+                <div class="error">
+                    <h3>⚠️ Paste Your Stripe Key</h3>
+                    <p>Replace 'pk_test_PASTE_YOUR_KEY_HERE' with your actual Stripe publishable key</p>
+                    <p>It should start with 'pk_test_' and be about 100 characters long</p>
+                </div>
+            `;
+        } else {
+            initializeStripe();
+        }
+        
+        function initializeStripe() {
+            stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
+            
+            // Create payment element
+            elements = stripe.elements({
+                mode: 'payment',
+                amount: 2900, // €29.00 in cents
+                currency: 'eur',
+                appearance: {
+                    theme: 'stripe'
+                }
+            });
+            
+            paymentElement = elements.create('payment');
+            paymentElement.mount('#payment-element');
+            
+            // Handle form submission
+            document.getElementById('payment-form').addEventListener('submit', handleSubmit);
+        }
+        
+        async function handleSubmit(event) {
+            event.preventDefault();
+            
+            const submitButton = document.getElementById('submit-button');
+            const errorDiv = document.getElementById('payment-errors');
+            const statusDiv = document.getElementById('payment-status');
+            
+            submitButton.disabled = true;
+            submitButton.textContent = 'Processing...';
+            errorDiv.textContent = '';
+            statusDiv.innerHTML = '';
+            
+            // For testing, we'll simulate a payment intent
+            // In production, you'd create this on your backend
+            try {
+                const {error} = await stripe.confirmPayment({
+                    elements,
+                    confirmParams: {
+                        return_url: window.location.href + '?payment=success',
+                    },
+                    redirect: 'if_required'
+                });
+                
+                if (error) {
+                    errorDiv.textContent = error.message;
+                } else {
+                    statusDiv.innerHTML = `
+                        <div class="success">
+                            <h3>✅ Payment Successful!</h3>
+                            <p>This was a test payment. No real money was charged.</p>
+                            <p>In production, this would redirect to your success page.</p>
+                        </div>
+                    `;
+                }
+            } catch (err) {
+                errorDiv.textContent = 'Payment failed: ' + err.message;
+            }
+            
+            submitButton.disabled = false;
+            submitButton.textContent = 'Pay €29.00';
+        }
+        
+        // Check if returning from successful payment
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('payment') === 'success') {
+            document.getElementById('payment-status').innerHTML = `
+                <div class="success">
+                    <h3>🎉 Payment Completed!</h3>
+                    <p>Test payment was successful!</p>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html> 

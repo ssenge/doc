@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en" id="html-root">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-en="TRT Clinic - Testosterone Replacement Therapy" data-de="TRT Klinik - Testosteron-Ersatztherapie">TRT Clinic - Testosterone Replacement Therapy</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/css/custom.css">
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white border-gray-200 px-4 lg:px-6 py-2.5 dark:bg-gray-800">
+        <div class="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl">
+            <a href="#" class="flex items-center">
+                <span class="self-center text-xl font-semibold whitespace-nowrap text-blue-600 dark:text-white">TRT Clinic</span>
+            </a>
+            <div class="flex items-center lg:order-2">
+                <!-- Language Switcher -->
+                <div class="relative mr-4">
+                    <button id="languageDropdown" data-dropdown-toggle="languageMenu" class="text-gray-500 hover:text-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-4 py-2.5 text-center inline-flex items-center dark:text-gray-400 dark:hover:text-white border border-gray-300 bg-white" type="button">
+                        <span id="currentFlag" class="mr-2">🇺🇸</span>
+                        <span id="currentLanguage" class="font-semibold">EN</span>
+                        <svg class="w-4 h-4 ml-2" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div id="languageMenu" class="z-50 hidden absolute right-0 mt-2 bg-white divide-y divide-gray-100 rounded-lg shadow-lg w-40 border border-gray-200">
+                        <ul class="py-2 text-sm text-gray-700">
+                            <li><a href="#" onclick="switchLanguage('en')" class="flex items-center px-4 py-2 hover:bg-gray-100 text-gray-900 font-medium">
+                                <span class="mr-2">🇺🇸</span>English
+                            </a></li>
+                            <li><a href="#" onclick="switchLanguage('de')" class="flex items-center px-4 py-2 hover:bg-gray-100 text-gray-900 font-medium">
+                                <span class="mr-2">🇩🇪</span>Deutsch
+                            </a></li>
+                        </ul>
+                    </div>
+                </div>
+                <a href="assessment.html" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800" data-en="Start Assessment" data-de="Assessment starten">Start Assessment</a>
+            </div>
+            <div class="hidden justify-between items-center w-full lg:flex lg:w-auto lg:order-1" id="mobile-menu-2">
+                <ul class="flex flex-col mt-4 font-medium lg:flex-row lg:space-x-8 lg:mt-0">
+                    <li><a href="#" class="block py-2 pr-4 pl-3 text-gray-700 hover:text-blue-700 lg:p-0" data-en="Home" data-de="Startseite">Home</a></li>
+                    <li><a href="#how-it-works" class="block py-2 pr-4 pl-3 text-gray-700 hover:text-blue-700 lg:p-0" data-en="How it Works" data-de="So funktioniert's">How it Works</a></li>
+                    <li><a href="#testimonials" class="block py-2 pr-4 pl-3 text-gray-700 hover:text-blue-700 lg:p-0" data-en="Testimonials" data-de="Erfahrungen">Testimonials</a></li>
+                    <li><a href="#faq" class="block py-2 pr-4 pl-3 text-gray-700 hover:text-blue-700 lg:p-0" data-en="FAQ" data-de="FAQ">FAQ</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="bg-gradient-to-r from-blue-600 to-blue-800 text-white relative">
+        <div class="py-8 px-4 mx-auto max-w-screen-xl text-center lg:py-16 lg:px-12 relative z-10">
+            <h1 class="mb-4 text-4xl font-extrabold tracking-tight leading-none text-white md:text-5xl lg:text-6xl drop-shadow-lg" data-en="Reclaim Your Energy with Professional TRT" data-de="Holen Sie sich Ihre Energie mit professioneller TRT zurück">Reclaim Your Energy with Professional TRT</h1>
+            <p class="mb-8 text-lg font-normal text-white lg:text-xl sm:px-16 xl:px-48 drop-shadow-md" data-en="Experience renewed vitality, strength, and confidence with our medically supervised testosterone replacement therapy program." data-de="Erleben Sie neue Vitalität, Kraft und Selbstvertrauen mit unserem medizinisch überwachten Testosteron-Ersatztherapie-Programm.">Experience renewed vitality, strength, and confidence with our medically supervised testosterone replacement therapy program.</p>
+            <div class="flex flex-col mb-8 lg:mb-16 space-y-4 sm:flex-row sm:justify-center sm:space-y-0 sm:space-x-4">
+                <a href="assessment.html" class="inline-flex justify-center items-center py-4 px-8 text-lg font-bold text-center text-white rounded-lg bg-orange-500 hover:bg-orange-600 focus:ring-4 focus:ring-orange-300 shadow-2xl border-2 border-orange-400 transform hover:scale-105 transition-all duration-300">
+                    <span data-en="Start Free Assessment" data-de="Kostenloses Assessment starten">Start Free Assessment</span>
+                    <svg class="ml-2 -mr-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                    </svg>
+                </a>
+                <a href="#how-it-works" class="inline-flex justify-center items-center py-4 px-8 text-lg font-semibold text-center text-white rounded-lg border-2 border-white hover:bg-white hover:text-blue-800 focus:ring-4 focus:ring-gray-100 transition-all duration-300 shadow-lg">
+                    <span data-en="Learn More" data-de="Mehr erfahren">Learn More</span>
+                </a>
+            </div>
+            <div class="px-4 mx-auto text-center md:max-w-screen-md lg:max-w-screen-lg lg:px-36">
+                <span class="font-semibold text-blue-100 uppercase tracking-wide" data-en="Trusted by thousands of men worldwide" data-de="Vertraut von Tausenden von Männern weltweit">Trusted by thousands of men worldwide</span>
+            </div>
+        </div>
+        <!-- Background overlay for better contrast -->
+        <div class="absolute inset-0 bg-blue-900 opacity-20 pointer-events-none"></div>
+    </section>
+
+    <!-- Symptoms Section -->
+    <section class="bg-white py-8 lg:py-16">
+        <div class="py-8 px-4 mx-auto max-w-screen-xl lg:py-16 lg:px-6">
+            <div class="mx-auto max-w-screen-sm text-center mb-8 lg:mb-16">
+                <h2 class="mb-4 text-4xl tracking-tight font-extrabold text-gray-900" data-en="Are You Experiencing These Symptoms?" data-de="Haben Sie diese Symptome?">Are You Experiencing These Symptoms?</h2>
+                <p class="font-light text-gray-500 lg:mb-16 sm:text-xl" data-en="Low testosterone affects millions of men. Recognize the signs and take action." data-de="Niedriger Testosteronspiegel betrifft Millionen von Männern. Erkennen Sie die Anzeichen und handeln Sie.">Low testosterone affects millions of men. Recognize the signs and take action.</p>
+            </div>
+            <div class="grid gap-8 mb-6 lg:mb-16 md:grid-cols-2 lg:grid-cols-3">
+                <div class="bg-gray-50 rounded-lg p-6 text-center hover:shadow-lg transition-shadow">
+                    <div class="flex justify-center items-center mb-4 w-10 h-10 rounded-full bg-red-100 lg:h-12 lg:w-12 mx-auto">
+                        <svg class="w-5 h-5 text-red-600 lg:w-6 lg:h-6" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10 2L3 7v11a2 2 0 002 2h10a2 2 0 002-2V7l-7-5z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="mb-2 text-xl font-bold" data-en="Low Energy & Fatigue" data-de="Niedrige Energie & Müdigkeit">Low Energy & Fatigue</h3>
+                    <p class="text-gray-500" data-en="Feeling tired all the time, even after a full night's sleep" data-de="Ständige Müdigkeit, auch nach einer ganzen Nacht Schlaf">Feeling tired all the time, even after a full night's sleep</p>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-6 text-center hover:shadow-lg transition-shadow">
+                    <div class="flex justify-center items-center mb-4 w-10 h-10 rounded-full bg-red-100 lg:h-12 lg:w-12 mx-auto">
+                        <svg class="w-5 h-5 text-red-600 lg:w-6 lg:h-6" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="mb-2 text-xl font-bold" data-en="Decreased Libido" data-de="Verminderte Libido">Decreased Libido</h3>
+                    <p class="text-gray-500" data-en="Reduced interest in sexual activity and intimacy" data-de="Verringertes Interesse an sexueller Aktivität und Intimität">Reduced interest in sexual activity and intimacy</p>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-6 text-center hover:shadow-lg transition-shadow">
+                    <div class="flex justify-center items-center mb-4 w-10 h-10 rounded-full bg-red-100 lg:h-12 lg:w-12 mx-auto">
+                        <svg class="w-5 h-5 text-red-600 lg:w-6 lg:h-6" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="mb-2 text-xl font-bold" data-en="Muscle Loss" data-de="Muskelverlust">Muscle Loss</h3>
+                    <p class="text-gray-500" data-en="Difficulty building or maintaining muscle mass despite exercise" data-de="Schwierigkeiten beim Aufbau oder Erhalt von Muskelmasse trotz Training">Difficulty building or maintaining muscle mass despite exercise</p>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-6 text-center hover:shadow-lg transition-shadow">
+                    <div class="flex justify-center items-center mb-4 w-10 h-10 rounded-full bg-red-100 lg:h-12 lg:w-12 mx-auto">
+                        <svg class="w-5 h-5 text-red-600 lg:w-6 lg:h-6" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"></path>
+                            <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"></path>
+                        </svg>
+                    </div>
+                    <h3 class="mb-2 text-xl font-bold" data-en="Mood Changes" data-de="Stimmungsschwankungen">Mood Changes</h3>
+                    <p class="text-gray-500" data-en="Irritability, depression, or lack of motivation" data-de="Reizbarkeit, Depression oder Motivationsmangel">Irritability, depression, or lack of motivation</p>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-6 text-center hover:shadow-lg transition-shadow">
+                    <div class="flex justify-center items-center mb-4 w-10 h-10 rounded-full bg-red-100 lg:h-12 lg:w-12 mx-auto">
+                        <svg class="w-5 h-5 text-red-600 lg:w-6 lg:h-6" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="mb-2 text-xl font-bold" data-en="Sleep Issues" data-de="Schlafprobleme">Sleep Issues</h3>
+                    <p class="text-gray-500" data-en="Trouble falling asleep or staying asleep through the night" data-de="Probleme beim Einschlafen oder Durchschlafen">Trouble falling asleep or staying asleep through the night</p>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-6 text-center hover:shadow-lg transition-shadow">
+                    <div class="flex justify-center items-center mb-4 w-10 h-10 rounded-full bg-red-100 lg:h-12 lg:w-12 mx-auto">
+                        <svg class="w-5 h-5 text-red-600 lg:w-6 lg:h-6" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11.707 4.707a1 1 0 00-1.414-1.414L10 9.586 8.707 8.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                        </svg>
+                    </div>
+                    <h3 class="mb-2 text-xl font-bold" data-en="Weight Gain" data-de="Gewichtszunahme">Weight Gain</h3>
+                    <p class="text-gray-500" data-en="Increased belly fat and difficulty losing weight" data-de="Zunahme von Bauchfett und Schwierigkeiten beim Abnehmen">Increased belly fat and difficulty losing weight</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="bg-gray-50 py-8 lg:py-16">
+        <div class="py-8 px-4 mx-auto max-w-screen-xl lg:py-16 lg:px-6">
+            <div class="mx-auto max-w-screen-sm text-center mb-8 lg:mb-16">
+                <h2 class="mb-4 text-4xl tracking-tight font-extrabold text-gray-900" data-en="How Our TRT Program Works" data-de="Wie unser TRT-Programm funktioniert">How Our TRT Program Works</h2>
+                <p class="font-light text-gray-500 lg:mb-16 sm:text-xl" data-en="Simple, safe, and effective testosterone replacement therapy in 4 easy steps" data-de="Einfache, sichere und effektive Testosteron-Ersatztherapie in 4 einfachen Schritten">Simple, safe, and effective testosterone replacement therapy in 4 easy steps</p>
+            </div>
+            <div class="space-y-8">
+                <div class="flex items-start space-x-4">
+                    <div class="flex-shrink-0">
+                        <div class="flex items-center justify-center w-10 h-10 bg-blue-100 rounded-full border-4 border-white shadow-lg">
+                            <span class="text-blue-800 text-lg font-bold">1</span>
+                        </div>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2" data-en="Complete Online Assessment" data-de="Online-Assessment ausfüllen">Complete Online Assessment</h3>
+                        <p class="text-base text-gray-500" data-en="Answer questions about your symptoms, medical history, and lifestyle. Takes only 5-10 minutes." data-de="Beantworten Sie Fragen zu Ihren Symptomen, Ihrer Krankengeschichte und Ihrem Lebensstil. Dauert nur 5-10 Minuten.">Answer questions about your symptoms, medical history, and lifestyle. Takes only 5-10 minutes.</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-start space-x-4">
+                    <div class="flex-shrink-0">
+                        <div class="flex items-center justify-center w-10 h-10 bg-blue-100 rounded-full border-4 border-white shadow-lg">
+                            <span class="text-blue-800 text-lg font-bold">2</span>
+                        </div>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2" data-en="Consult with Licensed Physician" data-de="Beratung mit zugelassenem Arzt">Consult with Licensed Physician</h3>
+                        <p class="text-base text-gray-500" data-en="Video or phone consultation with our hormone specialists to discuss your results and treatment options." data-de="Video- oder Telefonberatung mit unseren Hormonspezialisten zur Besprechung Ihrer Ergebnisse und Behandlungsoptionen.">Video or phone consultation with our hormone specialists to discuss your results and treatment options.</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-start space-x-4">
+                    <div class="flex-shrink-0">
+                        <div class="flex items-center justify-center w-10 h-10 bg-blue-100 rounded-full border-4 border-white shadow-lg">
+                            <span class="text-blue-800 text-lg font-bold">3</span>
+                        </div>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2" data-en="Get Prescription & Treatment Plan" data-de="Rezept & Behandlungsplan erhalten">Get Prescription & Treatment Plan</h3>
+                        <p class="text-base text-gray-500" data-en="Receive your personalized TRT prescription and comprehensive treatment plan delivered to your door." data-de="Erhalten Sie Ihr personalisiertes TRT-Rezept und einen umfassenden Behandlungsplan direkt vor Ihre Haustür.">Receive your personalized TRT prescription and comprehensive treatment plan delivered to your door.</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-start space-x-4">
+                    <div class="flex-shrink-0">
+                        <div class="flex items-center justify-center w-10 h-10 bg-blue-100 rounded-full border-4 border-white shadow-lg">
+                            <span class="text-blue-800 text-lg font-bold">4</span>
+                        </div>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2" data-en="Ongoing Monitoring & Support" data-de="Laufende Überwachung & Unterstützung">Ongoing Monitoring & Support</h3>
+                        <p class="text-base text-gray-500" data-en="Regular check-ins, blood work monitoring, and dosage adjustments to ensure optimal results." data-de="Regelmäßige Kontrollen, Blutbild-Überwachung und Dosisanpassungen für optimale Ergebnisse.">Regular check-ins, blood work monitoring, and dosage adjustments to ensure optimal results.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Doctor Section -->
+    <section class="bg-white py-8 lg:py-16">
+        <div class="py-8 px-4 mx-auto max-w-screen-xl lg:py-16 lg:px-6">
+            <div class="mx-auto max-w-screen-sm text-center mb-8 lg:mb-16">
+                <h2 class="mb-4 text-4xl tracking-tight font-extrabold text-gray-900" data-en="Meet Your TRT Specialist" data-de="Lernen Sie Ihren TRT-Spezialisten kennen">Meet Your TRT Specialist</h2>
+                <p class="font-light text-gray-500 lg:mb-16 sm:text-xl" data-en="Expert medical care from a board-certified specialist" data-de="Fachkundige medizinische Betreuung von einem zertifizierten Spezialisten">Expert medical care from a board-certified specialist</p>
+            </div>
+            
+            <div class="max-w-4xl mx-auto">
+                <div class="bg-gray-50 rounded-lg p-8 lg:p-12 shadow-lg">
+                    <div class="lg:flex lg:items-center lg:space-x-8">
+                        <!-- Doctor Image -->
+                        <div class="flex-shrink-0 mb-6 lg:mb-0">
+                            <div class="w-48 h-48 mx-auto lg:mx-0 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full flex items-center justify-center shadow-lg">
+                                <svg class="w-24 h-24 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        
+                        <!-- Doctor Info -->
+                        <div class="flex-1 text-center lg:text-left">
+                            <h3 class="text-3xl font-bold text-gray-900 mb-2">Dr. Daniel Gloga</h3>
+                            <p class="text-xl text-blue-600 font-semibold mb-4" data-en="Board-Certified Internist" data-de="Facharzt für Innere Medizin">Board-Certified Internist</p>
+                            
+                            <!-- Quote -->
+                            <blockquote class="text-lg text-gray-700 italic mb-6 leading-relaxed">
+                                <span class="text-3xl text-blue-600 font-bold">"</span>
+                                <span data-en="My passion lies in helping men reclaim their vitality and confidence through evidence-based hormone therapy. Every patient deserves personalized care that addresses not just symptoms, but their overall quality of life. I believe in empowering my patients with knowledge and providing them with the tools they need to live their healthiest, most energetic lives." data-de="Meine Leidenschaft liegt darin, Männern zu helfen, ihre Vitalität und ihr Selbstvertrauen durch evidenzbasierte Hormontherapie zurückzugewinnen. Jeder Patient verdient eine personalisierte Betreuung, die nicht nur Symptome behandelt, sondern seine gesamte Lebensqualität verbessert. Ich glaube daran, meine Patienten mit Wissen zu stärken und ihnen die Werkzeuge zu geben, die sie brauchen, um ihr gesündestes und energiereichstes Leben zu führen.">My passion lies in helping men reclaim their vitality and confidence through evidence-based hormone therapy. Every patient deserves personalized care that addresses not just symptoms, but their overall quality of life. I believe in empowering my patients with knowledge and providing them with the tools they need to live their healthiest, most energetic lives.</span>
+                                <span class="text-3xl text-blue-600 font-bold">"</span>
+                            </blockquote>
+                            
+                            <!-- Credentials -->
+                            <div class="space-y-2 text-sm text-gray-600">
+                                <div class="flex items-center justify-center lg:justify-start">
+                                    <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    <span data-en="15+ years of experience in internal medicine" data-de="15+ Jahre Erfahrung in der Inneren Medizin">15+ years of experience in internal medicine</span>
+                                </div>
+                                <div class="flex items-center justify-center lg:justify-start">
+                                    <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    <span data-en="Specialized training in hormone replacement therapy" data-de="Spezialisierte Ausbildung in Hormonersatztherapie">Specialized training in hormone replacement therapy</span>
+                                </div>
+                                <div class="flex items-center justify-center lg:justify-start">
+                                    <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    <span data-en="Thousands of successful TRT treatments" data-de="Tausende erfolgreiche TRT-Behandlungen">Thousands of successful TRT treatments</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="bg-blue-600">
+        <div class="py-8 px-4 mx-auto max-w-screen-xl sm:py-16 lg:px-6">
+            <div class="mx-auto max-w-screen-sm text-center">
+                <h2 class="mb-4 text-4xl tracking-tight font-extrabold leading-tight text-white" data-en="Ready to Start Your TRT Journey?" data-de="Bereit, Ihre TRT-Reise zu beginnen?">Ready to Start Your TRT Journey?</h2>
+                <p class="mb-6 font-light text-blue-200 md:text-lg" data-en="Take the first step towards renewed energy, strength, and confidence. Our assessment is completely free and confidential." data-de="Machen Sie den ersten Schritt zu neuer Energie, Kraft und Selbstvertrauen. Unser Assessment ist völlig kostenlos und vertraulich.">Take the first step towards renewed energy, strength, and confidence. Our assessment is completely free and confidential.</p>
+                <a href="assessment.html" class="inline-flex justify-center items-center py-4 px-8 text-lg font-bold text-center text-white rounded-lg bg-orange-500 hover:bg-orange-600 focus:ring-4 focus:ring-orange-300 shadow-2xl border-2 border-orange-400 transform hover:scale-105 transition-all duration-300" data-en="Start Free Assessment Now" data-de="Kostenloses Assessment jetzt starten">Start Free Assessment Now</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-white dark:bg-gray-900">
+        <div class="py-6 px-4 mx-auto max-w-screen-xl md:py-8">
+            <div class="sm:flex sm:items-center sm:justify-between">
+                <div class="mb-4 sm:mb-0">
+                    <span class="text-sm text-gray-500 sm:text-center dark:text-gray-400" data-en="© 2024 TRT Clinic. All Rights Reserved." data-de="© 2024 TRT Klinik. Alle Rechte vorbehalten.">© 2024 TRT Clinic. All Rights Reserved.</span>
+                    <br>
+                    <span class="text-xs text-gray-400 sm:text-center dark:text-gray-500" data-en="Made in Munich 🥨 and Berlin 🐻 with ❤️" data-de="Erstellt in München 🥨 und Berlin 🐻 mit ❤️">Made in Munich 🥨 and Berlin 🐻 with ❤️</span>
+                </div>
+                <div class="flex items-center space-x-4 text-sm">
+                    <a href="#" id="imprintLink" class="text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white" data-en="Imprint" data-de="Impressum">Imprint</a>
+                    <a href="#" class="text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white" data-en="Privacy Policy" data-de="Datenschutz">Privacy Policy</a>
+                    <a href="#" class="text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white" data-en="Terms of Service" data-de="AGB">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Imprint Modal -->
+    <div id="imprintModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+        <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
+            <div class="mt-3">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-bold text-gray-900" data-en="Legal Information / Imprint" data-de="Impressum">Legal Information / Imprint</h3>
+                    <button id="closeImprint" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                
+                <div class="text-sm text-gray-700 space-y-4 max-h-96 overflow-y-auto">
+                    <div>
+                        <h4 class="font-semibold mb-2" data-en="Service Provider" data-de="Anbieter">Service Provider</h4>
+                        <p>
+                            TRT Clinic GmbH<br>
+                            <span data-en="Managing Director: Dr. Daniel Gloga" data-de="Geschäftsführer: Dr. Daniel Gloga">Managing Director: Dr. Daniel Gloga</span><br>
+                            Musterstraße 123<br>
+                            10115 Berlin, Germany
+                        </p>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-semibold mb-2" data-en="Contact Information" data-de="Kontaktdaten">Contact Information</h4>
+                        <p>
+                            <span data-en="Phone" data-de="Telefon">Phone</span>: +49 (0) 30 12345678<br>
+                            <span data-en="Email" data-de="E-Mail">Email</span>: info@trt-clinic.de<br>
+                            <span data-en="Website" data-de="Website">Website</span>: www.trt-clinic.de
+                        </p>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-semibold mb-2" data-en="Commercial Register" data-de="Handelsregister">Commercial Register</h4>
+                        <p>
+                            <span data-en="Registration Court" data-de="Registergericht">Registration Court</span>: Amtsgericht Berlin-Charlottenburg<br>
+                            <span data-en="Registration Number" data-de="Registernummer">Registration Number</span>: HRB 123456 B<br>
+                            <span data-en="VAT ID" data-de="Umsatzsteuer-ID">VAT ID</span>: DE123456789
+                        </p>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-semibold mb-2" data-en="Professional Information" data-de="Berufsrechtliche Angaben">Professional Information</h4>
+                        <p>
+                            <span data-en="Professional Title" data-de="Berufsbezeichnung">Professional Title</span>: <span data-en="Doctor of Medicine (Germany)" data-de="Arzt (Deutschland)">Doctor of Medicine (Germany)</span><br>
+                            <span data-en="Medical License" data-de="Approbation">Medical License</span>: <span data-en="State of Berlin" data-de="Land Berlin">State of Berlin</span><br>
+                            <span data-en="Supervisory Authority" data-de="Zuständige Aufsichtsbehörde">Supervisory Authority</span>: <span data-en="Berlin Medical Association" data-de="Ärztekammer Berlin">Berlin Medical Association</span><br>
+                            <span data-en="Professional Regulations" data-de="Berufsrechtliche Regelungen">Professional Regulations</span>: <span data-en="German Medical Professional Code" data-de="Berufsordnung für Ärzte">German Medical Professional Code</span>
+                        </p>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-semibold mb-2" data-en="Liability Disclaimer" data-de="Haftungsausschluss">Liability Disclaimer</h4>
+                        <p class="text-xs leading-relaxed" data-en="The content of our website has been compiled with meticulous care and to the best of our knowledge. However, we cannot assume any liability for the up-to-dateness, completeness or accuracy of any of the pages. This website is for informational purposes only and does not replace professional medical advice, diagnosis or treatment." data-de="Die Inhalte unserer Seiten wurden mit größter Sorgfalt erstellt. Für die Richtigkeit, Vollständigkeit und Aktualität der Inhalte können wir jedoch keine Gewähr übernehmen. Diese Website dient nur zu Informationszwecken und ersetzt keine professionelle medizinische Beratung, Diagnose oder Behandlung.">The content of our website has been compiled with meticulous care and to the best of our knowledge. However, we cannot assume any liability for the up-to-dateness, completeness or accuracy of any of the pages. This website is for informational purposes only and does not replace professional medical advice, diagnosis or treatment.</p>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-semibold mb-2" data-en="Copyright" data-de="Urheberrecht">Copyright</h4>
+                        <p class="text-xs leading-relaxed" data-en="The content and works on these pages created by the site operators are subject to German copyright law. Duplication, processing, distribution, or any form of commercialization of such material beyond the scope of the copyright law shall require the prior written consent of its respective author or creator." data-de="Die durch die Seitenbetreiber erstellten Inhalte und Werke auf diesen Seiten unterliegen dem deutschen Urheberrecht. Die Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung außerhalb der Grenzen des Urheberrechtes bedürfen der schriftlichen Zustimmung des jeweiligen Autors bzw. Erstellers.">The content and works on these pages created by the site operators are subject to German copyright law. Duplication, processing, distribution, or any form of commercialization of such material beyond the scope of the copyright law shall require the prior written consent of its respective author or creator.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.js"></script>
+    <script src="assets/js/language.js"></script>
+    <script>
+        // Simple dropdown toggle for language selector
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropdownButton = document.getElementById('languageDropdown');
+            const dropdownMenu = document.getElementById('languageMenu');
+            
+            if (dropdownButton && dropdownMenu) {
+                dropdownButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dropdownMenu.classList.toggle('hidden');
+                });
+                
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!dropdownButton.contains(e.target) && !dropdownMenu.contains(e.target)) {
+                        dropdownMenu.classList.add('hidden');
+                    }
+                });
+                
+                // Close dropdown when selecting a language
+                dropdownMenu.addEventListener('click', function() {
+                    dropdownMenu.classList.add('hidden');
+                });
+            }
+            
+            // Imprint modal functionality
+            const imprintLink = document.getElementById('imprintLink');
+            const imprintModal = document.getElementById('imprintModal');
+            const closeImprint = document.getElementById('closeImprint');
+            
+            if (imprintLink && imprintModal && closeImprint) {
+                imprintLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    imprintModal.classList.remove('hidden');
+                    document.body.style.overflow = 'hidden'; // Prevent background scrolling
+                });
+                
+                closeImprint.addEventListener('click', function() {
+                    imprintModal.classList.add('hidden');
+                    document.body.style.overflow = 'auto'; // Restore scrolling
+                });
+                
+                // Close modal when clicking outside
+                imprintModal.addEventListener('click', function(e) {
+                    if (e.target === imprintModal) {
+                        imprintModal.classList.add('hidden');
+                        document.body.style.overflow = 'auto';
+                    }
+                });
+                
+                // Close modal with Escape key
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape' && !imprintModal.classList.contains('hidden')) {
+                        imprintModal.classList.add('hidden');
+                        document.body.style.overflow = 'auto';
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html> 

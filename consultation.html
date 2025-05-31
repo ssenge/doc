@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en" id="html-root">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-en="Book TRT Consultation - Expert Medical Advice" data-de="TRT-Beratung buchen - Fachärztliche Beratung">Book TRT Consultation - Expert Medical Advice</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/css/custom.css">
+    <script src="https://js.stripe.com/v3/"></script>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white border-gray-200 px-4 lg:px-6 py-2.5">
+        <div class="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl">
+            <a href="index.html" class="flex items-center">
+                <span class="self-center text-xl font-semibold whitespace-nowrap text-blue-600">TRT Clinic</span>
+            </a>
+            <div class="flex items-center">
+                <!-- Language Switcher -->
+                <div class="relative mr-4">
+                    <button id="languageDropdown" data-dropdown-toggle="languageMenu" class="text-gray-500 hover:text-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-4 py-2.5 text-center inline-flex items-center dark:text-gray-400 dark:hover:text-white border border-gray-300 bg-white" type="button">
+                        <span id="currentFlag" class="mr-2">🇺🇸</span>
+                        <span id="currentLanguage" class="font-semibold">EN</span>
+                        <svg class="w-4 h-4 ml-2" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div id="languageMenu" class="z-50 hidden absolute right-0 mt-2 bg-white divide-y divide-gray-100 rounded-lg shadow-lg w-40 border border-gray-200">
+                        <ul class="py-2 text-sm text-gray-700">
+                            <li><a href="#" onclick="switchLanguage('en')" class="flex items-center px-4 py-2 hover:bg-gray-100 text-gray-900 font-medium">
+                                <span class="mr-2">🇺🇸</span>English
+                            </a></li>
+                            <li><a href="#" onclick="switchLanguage('de')" class="flex items-center px-4 py-2 hover:bg-gray-100 text-gray-900 font-medium">
+                                <span class="mr-2">🇩🇪</span>Deutsch
+                            </a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Assessment Results -->
+    <section class="bg-blue-600 text-white py-8">
+        <div class="py-8 px-4 mx-auto max-w-screen-xl text-center">
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6 inline-block">
+                <strong data-en="Good News!" data-de="Gute Nachrichten!">Good News!</strong>
+                <span data-en="Based on your assessment, you may be a candidate for TRT." data-de="Basierend auf Ihrer Bewertung könnten Sie ein Kandidat für TRT sein.">Based on your assessment, you may be a candidate for TRT.</span>
+            </div>
+            <h1 class="mb-4 text-4xl tracking-tight font-extrabold" data-en="Book Your Consultation" data-de="Buchen Sie Ihre Beratung">Book Your Consultation</h1>
+            <p class="mb-8 text-lg font-normal lg:text-xl" data-en="Schedule a consultation with our hormone specialists to discuss your personalized treatment plan." data-de="Vereinbaren Sie einen Termin mit unseren Hormonspezialisten, um Ihren personalisierten Behandlungsplan zu besprechen.">Schedule a consultation with our hormone specialists to discuss your personalized treatment plan.</p>
+        </div>
+    </section>
+
+    <!-- Pricing Cards -->
+    <section class="bg-white py-8 lg:py-16">
+        <div class="py-8 px-4 mx-auto max-w-screen-xl lg:py-16 lg:px-6">
+            <div class="mx-auto max-w-screen-md text-center mb-8 lg:mb-12">
+                <h2 class="mb-4 text-4xl tracking-tight font-extrabold text-gray-900" data-en="Choose Your Consultation Type" data-de="Wählen Sie Ihren Beratungstyp">Choose Your Consultation Type</h2>
+                <p class="mb-5 font-light text-gray-500 sm:text-xl" data-en="All consultations include comprehensive review of your assessment and personalized treatment recommendations." data-de="Alle Beratungen beinhalten eine umfassende Überprüfung Ihrer Bewertung und personalisierte Behandlungsempfehlungen.">All consultations include comprehensive review of your assessment and personalized treatment recommendations.</p>
+            </div>
+            <div class="space-y-8 lg:grid lg:grid-cols-2 xl:grid-cols-4 sm:gap-6 xl:gap-6 lg:space-y-0">
+                <!-- No Consultation -->
+                <div class="flex flex-col p-6 mx-auto max-w-lg text-center text-gray-900 bg-white rounded-lg border border-gray-100 shadow xl:p-8">
+                    <h3 class="mb-4 text-2xl font-semibold" data-en="No Consultation" data-de="Keine Beratung">No Consultation</h3>
+                    <p class="font-light text-gray-500 sm:text-lg" data-en="Complete assessment only, book consultation later" data-de="Nur Assessment abschließen, Beratung später buchen">Complete assessment only, book consultation later</p>
+                    <div class="flex justify-center items-baseline my-8">
+                        <span class="mr-2 text-5xl font-extrabold">€29</span>
+                        <span class="text-gray-500" data-en="/assessment" data-de="/Assessment">/assessment</span>
+                    </div>
+                    <ul role="list" class="mb-8 space-y-4 text-left">
+                        <li class="flex items-center space-x-3">
+                            <svg class="flex-shrink-0 w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span data-en="Assessment results saved" data-de="Assessment-Ergebnisse gespeichert">Assessment results saved</span>
+                        </li>
+                        <li class="flex items-center space-x-3">
+                            <svg class="flex-shrink-0 w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span data-en="Email follow-up with recommendations" data-de="E-Mail-Follow-up mit Empfehlungen">Email follow-up with recommendations</span>
+                        </li>
+                        <li class="flex items-center space-x-3">
+                            <svg class="flex-shrink-0 w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span data-en="Book consultation anytime" data-de="Beratung jederzeit buchbar">Book consultation anytime</span>
+                        </li>
+                    </ul>
+                    <button onclick="selectConsultation('none', 29)" class="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center" data-en="Select Assessment" data-de="Assessment auswählen">Select Assessment</button>
+                </div>
+
+                <!-- Video Consultation -->
+                <div class="flex flex-col p-6 mx-auto max-w-lg text-center text-gray-900 bg-white rounded-lg border border-gray-100 shadow xl:p-8">
+                    <h3 class="mb-4 text-2xl font-semibold" data-en="Video Consultation" data-de="Video-Beratung">Video Consultation</h3>
+                    <p class="font-light text-gray-500 sm:text-lg" data-en="Face-to-face consultation via secure video call" data-de="Persönliche Beratung per sicherem Videoanruf">Face-to-face consultation via secure video call</p>
+                    <div class="flex justify-center items-baseline my-8">
+                        <span class="mr-2 text-5xl font-extrabold">€199</span>
+                        <span class="text-gray-500" data-en="/consultation" data-de="/Beratung">/consultation</span>
+                    </div>
+                    <ul role="list" class="mb-8 space-y-4 text-left">
+                        <li class="flex items-center space-x-3">
+                            <svg class="flex-shrink-0 w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span data-en="45-minute consultation" data-de="45-minütige Beratung">45-minute consultation</span>
+                        </li>
+                        <li class="flex items-center space-x-3">
+                            <svg class="flex-shrink-0 w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span data-en="Personalized treatment plan" data-de="Personalisierter Behandlungsplan">Personalized treatment plan</span>
+                        </li>
+                        <li class="flex items-center space-x-3">
+                            <svg class="flex-shrink-0 w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span data-en="Prescription if eligible" data-de="Rezept bei Berechtigung">Prescription if eligible</span>
+                        </li>
+                    </ul>
+                    <button onclick="selectConsultation('video', 199)" class="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center" data-en="Select Video Call" data-de="Videoanruf auswählen">Select Video Call</button>
+                </div>
+
+                <!-- Phone Consultation -->
+                <div class="flex flex-col p-6 mx-auto max-w-lg text-center text-gray-900 bg-white rounded-lg border border-gray-100 shadow xl:p-8">
+                    <h3 class="mb-4 text-2xl font-semibold" data-en="Phone Consultation" data-de="Telefon-Beratung">Phone Consultation</h3>
+                    <p class="font-light text-gray-500 sm:text-lg" data-en="Professional consultation via phone call" data-de="Professionelle Beratung per Telefonanruf">Professional consultation via phone call</p>
+                    <div class="flex justify-center items-baseline my-8">
+                        <span class="mr-2 text-5xl font-extrabold">€149</span>
+                        <span class="text-gray-500" data-en="/consultation" data-de="/Beratung">/consultation</span>
+                    </div>
+                    <ul role="list" class="mb-8 space-y-4 text-left">
+                        <li class="flex items-center space-x-3">
+                            <svg class="flex-shrink-0 w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span data-en="30-minute consultation" data-de="30-minütige Beratung">30-minute consultation</span>
+                        </li>
+                        <li class="flex items-center space-x-3">
+                            <svg class="flex-shrink-0 w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span data-en="Treatment recommendations" data-de="Behandlungsempfehlungen">Treatment recommendations</span>
+                        </li>
+                        <li class="flex items-center space-x-3">
+                            <svg class="flex-shrink-0 w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span data-en="Prescription if eligible" data-de="Rezept bei Berechtigung">Prescription if eligible</span>
+                        </li>
+                    </ul>
+                    <button onclick="selectConsultation('phone', 149)" class="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center" data-en="Select Phone Call" data-de="Telefonanruf auswählen">Select Phone Call</button>
+                </div>
+
+                <!-- Premium Package -->
+                <div class="flex flex-col p-6 mx-auto max-w-lg text-center text-gray-900 bg-white rounded-lg border border-gray-100 shadow xl:p-8">
+                    <h3 class="mb-4 text-2xl font-semibold" data-en="Premium Package" data-de="Premium-Paket">Premium Package</h3>
+                    <p class="font-light text-gray-500 sm:text-lg" data-en="Complete TRT program with ongoing support" data-de="Komplettes TRT-Programm mit laufender Unterstützung">Complete TRT program with ongoing support</p>
+                    <div class="flex justify-center items-baseline my-8">
+                        <span class="mr-2 text-5xl font-extrabold">€299</span>
+                        <span class="text-gray-500" data-en="/month" data-de="/Monat">/month</span>
+                    </div>
+                    <ul role="list" class="mb-8 space-y-4 text-left">
+                        <li class="flex items-center space-x-3">
+                            <svg class="flex-shrink-0 w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span data-en="Initial consultation included" data-de="Erstberatung inklusive">Initial consultation included</span>
+                        </li>
+                        <li class="flex items-center space-x-3">
+                            <svg class="flex-shrink-0 w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span data-en="Monthly medication delivery" data-de="Monatliche Medikamentenlieferung">Monthly medication delivery</span>
+                        </li>
+                        <li class="flex items-center space-x-3">
+                            <svg class="flex-shrink-0 w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span data-en="Ongoing monitoring & support" data-de="Laufende Überwachung & Unterstützung">Ongoing monitoring & support</span>
+                        </li>
+                    </ul>
+                    <button onclick="selectConsultation('premium', 299)" class="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center" data-en="Select Premium" data-de="Premium auswählen">Select Premium</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Booking Form -->
+    <section id="bookingForm" class="bg-gray-50 py-8 lg:py-16 hidden">
+        <div class="py-8 px-4 mx-auto max-w-screen-md">
+            <h2 class="mb-4 text-4xl tracking-tight font-extrabold text-center text-gray-900" data-en="Complete Your Booking" data-de="Buchung abschließen">Complete Your Booking</h2>
+            <p class="mb-8 lg:mb-16 font-light text-center text-gray-500 sm:text-xl" data-en="Provide your details and payment information to secure your consultation." data-de="Geben Sie Ihre Daten und Zahlungsinformationen an, um Ihre Beratung zu sichern.">Provide your details and payment information to secure your consultation.</p>
+            
+            <form id="consultationForm" class="space-y-8">
+                <!-- Selected Package Info -->
+                <div id="selectedPackage" class="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                    <h3 class="text-lg font-semibold text-blue-900 mb-2" data-en="Selected Package" data-de="Gewähltes Paket">Selected Package</h3>
+                    <div class="flex justify-between items-center">
+                        <span id="packageName" class="text-blue-800"></span>
+                        <span id="packagePrice" class="text-2xl font-bold text-blue-900"></span>
+                    </div>
+                </div>
+
+                <!-- Information Notice -->
+                <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                    <div class="flex items-start">
+                        <svg class="w-5 h-5 text-green-600 mt-0.5 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                        </svg>
+                        <div>
+                            <h4 class="text-green-800 font-medium mb-1" data-en="Secure Checkout Process" data-de="Sicherer Checkout-Prozess">Secure Checkout Process</h4>
+                            <p class="text-green-700 text-sm" data-en="Your personal details, billing address, and payment information will be collected securely by Stripe during the next step. No sensitive information is stored on our servers." data-de="Ihre persönlichen Daten, Rechnungsadresse und Zahlungsinformationen werden im nächsten Schritt sicher von Stripe erfasst. Keine sensiblen Informationen werden auf unseren Servern gespeichert.">Your personal details, billing address, and payment information will be collected securely by Stripe during the next step. No sensitive information is stored on our servers.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Information -->
+                <div>
+                    <h3 class="mb-4 text-lg font-medium text-gray-900" data-en="Payment Information" data-de="Zahlungsinformationen">Payment Information</h3>
+                    
+                    <!-- Stripe Payment Element -->
+                    <div id="payment-element" class="mb-6">
+                        <!-- Stripe will inject the payment form here -->
+                    </div>
+                    
+                    <!-- Payment Errors -->
+                    <div id="payment-errors" class="text-red-500 text-sm mb-4" role="alert"></div>
+                </div>
+
+                <!-- Terms and Conditions -->
+                <div class="flex items-start">
+                    <div class="flex items-center h-5">
+                        <input id="terms" type="checkbox" class="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300" required>
+                    </div>
+                    <label for="terms" class="ml-2 text-sm font-medium text-gray-900">
+                        <span data-en="I agree to the " data-de="Ich stimme den ">I agree to the </span>
+                        <a href="#" class="text-blue-600 hover:underline" data-en="Terms and Conditions" data-de="Allgemeinen Geschäftsbedingungen">Terms and Conditions</a>
+                        <span data-en=" and " data-de=" und der "> and </span>
+                        <a href="#" class="text-blue-600 hover:underline" data-en="Privacy Policy" data-de="Datenschutzrichtlinie">Privacy Policy</a>
+                    </label>
+                </div>
+
+                <button type="submit" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center" data-en="Proceed to Secure Checkout" data-de="Zum sicheren Checkout">Proceed to Secure Checkout</button>
+            </form>
+        </div>
+    </section>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.js"></script>
+    <script src="assets/js/language.js"></script>
+    <script src="assets/js/stripe-integration.js"></script>
+    <script src="assets/js/consultation.js"></script>
+    <script>
+        // Simple dropdown toggle for language selector
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropdownButton = document.getElementById('languageDropdown');
+            const dropdownMenu = document.getElementById('languageMenu');
+            
+            if (dropdownButton && dropdownMenu) {
+                dropdownButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dropdownMenu.classList.toggle('hidden');
+                });
+                
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!dropdownButton.contains(e.target) && !dropdownMenu.contains(e.target)) {
+                        dropdownMenu.classList.add('hidden');
+                    }
+                });
+                
+                // Close dropdown when selecting a language
+                dropdownMenu.addEventListener('click', function() {
+                    dropdownMenu.classList.add('hidden');
+                });
+            }
+        });
+    </script>
+</body>
+</html> 
