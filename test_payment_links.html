@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Links Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-card {
+            background: white;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-button {
+            background: #635bff;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px 10px 10px 0;
+        }
+        .test-button:hover {
+            background: #5a52e8;
+        }
+        .instructions {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+        .test-card-info {
+            background: #fff3e0;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Payment Links Test Page</h1>
+    
+    <div class="instructions">
+        <h3>📋 Testing Instructions:</h3>
+        <ol>
+            <li>Click any "Test Payment" button below</li>
+            <li>Use the test card: <strong>4242 4242 4242 4242</strong></li>
+            <li>Use any future expiry date (e.g., 12/34)</li>
+            <li>Use any 3-digit CVC (e.g., 123)</li>
+            <li>Fill in any email and address details</li>
+        </ol>
+    </div>
+
+    <div class="test-card-info">
+        <h4>🔧 Test Card Details:</h4>
+        <ul>
+            <li><strong>Card Number:</strong> 4242 4242 4242 4242</li>
+            <li><strong>Expiry:</strong> Any future date (12/34)</li>
+            <li><strong>CVC:</strong> Any 3 digits (123)</li>
+            <li><strong>Email:</strong> test@example.com</li>
+        </ul>
+    </div>
+
+    <div class="test-card">
+        <h3>💊 Testosterone Gel - €89</h3>
+        <p>Daily topical application with steady hormone levels.</p>
+        <a href="https://buy.stripe.com/test_14AaEZfrQePmedTfVq0Jq02" class="test-button" target="_blank">
+            Test Payment
+        </a>
+    </div>
+
+    <div class="test-card">
+        <h3>💉 Testosterone Injections - €129</h3>
+        <p>Weekly intramuscular injections for peak effectiveness.</p>
+        <a href="https://buy.stripe.com/test_eVqeVfbbAePm3zfaB60Jq03" class="test-button" target="_blank">
+            Test Payment
+        </a>
+    </div>
+
+    <div class="test-card">
+        <h3>🩹 Testosterone Patches - €109</h3>
+        <p>Daily transdermal patches, convenient and discreet.</p>
+        <a href="https://buy.stripe.com/test_8x2eVfa7w5eM3zfbFa0Jq04" class="test-button" target="_blank">
+            Test Payment
+        </a>
+    </div>
+
+    <div class="test-card">
+        <h3>⚪ Testosterone Pellets - €299</h3>
+        <p>Long-lasting subcutaneous pellets, 3-4 month duration.</p>
+        <a href="https://buy.stripe.com/test_6oUdRbgvU5eMd9PgZu0Jq05" class="test-button" target="_blank">
+            Test Payment
+        </a>
+    </div>
+
+    <div class="test-card">
+        <h3>🌬️ Testosterone Nasal Gel - €149</h3>
+        <p>Innovative nasal application with fast absorption.</p>
+        <a href="https://buy.stripe.com/test_cNiaEZ3J8gXu6Lr38E0Jq06" class="test-button" target="_blank">
+            Test Payment
+        </a>
+    </div>
+
+    <div class="test-card">
+        <h3>🧪 Custom Compound - €189</h3>
+        <p>Personalized testosterone formulation tailored to your needs.</p>
+        <a href="https://buy.stripe.com/test_bJe6oJ7ZofTq5HngZu0Jq07" class="test-button" target="_blank">
+            Test Payment
+        </a>
+    </div>
+
+    <div style="margin-top: 30px; padding: 20px; background: #f0f0f0; border-radius: 6px;">
+        <h3>🔍 Troubleshooting Tips:</h3>
+        <ul>
+            <li><strong>If payment fails:</strong> Try in an incognito/private browser window</li>
+            <li><strong>Clear browser cache:</strong> Ctrl+Shift+R (or Cmd+Shift+R on Mac)</li>
+            <li><strong>Check browser console:</strong> F12 → Console tab for error messages</li>
+            <li><strong>Try different browser:</strong> Chrome, Firefox, Safari, Edge</li>
+            <li><strong>Disable ad blockers:</strong> Some extensions can interfere with payments</li>
+        </ul>
+    </div>
+
+    <div style="margin-top: 20px; padding: 15px; background: #e8f5e8; border-radius: 6px;">
+        <h4>✅ Expected Success Flow:</h4>
+        <ol>
+            <li>Click "Test Payment" → Opens Stripe Payment Link</li>
+            <li>Enter test card details → Payment processes</li>
+            <li>Redirects to success page → Shows confirmation</li>
+        </ol>
+    </div>
+
+    <div style="margin-top: 20px; padding: 15px; background: #ffe8e8; border-radius: 6px;">
+        <h4>❌ If You See Errors:</h4>
+        <ul>
+            <li>"Invalid card" → Make sure you're using 4242 4242 4242 4242</li>
+            <li>"Processing error" → Try incognito mode or different browser</li>
+            <li>"Payment failed" → Check if you're in test mode</li>
+        </ul>
+    </div>
+</body>
+</html> 
