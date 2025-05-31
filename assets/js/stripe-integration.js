@@ -7,10 +7,10 @@ let isStripeInitialized = false;
 
 // Stripe Payment Links (created in Stripe Dashboard)
 const PAYMENT_LINKS = {
-    'none': 'https://book.stripe.com/test_28E7sN3J836EfhXgZu0Jq00',
-    'video': 'https://book.stripe.com/test_28E7sN3J836EfhXgZu0Jq00', 
-    'phone': 'https://book.stripe.com/test_28E7sN3J836EfhXgZu0Jq00',
-    'premium': 'https://book.stripe.com/test_28E7sN3J836EfhXgZu0Jq00'
+    'none': 'https://buy.stripe.com/test_9B614p3J836E8Tz10w0Jq01',
+    'video': 'https://buy.stripe.com/test_9B614p3J836E8Tz10w0Jq01', 
+    'phone': 'https://buy.stripe.com/test_9B614p3J836E8Tz10w0Jq01',
+    'premium': 'https://buy.stripe.com/test_9B614p3J836E8Tz10w0Jq01'
 };
 
 // Initialize Stripe when the page loads
