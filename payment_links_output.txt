@@ -1,0 +1,51 @@
+// Generated Payment Links for TRT Treatments
+const TREATMENTS = {
+    'testo-gel': {
+        name: 'Testosterone Gel',
+        price: 8900,
+        currency: 'eur',
+        description: 'Daily topical application with steady hormone levels throughout the day. Perfect for those who prefer non-invasive treatment.',
+        interval: 'month',
+        paymentLink: 'https://buy.stripe.com/test_14AaEZfrQePmedTfVq0Jq02'
+    },
+    'injections': {
+        name: 'Testosterone Injections',
+        price: 12900,
+        currency: 'eur',
+        description: 'Weekly intramuscular injections. Most effective method with peak hormone optimization. Includes all supplies and detailed instructions.',
+        interval: 'month',
+        paymentLink: 'https://buy.stripe.com/test_eVqeVfbbAePm3zfaB60Jq03'
+    },
+    'patches': {
+        name: 'Testosterone Patches',
+        price: 10900,
+        currency: 'eur',
+        description: 'Daily transdermal patches. Convenient and discreet with consistent hormone delivery. Simply apply and forget.',
+        interval: 'month',
+        paymentLink: 'https://buy.stripe.com/test_8x2eVfa7w5eM3zfbFa0Jq04'
+    },
+    'pellets': {
+        name: 'Testosterone Pellets',
+        price: 29900,
+        currency: 'eur',
+        description: 'Long-lasting subcutaneous pellets. Inserted once every 3-4 months for ultimate convenience. No daily routine required.',
+        interval: '3-month',
+        paymentLink: 'https://buy.stripe.com/test_6oUdRbgvU5eMd9PgZu0Jq05'
+    },
+    'nasal-gel': {
+        name: 'Testosterone Nasal Gel',
+        price: 14900,
+        currency: 'eur',
+        description: 'Innovative nasal application. Fast absorption with no skin transfer risk. Perfect for those with sensitive skin or active lifestyles.',
+        interval: 'month',
+        paymentLink: 'https://buy.stripe.com/test_cNiaEZ3J8gXu6Lr38E0Jq06'
+    },
+    'custom': {
+        name: 'Custom Compound',
+        price: 18900,
+        currency: 'eur',
+        description: 'Personalized testosterone formulation. Tailored to your specific needs and preferences based on your assessment and lab results.',
+        interval: 'month',
+        paymentLink: 'https://buy.stripe.com/test_bJe6oJ7ZofTq5HngZu0Jq07'
+    },
+};

@@ -4,43 +4,49 @@ const TREATMENTS = {
         name: 'Testosterone Gel',
         price: 8900, // Price in cents (€89.00)
         currency: 'eur',
-        description: 'Daily topical application with steady hormone levels',
-        interval: 'month'
+        description: 'Daily topical application with steady hormone levels throughout the day. Perfect for those who prefer non-invasive treatment.',
+        interval: 'month',
+        paymentLink: 'https://buy.stripe.com/test_14AaEZfrQePmedTfVq0Jq02'
     },
     'injections': {
         name: 'Testosterone Injections',
         price: 12900, // Price in cents (€129.00)
         currency: 'eur',
-        description: 'Weekly intramuscular injections for peak effectiveness',
-        interval: 'month'
+        description: 'Weekly intramuscular injections. Most effective method with peak hormone optimization. Includes all supplies and detailed instructions.',
+        interval: 'month',
+        paymentLink: 'https://buy.stripe.com/test_eVqeVfbbAePm3zfaB60Jq03'
     },
     'patches': {
         name: 'Testosterone Patches',
         price: 10900, // Price in cents (€109.00)
         currency: 'eur',
-        description: 'Daily transdermal patches for consistent delivery',
-        interval: 'month'
+        description: 'Daily transdermal patches. Convenient and discreet with consistent hormone delivery. Simply apply and forget.',
+        interval: 'month',
+        paymentLink: 'https://buy.stripe.com/test_8x2eVfa7w5eM3zfbFa0Jq04'
     },
     'pellets': {
         name: 'Testosterone Pellets',
         price: 29900, // Price in cents (€299.00)
         currency: 'eur',
-        description: 'Long-lasting subcutaneous pellets inserted every 3-4 months',
-        interval: '3-month'
+        description: 'Long-lasting subcutaneous pellets. Inserted once every 3-4 months for ultimate convenience. No daily routine required.',
+        interval: '3-month',
+        paymentLink: 'https://buy.stripe.com/test_6oUdRbgvU5eMd9PgZu0Jq05'
     },
     'nasal-gel': {
         name: 'Testosterone Nasal Gel',
         price: 14900, // Price in cents (€149.00)
         currency: 'eur',
-        description: 'Innovative nasal application with fast absorption',
-        interval: 'month'
+        description: 'Innovative nasal application. Fast absorption with no skin transfer risk. Perfect for those with sensitive skin or active lifestyles.',
+        interval: 'month',
+        paymentLink: 'https://buy.stripe.com/test_cNiaEZ3J8gXu6Lr38E0Jq06'
     },
     'custom': {
         name: 'Custom Compound',
         price: 18900, // Price in cents (€189.00)
         currency: 'eur',
-        description: 'Personalized testosterone formulation tailored to your needs',
-        interval: 'month'
+        description: 'Personalized testosterone formulation. Tailored to your specific needs and preferences based on your assessment and lab results.',
+        interval: 'month',
+        paymentLink: 'https://buy.stripe.com/test_bJe6oJ7ZofTq5HngZu0Jq07'
     }
 };
 
@@ -93,90 +99,36 @@ async function handleTreatmentSelection(event) {
     showLoading();
     
     try {
-        // Create Stripe Checkout Session
-        await createStripeCheckout(treatment, treatmentId);
+        // Redirect to Payment Link
+        redirectToPaymentLink(treatment, treatmentId);
     } catch (error) {
-        console.error('Error creating checkout:', error);
+        console.error('Error redirecting to payment:', error);
         hideLoading();
         alert('There was an error processing your request. Please try again.');
     }
 }
 
-async function createStripeCheckout(treatment, treatmentId) {
-    console.log('Creating Stripe checkout for:', treatment);
+function redirectToPaymentLink(treatment, treatmentId) {
+    console.log('Redirecting to payment link for:', treatment);
 
-    // Prepare line items for Stripe
-    const lineItems = [{
-        price_data: {
-            currency: treatment.currency,
-            product_data: {
-                name: treatment.name,
-                description: treatment.description,
-                metadata: {
-                    treatment_id: treatmentId,
-                    interval: treatment.interval
-                }
-            },
-            unit_amount: treatment.price,
-        },
-        quantity: 1,
-    }];
-
-    // Create checkout session data
-    const sessionData = {
-        payment_method_types: ['card'],
-        line_items: lineItems,
-        mode: 'payment',
-        success_url: `${window.location.origin}/success.html?session_id={CHECKOUT_SESSION_ID}&treatment=${treatmentId}`,
-        cancel_url: `${window.location.origin}/treatments.html`,
-        metadata: {
-            treatment_id: treatmentId,
-            source: 'treatments_page'
-        },
-        billing_address_collection: 'required',
-        shipping_address_collection: {
-            allowed_countries: ['DE', 'AT', 'CH', 'NL', 'BE', 'LU', 'FR', 'IT', 'ES', 'PT']
-        }
-    };
-
-    console.log('Session data:', sessionData);
-
-    try {
-        // Create checkout session using Stripe's client-side API
-        const { error } = await stripe.redirectToCheckout({
-            lineItems: sessionData.line_items,
-            mode: sessionData.mode,
-            successUrl: sessionData.success_url,
-            cancelUrl: sessionData.cancel_url,
-            billingAddressCollection: sessionData.billing_address_collection,
-            shippingAddressCollection: sessionData.shipping_address_collection
-        });
-
-        if (error) {
-            console.error('Stripe checkout error:', error);
-            throw error;
-        }
-
-        // If we reach here, there was an error (redirect should have happened)
-        console.error('Checkout did not redirect as expected');
-        throw new Error('Checkout failed to redirect');
-
-    } catch (error) {
-        console.error('Error in createStripeCheckout:', error);
-        hideLoading();
-        
-        // Show user-friendly error message
-        let errorMessage = 'There was an error processing your payment. Please try again.';
-        
-        if (error.message && error.message.includes('network')) {
-            errorMessage = 'Network error. Please check your connection and try again.';
-        } else if (error.message && error.message.includes('card')) {
-            errorMessage = 'There was an issue with your payment method. Please try a different card.';
-        }
-        
-        alert(errorMessage);
-        throw error;
+    // Get the payment link for this treatment
+    const baseUrl = treatment.paymentLink;
+    
+    if (!baseUrl) {
+        throw new Error('Payment link not configured for this treatment');
     }
+
+    // Add success and cancel URLs as parameters
+    const successUrl = encodeURIComponent(`${window.location.origin}/success.html?treatment=${treatmentId}&amount=${(treatment.price / 100).toFixed(2)}&product=${encodeURIComponent(treatment.name)}`);
+    const cancelUrl = encodeURIComponent(`${window.location.origin}/treatments.html`);
+    
+    // Create the full URL with parameters
+    const urlWithParams = `${baseUrl}?success_url=${successUrl}&cancel_url=${cancelUrl}`;
+    
+    console.log('Redirecting to:', urlWithParams);
+    
+    // Redirect to Stripe Payment Link
+    window.location.href = urlWithParams;
 }
 
 function showLoading() {
