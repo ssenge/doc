@@ -134,9 +134,16 @@ function createCheckoutUrl(amount, productName, customerEmail) {
         return `success.html?amount=${amount/100}&product=${encodeURIComponent(productName)}&email=${encodeURIComponent(customerEmail)}&demo=true`;
     }
     
-    // Use the real Stripe Payment Link
-    console.log('Using real Stripe Payment Link:', paymentLink);
-    return paymentLink;
+    // Add success and cancel URLs as parameters
+    const baseUrl = paymentLink;
+    const successUrl = encodeURIComponent('https://ssenge.github.io/doc/success.html');
+    const cancelUrl = encodeURIComponent('https://ssenge.github.io/doc/consultation.html');
+    
+    // Append URLs as query parameters
+    const urlWithParams = `${baseUrl}?success_url=${successUrl}&cancel_url=${cancelUrl}`;
+    
+    console.log('Using real Stripe Payment Link with URLs:', urlWithParams);
+    return urlWithParams;
 }
 
 // Helper functions
