@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Debug Tool - TRT Clinic</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="assets/js/config.js?v=1.2"></script>
+    <script src="assets/js/supabase-client.js?v=1.2"></script>
+</head>
+<body class="bg-gray-50 min-h-screen py-8">
+    <div class="max-w-4xl mx-auto px-4">
+        <div class="bg-white rounded-lg shadow-lg p-8">
+            <h1 class="text-3xl font-bold text-gray-900 mb-8">📧 Email Confirmation Debug Tool</h1>
+            
+            <!-- Test Email Registration -->
+            <div class="mb-8 p-6 bg-blue-50 rounded-lg">
+                <h2 class="text-xl font-semibold mb-4">🧪 Test Email Registration</h2>
+                <form id="testEmailForm" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Test Email Address</label>
+                        <input type="email" id="testEmail" required 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                               placeholder="your-email@example.com">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Test Password</label>
+                        <input type="password" id="testPassword" required 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                               placeholder="Test123!">
+                    </div>
+                    <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700">
+                        🚀 Test Registration & Email
+                    </button>
+                </form>
+                <div id="testResult" class="mt-4"></div>
+            </div>
+
+            <!-- Configuration Check -->
+            <div class="mb-8 p-6 bg-green-50 rounded-lg">
+                <h2 class="text-xl font-semibold mb-4">⚙️ Configuration Check</h2>
+                <div id="configCheck" class="space-y-2"></div>
+            </div>
+
+            <!-- Email Troubleshooting Guide -->
+            <div class="mb-8 p-6 bg-yellow-50 rounded-lg">
+                <h2 class="text-xl font-semibold mb-4">🔍 Email Troubleshooting Checklist</h2>
+                <div class="space-y-3">
+                    <div class="flex items-start space-x-3">
+                        <input type="checkbox" id="check1" class="mt-1">
+                        <label for="check1" class="text-sm">Check spam/junk folder in your email</label>
+                    </div>
+                    <div class="flex items-start space-x-3">
+                        <input type="checkbox" id="check2" class="mt-1">
+                        <label for="check2" class="text-sm">Check promotions tab (Gmail)</label>
+                    </div>
+                    <div class="flex items-start space-x-3">
+                        <input type="checkbox" id="check3" class="mt-1">
+                        <label for="check3" class="text-sm">Wait 5-10 minutes for email delivery</label>
+                    </div>
+                    <div class="flex items-start space-x-3">
+                        <input type="checkbox" id="check4" class="mt-1">
+                        <label for="check4" class="text-sm">Updated Supabase redirect URLs with Vercel domain</label>
+                    </div>
+                    <div class="flex items-start space-x-3">
+                        <input type="checkbox" id="check5" class="mt-1">
+                        <label for="check5" class="text-sm">Checked Supabase Auth logs for errors</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Manual Confirmation -->
+            <div class="mb-8 p-6 bg-purple-50 rounded-lg">
+                <h2 class="text-xl font-semibold mb-4">🔧 Manual Email Confirmation</h2>
+                <p class="text-sm text-gray-600 mb-4">If emails aren't working, you can manually confirm users in Supabase:</p>
+                <ol class="list-decimal list-inside space-y-2 text-sm">
+                    <li>Go to Supabase Dashboard → Authentication → Users</li>
+                    <li>Find the user and click on them</li>
+                    <li>Toggle "Email Confirmed" to ON</li>
+                    <li>Click "Update user"</li>
+                </ol>
+            </div>
+
+            <!-- Supabase Links -->
+            <div class="p-6 bg-gray-50 rounded-lg">
+                <h2 class="text-xl font-semibold mb-4">🔗 Quick Links</h2>
+                <div class="space-y-2">
+                    <a href="https://supabase.com/dashboard/project/clsknohsqcqiymjgrrxc/auth/users" 
+                       target="_blank" class="block text-blue-600 hover:underline">
+                        📊 Supabase Users Dashboard
+                    </a>
+                    <a href="https://supabase.com/dashboard/project/clsknohsqcqiymjgrrxc/auth/logs" 
+                       target="_blank" class="block text-blue-600 hover:underline">
+                        📋 Supabase Auth Logs
+                    </a>
+                    <a href="https://supabase.com/dashboard/project/clsknohsqcqiymjgrrxc/auth/url-configuration" 
+                       target="_blank" class="block text-blue-600 hover:underline">
+                        ⚙️ Supabase URL Configuration
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', async () => {
+            await initSupabase();
+            checkConfiguration();
+            setupTestForm();
+        });
+
+        function checkConfiguration() {
+            const configDiv = document.getElementById('configCheck');
+            const config = window.EDOC_CONFIG;
+            
+            const checks = [
+                {
+                    name: 'Supabase URL',
+                    value: config.supabase.url,
+                    status: config.supabase.url.includes('supabase.co') ? '✅' : '❌'
+                },
+                {
+                    name: 'Environment',
+                    value: config.app.environment,
+                    status: '✅'
+                },
+                {
+                    name: 'Current URL',
+                    value: window.location.origin,
+                    status: '✅'
+                },
+                {
+                    name: 'Expected Redirect URL',
+                    value: `${window.location.origin}/auth-confirm.html`,
+                    status: '✅'
+                }
+            ];
+
+            configDiv.innerHTML = checks.map(check => 
+                `<div class="flex justify-between items-center">
+                    <span class="font-medium">${check.name}:</span>
+                    <span class="text-sm">${check.status} ${check.value}</span>
+                </div>`
+            ).join('');
+        }
+
+        function setupTestForm() {
+            const form = document.getElementById('testEmailForm');
+            const resultDiv = document.getElementById('testResult');
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const email = document.getElementById('testEmail').value;
+                const password = document.getElementById('testPassword').value;
+
+                resultDiv.innerHTML = '<div class="text-blue-600">🔄 Testing registration...</div>';
+
+                try {
+                    const result = await eDocAuth.signUp(email, password);
+                    
+                    if (result.success) {
+                        resultDiv.innerHTML = `
+                            <div class="text-green-600 space-y-2">
+                                <div>✅ Registration successful!</div>
+                                <div class="text-sm">📧 Confirmation email should be sent to: ${email}</div>
+                                <div class="text-sm">🔗 Check your email and click the confirmation link</div>
+                                <div class="text-sm">⏰ If no email arrives in 10 minutes, check the troubleshooting steps above</div>
+                            </div>
+                        `;
+                    } else {
+                        resultDiv.innerHTML = `
+                            <div class="text-red-600">
+                                <div>❌ Registration failed: ${result.error}</div>
+                            </div>
+                        `;
+                    }
+                } catch (error) {
+                    resultDiv.innerHTML = `
+                        <div class="text-red-600">
+                            <div>❌ Error: ${error.message}</div>
+                        </div>
+                    `;
+                }
+            });
+        }
+    </script>
+</body>
+</html> 
