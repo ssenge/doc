@@ -210,7 +210,7 @@ function populateProfileForm() {
 
 // Display treatment timeline
 function displayTreatmentTimeline() {
-    const container = document.getElementById('treatmentTimelineContainer');
+    const container = document.getElementById('treatmentTimeline');
     if (!container) return;
     
     if (userOrders.length === 0) {
