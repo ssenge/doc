@@ -119,23 +119,33 @@ const eDocAuth = {
     },
 
     // Sign up new user
-    async signUp(email, password, userData = {}) {
+    async signUp(email, password, metadata = {}, options = {}) {
         try {
+            // Add default redirect URL if not provided
+            const defaultOptions = {
+                emailRedirectTo: `${window.location.origin}/auth-confirm.html`,
+                ...options
+            };
+            
             const { data, error } = await supabase.auth.signUp({
                 email,
                 password,
                 options: {
-                    data: userData
+                    data: metadata,
+                    ...defaultOptions
                 }
             });
             
-            if (error) throw error;
+            if (error) {
+                console.error('Sign up error:', error);
+                return { success: false, error: error.message, user: null };
+            }
             
-            window.debugLog('User signed up successfully');
-            return { success: true, user: data.user, session: data.session };
+            console.log('Sign up successful:', data);
+            return { success: true, error: null, user: data.user };
         } catch (error) {
-            console.error('❌ Sign up error:', error);
-            return { success: false, error: error.message };
+            console.error('Sign up exception:', error);
+            return { success: false, error: error.message, user: null };
         }
     },
 
@@ -384,7 +394,15 @@ const eDocUtils = {
 
     // Validate email
     validateEmail(email) {
-        return window.EDOC_CONFIG.validation.email.pattern.test(email);
+        // Fallback pattern if config isn't loaded
+        const fallbackPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        
+        try {
+            return window.EDOC_CONFIG?.validation?.email?.pattern?.test(email) || fallbackPattern.test(email);
+        } catch (error) {
+            console.warn('Email validation config error, using fallback:', error);
+            return fallbackPattern.test(email);
+        }
     },
 
     // Validate password

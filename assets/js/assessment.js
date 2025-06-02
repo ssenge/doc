@@ -158,39 +158,31 @@ function validateStep1() {
     const age = document.getElementById('age');
     const height = document.getElementById('height');
     const weight = document.getElementById('weight');
-    const email = document.getElementById('email');
-    const phone = document.getElementById('phone');
     
     let isValid = true;
     
     // Validate age
-    if (!age || age < 18 || age > 100) {
-        showFieldError(age, window.eDocLanguage.getValidationMessage('age'));
+    if (!age || !age.value || age.value < 18 || age.value > 100) {
+        showFieldError(age, 'Please enter a valid age between 18 and 100');
         isValid = false;
+    } else {
+        clearFieldError(age);
     }
     
     // Validate height
-    if (!height || height < 100 || height > 250) {
-        showFieldError(height, window.eDocLanguage.getValidationMessage('height'));
+    if (!height || !height.value || height.value < 100 || height.value > 250) {
+        showFieldError(height, 'Please enter a valid height between 100 and 250 cm');
         isValid = false;
+    } else {
+        clearFieldError(height);
     }
     
     // Validate weight
-    if (!weight || weight < 30 || weight > 300) {
-        showFieldError(weight, window.eDocLanguage.getValidationMessage('weight'));
+    if (!weight || !weight.value || weight.value < 30 || weight.value > 300) {
+        showFieldError(weight, 'Please enter a valid weight between 30 and 300 kg');
         isValid = false;
-    }
-    
-    // Validate email
-    if (!email || !isValidEmail(email.value)) {
-        showFieldError(email, window.eDocLanguage.getValidationMessage('email'));
-        isValid = false;
-    }
-    
-    // Validate phone
-    if (!phone || phone.length < 8) {
-        showFieldError(phone, window.eDocLanguage.getValidationMessage('phone'));
-        isValid = false;
+    } else {
+        clearFieldError(weight);
     }
     
     return isValid;

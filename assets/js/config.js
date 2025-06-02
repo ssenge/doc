@@ -3,6 +3,10 @@
  * Generic health platform - currently configured for TRT Clinic
  */
 
+// Detect environment
+const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+const isDevelopment = isLocalhost || window.location.hostname.includes('localhost');
+
 // eDoc Configuration (internal)
 const EDOC_CONFIG = {
     supabase: {
@@ -15,8 +19,10 @@ const EDOC_CONFIG = {
         name: 'eDoc',                    // Internal name
         displayName: 'TRT Clinic',      // User-facing name
         version: '1.0.0',
-        environment: 'development',      // 'development' or 'production'
-        debug: true
+        environment: isDevelopment ? 'development' : 'production',
+        debug: isDevelopment,            // Only debug in development
+        // Development settings
+        skipEmailConfirmation: isDevelopment  // Only skip in development
     },
     
     // Feature flags
@@ -88,6 +94,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (EDOC_CONFIG.supabase.anonKey === 'YOUR_SUPABASE_ANON_KEY_HERE') {
         console.warn('⚠️ Please update your Supabase anon key in assets/js/config.js');
     } else {
-        console.log(`✅ ${EDOC_CONFIG.app.displayName} (${EDOC_CONFIG.app.name}) configuration loaded`);
+        console.log(`✅ ${EDOC_CONFIG.app.displayName} (${EDOC_CONFIG.app.name}) configuration loaded - Environment: ${EDOC_CONFIG.app.environment}`);
     }
 }); 

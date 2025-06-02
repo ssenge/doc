@@ -117,6 +117,18 @@
     <script src="assets/js/supabase-client.js?v=1.2"></script>
     <script src="assets/js/data-collection.js?v=1.2"></script>
     <script src="assets/js/enhanced-data-collection.js?v=1.2"></script>
+    
+    <!-- Debug section for testing (remove in production) -->
+    <div id="debug-info" class="fixed bottom-4 left-4 bg-gray-800 text-white p-3 rounded-lg text-xs max-w-sm" style="display: none;">
+        <h4 class="font-bold mb-2">Debug Info:</h4>
+        <div id="debug-content"></div>
+        <div class="mt-2 space-x-1">
+            <button onclick="testEmailValidation()" class="text-xs bg-blue-600 px-2 py-1 rounded">Test Email</button>
+            <button onclick="testSupabaseConnection()" class="text-xs bg-green-600 px-2 py-1 rounded">Test Supabase</button>
+            <button onclick="document.getElementById('debug-info').style.display='none'" class="text-xs bg-gray-600 px-2 py-1 rounded">Close</button>
+        </div>
+    </div>
+    
     <script>
         // Simple dropdown toggle for language selector
         document.addEventListener('DOMContentLoaded', function() {
@@ -141,6 +153,24 @@
                 dropdownMenu.addEventListener('click', function() {
                     dropdownMenu.classList.add('hidden');
                 });
+            }
+            
+            // Show debug info if we have URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.toString()) {
+                const debugInfo = document.getElementById('debug-info');
+                const debugContent = document.getElementById('debug-content');
+                if (debugInfo && debugContent) {
+                    const paymentData = window.eDocDataCollection?.getPaymentDataFromURL();
+                    debugContent.innerHTML = `
+                        <p><strong>URL Params:</strong></p>
+                        <p>Email: ${urlParams.get('email') || 'Not provided'}</p>
+                        <p>Amount: €${urlParams.get('amount') || 'Not provided'}</p>
+                        <p>Product: ${urlParams.get('product') || 'Not provided'}</p>
+                        <p>Session ID: ${urlParams.get('session_id') || 'Not provided'}</p>
+                    `;
+                    debugInfo.style.display = 'block';
+                }
             }
             
             // Initialize enhanced success page functionality
@@ -351,6 +381,99 @@
                     }
                 }
             }
+        }
+        
+        // Test function for email validation
+        function testEmailValidation() {
+            const testEmails = [
+                'test@example.com',
+                'user@domain.co.uk',
+                'invalid@',
+                '@invalid.com',
+                'valid.email+tag@example.org'
+            ];
+            
+            console.log('Testing email validation:');
+            testEmails.forEach(email => {
+                const isValid = window.eDocUtils?.validateEmail(email);
+                console.log(`${email}: ${isValid ? '✅ Valid' : '❌ Invalid'}`);
+            });
+            
+            alert('Check console for email validation test results');
+        }
+        
+        // Comprehensive Supabase diagnostic
+        async function testSupabaseConnection() {
+            console.log('🔍 Starting Supabase diagnostics...');
+            
+            try {
+                // Test 1: Check if Supabase is initialized
+                console.log('1. Checking Supabase initialization...');
+                if (!window.eDocAuth || !window.eDocDatabase) {
+                    console.error('❌ Supabase client not initialized');
+                    return;
+                }
+                console.log('✅ Supabase client initialized');
+                
+                // Test 2: Check configuration
+                console.log('2. Checking configuration...');
+                console.log('Config:', window.EDOC_CONFIG?.supabase);
+                
+                // Test 3: Test database connection
+                console.log('3. Testing database connection...');
+                try {
+                    const testUser = await window.eDocAuth.getCurrentUser();
+                    console.log('✅ Database connection working, current user:', testUser?.email || 'None');
+                } catch (error) {
+                    console.error('❌ Database connection failed:', error);
+                }
+                
+                // Test 4: Test user creation with a real email
+                console.log('4. Testing user creation...');
+                const testEmail = 'test+' + Date.now() + '@gmail.com';
+                const testPassword = 'TestPassword123!';
+                
+                console.log(`Attempting to create user: ${testEmail}`);
+                
+                const signUpResult = await window.eDocAuth.signUp(testEmail, testPassword, {
+                    full_name: 'Test User',
+                    preferred_language: 'en'
+                });
+                
+                console.log('Sign up result:', signUpResult);
+                
+                if (signUpResult.success) {
+                    console.log('✅ User creation successful!');
+                    console.log('User:', signUpResult.user);
+                    
+                    // Test profile creation
+                    if (signUpResult.user) {
+                        console.log('5. Testing profile creation...');
+                        const profileResult = await window.eDocDatabase.createUserProfile(signUpResult.user.id, {
+                            email: testEmail,
+                            first_name: 'Test',
+                            last_name: 'User',
+                            preferred_language: 'en',
+                            created_at: new Date().toISOString()
+                        });
+                        
+                        console.log('Profile creation result:', profileResult);
+                        
+                        if (profileResult.success) {
+                            console.log('✅ Profile creation successful!');
+                        } else {
+                            console.error('❌ Profile creation failed:', profileResult.error);
+                        }
+                    }
+                } else {
+                    console.error('❌ User creation failed:', signUpResult.error);
+                }
+                
+            } catch (error) {
+                console.error('❌ Diagnostic failed:', error);
+            }
+            
+            alert('Diagnostic complete! Check console for detailed results.');
         }
     </script>
 </body>

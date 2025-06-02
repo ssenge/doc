@@ -390,20 +390,45 @@ const eDocSuccessPageEnhanced = {
 
     // Show account creation prompt
     showAccountCreationPrompt(dataSummary) {
+        // Get email from Stripe payment data
+        const paymentData = window.eDocDataCollection.getPaymentDataFromURL();
+        const stripeEmail = paymentData.email;
+        
         const promptHtml = `
             <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6">
                 <h3 class="text-lg font-semibold text-blue-800 mb-4">Create Your Account</h3>
                 <p class="text-blue-700 mb-4">
                     Create an account to track your order, view your treatment history, and communicate with our medical team.
                 </p>
+                
+                ${paymentData.amount && paymentData.product ? `
+                <div class="bg-white border border-blue-200 rounded-md p-3 mb-4">
+                    <h4 class="text-sm font-medium text-gray-800 mb-2">Your Purchase:</h4>
+                    <div class="text-sm text-gray-600">
+                        <p><strong>Treatment:</strong> ${paymentData.product}</p>
+                        <p><strong>Amount:</strong> €${paymentData.amount}</p>
+                        ${stripeEmail ? `<p><strong>Email:</strong> ${stripeEmail}</p>` : ''}
+                    </div>
+                </div>
+                ` : ''}
+                
                 <div class="space-y-4">
+                    ${stripeEmail ? `
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                        <input type="email" id="account-email" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <input type="email" id="account-email" value="${stripeEmail}" readonly class="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-600 cursor-not-allowed">
+                        <p class="text-xs text-gray-500 mt-1">Email from your payment information</p>
                     </div>
+                    ` : `
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <input type="email" id="account-email" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter your email address">
+                    </div>
+                    `}
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                        <input type="password" id="account-password" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <input type="password" id="account-password" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Choose a secure password">
+                        <p class="text-xs text-gray-500 mt-1">Minimum 8 characters with letters and numbers</p>
                     </div>
                     <button onclick="eDocSuccessPageEnhanced.createAccountFromPrompt()" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors">
                         Create Account
@@ -432,34 +457,72 @@ const eDocSuccessPageEnhanced = {
         }
         
         // Validate email and password
-        if (!window.eDocUtils.validateEmail(email)) {
+        if (!window.eDocUtils?.validateEmail(email)) {
             alert('Please enter a valid email address');
             return;
         }
         
-        const passwordValidation = window.eDocUtils.validatePassword(password);
-        if (!passwordValidation.isValid) {
-            alert('Password requirements:\n' + passwordValidation.errors.join('\n'));
+        const passwordValidation = window.eDocUtils?.validatePassword(password);
+        if (!passwordValidation?.isValid) {
+            alert('Password requirements:\n' + (passwordValidation?.errors?.join('\n') || 'Invalid password'));
             return;
         }
         
         try {
-            // Get payment data for personal info
+            // Show loading state
+            const createButton = document.querySelector('button[onclick="eDocSuccessPageEnhanced.createAccountFromPrompt()"]');
+            if (createButton) {
+                createButton.disabled = true;
+                createButton.textContent = 'Creating Account...';
+            }
+            
+            // Get payment data for additional context
             const paymentData = window.eDocDataCollection.getPaymentDataFromURL();
             
             const result = await eDocDataCollectionEnhanced.createAccountDuringCheckout(email, password, {
-                email: email
+                email: email,
+                source: 'success_page_prompt',
+                payment_session_id: paymentData.sessionId
             });
             
             if (result.success) {
-                // Refresh page to show authenticated view
-                window.location.reload();
+                // Show success message
+                const container = document.getElementById('account-creation-container');
+                if (container) {
+                    container.innerHTML = `
+                        <div class="bg-green-50 border border-green-200 rounded-lg p-6 mb-6">
+                            <h3 class="text-lg font-semibold text-green-800 mb-2">Account Created Successfully!</h3>
+                            <p class="text-green-700 mb-4">
+                                Your account has been created and you are now logged in. Redirecting to your dashboard...
+                            </p>
+                        </div>
+                    `;
+                }
+                
+                // Redirect to dashboard after a short delay
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 2000);
             } else {
+                // Reset button state
+                if (createButton) {
+                    createButton.disabled = false;
+                    createButton.textContent = 'Create Account';
+                }
+                
                 alert('Error creating account: ' + result.error);
             }
             
         } catch (error) {
             console.error('Error creating account:', error);
+            
+            // Reset button state
+            const createButton = document.querySelector('button[onclick="eDocSuccessPageEnhanced.createAccountFromPrompt()"]');
+            if (createButton) {
+                createButton.disabled = false;
+                createButton.textContent = 'Create Account';
+            }
+            
             alert('Error creating account. Please try again.');
         }
     },
