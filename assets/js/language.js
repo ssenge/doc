@@ -244,7 +244,7 @@ const translations = {
 // Initialize language on page load
 document.addEventListener('DOMContentLoaded', function() {
     // Check for saved language preference
-    const savedLanguage = localStorage.getItem('trt-language');
+    const savedLanguage = localStorage.getItem('edoc-language');
     if (savedLanguage && (savedLanguage === 'en' || savedLanguage === 'de')) {
         currentLanguage = savedLanguage;
     } else {
@@ -270,7 +270,7 @@ function switchLanguage(lang) {
     currentLanguage = lang;
     
     // Save language preference
-    localStorage.setItem('trt-language', lang);
+    localStorage.setItem('edoc-language', lang);
     
     // Update HTML lang attribute
     document.documentElement.lang = lang;
@@ -405,13 +405,26 @@ function getValidationMessage(type, field) {
     return messages[currentLanguage][type] || messages['en'][type] || 'Invalid input';
 }
 
-// Export functions for use in other scripts
-window.TRTLanguage = {
-    switchLanguage,
+// Export language functions globally (new naming)
+window.eDocLanguage = {
     getCurrentLanguage: () => currentLanguage,
-    t,
-    formatCurrency,
-    formatDate,
-    getValidationMessage,
-    updatePageContent: () => switchLanguage(currentLanguage)
-}; 
+    setLanguage: switchLanguage,
+    t: (key) => translations[currentLanguage][key] || translations['en'][key] || key,
+    formatCurrency: (amount) => {
+        const locale = currentLanguage === 'de' ? 'de-DE' : 'en-US';
+        return new Intl.NumberFormat(locale, {
+            style: 'currency',
+            currency: 'EUR'
+        }).format(amount);
+    },
+    getValidationMessage: (type, field) => {
+        const messages = validationMessages[currentLanguage] || validationMessages['en'];
+        if (field && messages[type]) {
+            return messages[type].replace('{field}', field);
+        }
+        return messages[type] || `Validation error: ${type}`;
+    }
+};
+
+// Backward compatibility - keep old naming working
+window.TRTLanguage = window.eDocLanguage; 

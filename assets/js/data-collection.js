@@ -13,81 +13,83 @@ function generateSessionId() {
 
 // Get or create session ID
 function getSessionId() {
-    let sessionId = localStorage.getItem('trt-session-id');
+    let sessionId = localStorage.getItem('edoc-session-id');
     if (!sessionId) {
-        sessionId = generateSessionId();
-        localStorage.setItem('trt-session-id', sessionId);
+        sessionId = 'edoc-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem('edoc-session-id', sessionId);
     }
     return sessionId;
 }
 
-// Save assessment data
+// Save assessment data to localStorage
 function saveAssessmentData(formData) {
     const assessmentData = {
-        ...formData,
-        timestamp: new Date().toISOString(),
         sessionId: getSessionId(),
-        completedAt: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        age: formData.age,
+        height: formData.height,
+        weight: formData.weight,
+        symptoms: formData.symptoms || {},
+        medicalHistory: formData.medicalHistory || {},
+        lifestyle: formData.lifestyle || {},
+        email: formData.email,
+        phone: formData.phone
     };
     
-    localStorage.setItem('trt-assessment', JSON.stringify(assessmentData));
+    localStorage.setItem('edoc-assessment', JSON.stringify(assessmentData));
     console.log('Assessment data saved:', assessmentData);
     return assessmentData;
 }
 
-// Save treatment selection data
+// Save treatment selection to localStorage
 function saveTreatmentData(treatmentId, treatmentDetails) {
     const treatmentData = {
+        sessionId: getSessionId(),
+        timestamp: new Date().toISOString(),
         treatmentId: treatmentId,
         treatmentName: treatmentDetails.name,
-        price: treatmentDetails.price / 100, // Convert from cents to euros
-        priceInCents: treatmentDetails.price,
-        currency: 'EUR',
-        description: treatmentDetails.description,
+        price: treatmentDetails.price,
         interval: treatmentDetails.interval,
-        selectedAt: new Date().toISOString(),
-        sessionId: getSessionId()
+        description: treatmentDetails.description
     };
     
-    localStorage.setItem('trt-treatment', JSON.stringify(treatmentData));
+    localStorage.setItem('edoc-treatment', JSON.stringify(treatmentData));
     console.log('Treatment data saved:', treatmentData);
     return treatmentData;
 }
 
-// Save consultation selection data
+// Save consultation data to localStorage
 function saveConsultationData(consultationType, price) {
     const consultationData = {
+        sessionId: getSessionId(),
+        timestamp: new Date().toISOString(),
         type: consultationType,
-        price: price,
-        currency: 'EUR',
-        selectedAt: new Date().toISOString(),
-        sessionId: getSessionId()
+        price: price
     };
     
-    localStorage.setItem('trt-consultation', JSON.stringify(consultationData));
+    localStorage.setItem('edoc-consultation', JSON.stringify(consultationData));
     console.log('Consultation data saved:', consultationData);
     return consultationData;
 }
 
 // Get all collected data
 function getAllCollectedData() {
-    const assessmentData = JSON.parse(localStorage.getItem('trt-assessment') || '{}');
-    const treatmentData = JSON.parse(localStorage.getItem('trt-treatment') || '{}');
-    const consultationData = JSON.parse(localStorage.getItem('trt-consultation') || '{}');
+    const assessmentData = JSON.parse(localStorage.getItem('edoc-assessment') || '{}');
+    const treatmentData = JSON.parse(localStorage.getItem('edoc-treatment') || '{}');
+    const consultationData = JSON.parse(localStorage.getItem('edoc-consultation') || '{}');
     
     return {
-        assessment: assessmentData,
-        treatment: treatmentData,
-        consultation: consultationData,
         session: {
             sessionId: getSessionId(),
+            currentLanguage: window.eDocLanguage?.getCurrentLanguage() || 'en',
+            timestamp: new Date().toISOString(),
             userAgent: navigator.userAgent,
             referrer: document.referrer,
-            language: navigator.language,
-            currentLanguage: window.TRTLanguage?.getCurrentLanguage() || 'en',
-            timestamp: new Date().toISOString(),
             url: window.location.href
-        }
+        },
+        assessment: assessmentData,
+        treatment: treatmentData,
+        consultation: consultationData
     };
 }
 
@@ -171,8 +173,10 @@ async function sendToZapier(additionalData = {}) {
                 referrer: collectedData.session.referrer,
                 browserLanguage: collectedData.session.language,
                 currentUrl: collectedData.session.url,
-                source: 'trt-clinic-website',
+                source: 'edoc-clinic-website',
+                platform: 'web',
                 version: '1.0',
+                environment: window.isDevelopment?.() ? 'development' : 'production',
                 timestamp: new Date().toISOString()
             },
             
@@ -196,8 +200,12 @@ async function sendToZapier(additionalData = {}) {
             console.log('✅ Data sent to Zapier successfully:', result);
             
             // Mark as sent to avoid duplicates
-            localStorage.setItem('trt-data-sent', 'true');
-            localStorage.setItem('trt-data-sent-at', new Date().toISOString());
+            localStorage.setItem('edoc-data-sent', 'true');
+            localStorage.setItem('edoc-data-sent-at', new Date().toISOString());
+            
+            // Clear any failed send data
+            localStorage.removeItem('edoc-failed-send');
+            localStorage.removeItem('edoc-retry-count');
             
             return { success: true, result };
         } else {
@@ -209,14 +217,14 @@ async function sendToZapier(additionalData = {}) {
         
         // Store failed attempt for retry
         const failedData = {
-            data: getAllCollectedData(),
+            payload: getAllCollectedData(),
             error: error.message,
             timestamp: new Date().toISOString(),
-            retryCount: (parseInt(localStorage.getItem('trt-retry-count')) || 0) + 1
+            retryCount: (parseInt(localStorage.getItem('edoc-retry-count')) || 0) + 1
         };
         
-        localStorage.setItem('trt-failed-send', JSON.stringify(failedData));
-        localStorage.setItem('trt-retry-count', failedData.retryCount.toString());
+        localStorage.setItem('edoc-failed-send', JSON.stringify(failedData));
+        localStorage.setItem('edoc-retry-count', failedData.retryCount.toString());
         
         return { success: false, error: error.message };
     }
@@ -224,41 +232,42 @@ async function sendToZapier(additionalData = {}) {
 
 // Retry failed sends
 async function retryFailedSend() {
-    const failedData = localStorage.getItem('trt-failed-send');
-    const retryCount = parseInt(localStorage.getItem('trt-retry-count')) || 0;
+    const failedData = localStorage.getItem('edoc-failed-send');
+    const retryCount = parseInt(localStorage.getItem('edoc-retry-count')) || 0;
     
-    if (failedData && retryCount < 3) {
-        console.log(`Retrying failed send (attempt ${retryCount + 1}/3)`);
-        return await sendToZapier();
+    if (!failedData || retryCount >= 3) {
+        console.log('No failed data to retry or max retries reached');
+        return { success: false, error: 'No retry data or max retries reached' };
     }
     
-    return { success: false, error: 'Max retries exceeded' };
+    const { payload } = JSON.parse(failedData);
+    return await sendToZapier(payload);
 }
 
 // Check if data has already been sent
 function hasDataBeenSent() {
-    return localStorage.getItem('trt-data-sent') === 'true';
+    return localStorage.getItem('edoc-data-sent') === 'true';
 }
 
 // Clear all stored data (for testing or after successful processing)
 function clearStoredData() {
     const keysToRemove = [
-        'trt-assessment',
-        'trt-treatment', 
-        'trt-consultation',
-        'trt-session-id',
-        'trt-data-sent',
-        'trt-data-sent-at',
-        'trt-failed-send',
-        'trt-retry-count'
+        'edoc-assessment',
+        'edoc-treatment', 
+        'edoc-consultation',
+        'edoc-session-id',
+        'edoc-data-sent',
+        'edoc-data-sent-at',
+        'edoc-failed-send',
+        'edoc-retry-count'
     ];
     
     keysToRemove.forEach(key => localStorage.removeItem(key));
     console.log('All TRT data cleared from localStorage');
 }
 
-// Export functions for use in other scripts
-window.TRTDataCollection = {
+// Export functions for use in other scripts (new naming)
+window.eDocDataCollection = {
     saveAssessmentData,
     saveTreatmentData,
     saveConsultationData,
@@ -267,5 +276,9 @@ window.TRTDataCollection = {
     retryFailedSend,
     hasDataBeenSent,
     clearStoredData,
+    getPaymentDataFromURL,
     getSessionId
-}; 
+};
+
+// Backward compatibility - keep old naming working
+window.TRTDataCollection = window.eDocDataCollection; 

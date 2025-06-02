@@ -97,9 +97,9 @@ function handleTreatmentSelection(event) {
         return;
     }
 
-    // Save treatment data using data collection system
-    if (window.TRTDataCollection) {
-        window.TRTDataCollection.saveTreatmentData(treatmentId, treatment);
+    // Save treatment selection to data collection system
+    if (window.eDocDataCollection) {
+        window.eDocDataCollection.saveTreatmentData(treatmentId, treatment);
         console.log('Treatment data saved to localStorage');
     }
 

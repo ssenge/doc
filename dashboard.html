@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en" id="html-root">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-en="Dashboard - TRT Clinic" data-de="Dashboard - TRT Clinic">Dashboard - TRT Clinic</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/css/custom.css">
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white border-gray-200 px-4 lg:px-6 py-2.5 shadow-sm">
+        <div class="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl">
+            <a href="index.html" class="flex items-center">
+                <span class="self-center text-xl font-semibold whitespace-nowrap text-blue-600">TRT Clinic</span>
+            </a>
+            <div class="flex items-center">
+                <!-- Language Switcher -->
+                <div class="relative mr-4">
+                    <button id="languageDropdown" data-dropdown-toggle="languageMenu" class="text-gray-500 hover:text-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-4 py-2.5 text-center inline-flex items-center dark:text-gray-400 dark:hover:text-white border border-gray-300 bg-white" type="button">
+                        <span id="currentFlag" class="mr-2">🇺🇸</span>
+                        <span id="currentLanguage" class="font-semibold">EN</span>
+                        <svg class="w-4 h-4 ml-2" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div id="languageMenu" class="z-50 hidden absolute right-0 mt-2 bg-white divide-y divide-gray-100 rounded-lg shadow-lg w-40 border border-gray-200">
+                        <ul class="py-2 text-sm text-gray-700">
+                            <li><a href="#" onclick="switchLanguage('en')" class="flex items-center px-4 py-2 hover:bg-gray-100 text-gray-900 font-medium">
+                                <span class="mr-2">🇺🇸</span>English
+                            </a></li>
+                            <li><a href="#" onclick="switchLanguage('de')" class="flex items-center px-4 py-2 hover:bg-gray-100 text-gray-900 font-medium">
+                                <span class="mr-2">🇩🇪</span>Deutsch
+                            </a></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- User menu -->
+                <div class="flex items-center space-x-2">
+                    <span id="userEmail" class="text-sm text-gray-600"></span>
+                    <button onclick="handleLogout()" class="text-gray-500 hover:text-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-4 py-2.5 border border-gray-300 bg-white">
+                        <span data-en="Logout" data-de="Abmelden">Logout</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Dashboard Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Loading State -->
+        <div id="loadingState" class="text-center py-12">
+            <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <p class="mt-2 text-gray-600" data-en="Loading your dashboard..." data-de="Dashboard wird geladen...">Loading your dashboard...</p>
+        </div>
+
+        <!-- Dashboard Header -->
+        <div id="dashboardContent" class="hidden">
+            <div class="mb-8">
+                <h1 class="text-3xl font-bold text-gray-900" data-en="Your Dashboard" data-de="Ihr Dashboard">Your Dashboard</h1>
+                <p class="mt-2 text-gray-600" data-en="Manage your orders, track treatments, and update your profile" data-de="Verwalten Sie Ihre Bestellungen, verfolgen Sie Behandlungen und aktualisieren Sie Ihr Profil">Manage your orders, track treatments, and update your profile</p>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white rounded-lg shadow p-6">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-500" data-en="Total Orders" data-de="Gesamtbestellungen">Total Orders</p>
+                            <p id="totalOrders" class="text-2xl font-semibold text-gray-900">-</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow p-6">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-500" data-en="Active Treatments" data-de="Aktive Behandlungen">Active Treatments</p>
+                            <p id="activeTreatments" class="text-2xl font-semibold text-gray-900">-</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow p-6">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+                                <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-500" data-en="Total Spent" data-de="Gesamtausgaben">Total Spent</p>
+                            <p id="totalSpent" class="text-2xl font-semibold text-gray-900">-</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Navigation -->
+            <div class="border-b border-gray-200 mb-6">
+                <nav class="-mb-px flex space-x-8">
+                    <button id="ordersTab" onclick="showTab('orders')" class="border-transparent text-blue-600 border-b-2 border-blue-600 py-2 px-1 text-sm font-medium">
+                        <span data-en="Orders" data-de="Bestellungen">Orders</span>
+                    </button>
+                    <button id="profileTab" onclick="showTab('profile')" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 border-b-2 py-2 px-1 text-sm font-medium">
+                        <span data-en="Profile" data-de="Profil">Profile</span>
+                    </button>
+                    <button id="treatmentTab" onclick="showTab('treatment')" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 border-b-2 py-2 px-1 text-sm font-medium">
+                        <span data-en="Treatment History" data-de="Behandlungsverlauf">Treatment History</span>
+                    </button>
+                </nav>
+            </div>
+
+            <!-- Orders Tab -->
+            <div id="ordersContent" class="tab-content">
+                <div class="bg-white shadow rounded-lg">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg font-medium text-gray-900" data-en="Your Orders" data-de="Ihre Bestellungen">Your Orders</h3>
+                        <p class="mt-1 text-sm text-gray-500" data-en="Track your treatment orders and their status" data-de="Verfolgen Sie Ihre Behandlungsbestellungen und deren Status">Track your treatment orders and their status</p>
+                    </div>
+                    <div id="ordersContainer" class="divide-y divide-gray-200">
+                        <!-- Orders will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Tab -->
+            <div id="profileContent" class="tab-content hidden">
+                <div class="bg-white shadow rounded-lg">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg font-medium text-gray-900" data-en="Profile Information" data-de="Profilinformationen">Profile Information</h3>
+                        <p class="mt-1 text-sm text-gray-500" data-en="Update your personal information and preferences" data-de="Aktualisieren Sie Ihre persönlichen Daten und Einstellungen">Update your personal information and preferences</p>
+                    </div>
+                    <div class="px-6 py-6">
+                        <form id="profileForm" onsubmit="handleProfileUpdate(event)">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label for="firstName" class="block text-sm font-medium text-gray-700" data-en="First Name" data-de="Vorname">First Name</label>
+                                    <input type="text" id="firstName" name="firstName" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                                </div>
+                                <div>
+                                    <label for="lastName" class="block text-sm font-medium text-gray-700" data-en="Last Name" data-de="Nachname">Last Name</label>
+                                    <input type="text" id="lastName" name="lastName" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                                </div>
+                                <div>
+                                    <label for="email" class="block text-sm font-medium text-gray-700" data-en="Email" data-de="E-Mail">Email</label>
+                                    <input type="email" id="email" name="email" disabled class="mt-1 block w-full border-gray-300 rounded-md shadow-sm bg-gray-50">
+                                </div>
+                                <div>
+                                    <label for="dateOfBirth" class="block text-sm font-medium text-gray-700" data-en="Date of Birth" data-de="Geburtsdatum">Date of Birth</label>
+                                    <input type="date" id="dateOfBirth" name="dateOfBirth" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                                </div>
+                                <div class="md:col-span-2">
+                                    <label for="billingStreet" class="block text-sm font-medium text-gray-700" data-en="Street Address" data-de="Straße">Street Address</label>
+                                    <input type="text" id="billingStreet" name="billingStreet" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                                </div>
+                                <div>
+                                    <label for="billingCity" class="block text-sm font-medium text-gray-700" data-en="City" data-de="Stadt">City</label>
+                                    <input type="text" id="billingCity" name="billingCity" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                                </div>
+                                <div>
+                                    <label for="billingPostalCode" class="block text-sm font-medium text-gray-700" data-en="Postal Code" data-de="Postleitzahl">Postal Code</label>
+                                    <input type="text" id="billingPostalCode" name="billingPostalCode" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                                </div>
+                                <div>
+                                    <label for="billingCountry" class="block text-sm font-medium text-gray-700" data-en="Country" data-de="Land">Country</label>
+                                    <select id="billingCountry" name="billingCountry" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                                        <option value="DE">Germany</option>
+                                        <option value="AT">Austria</option>
+                                        <option value="CH">Switzerland</option>
+                                        <option value="NL">Netherlands</option>
+                                        <option value="BE">Belgium</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="preferredLanguage" class="block text-sm font-medium text-gray-700" data-en="Preferred Language" data-de="Bevorzugte Sprache">Preferred Language</label>
+                                    <select id="preferredLanguage" name="preferredLanguage" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                                        <option value="en">English</option>
+                                        <option value="de">Deutsch</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="mt-6">
+                                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                                    <span data-en="Update Profile" data-de="Profil aktualisieren">Update Profile</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Treatment History Tab -->
+            <div id="treatmentContent" class="tab-content hidden">
+                <div class="bg-white shadow rounded-lg">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg font-medium text-gray-900" data-en="Treatment Timeline" data-de="Behandlungsverlauf">Treatment Timeline</h3>
+                        <p class="mt-1 text-sm text-gray-500" data-en="Your complete treatment history and progress" data-de="Ihr vollständiger Behandlungsverlauf und Fortschritt">Your complete treatment history and progress</p>
+                    </div>
+                    <div id="treatmentTimeline" class="p-6">
+                        <!-- Treatment timeline will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.js"></script>
+    <script src="assets/js/language.js"></script>
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/supabase-client.js"></script>
+    <script src="assets/js/dashboard.js"></script>
+    <script>
+        // Global variables
+        let currentUser = null;
+        let userProfile = null;
+        let userOrders = [];
+        let realTimeSubscription = null;
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Language dropdown functionality
+            setupLanguageDropdown();
+            
+            // Wait for Supabase to initialize
+            await waitForSupabase();
+            
+            // Check authentication
+            currentUser = await window.eDocAuth.getCurrentUser();
+            if (!currentUser) {
+                // Redirect to login if not authenticated
+                window.location.href = 'login.html?return=' + encodeURIComponent(window.location.pathname);
+                return;
+            }
+            
+            // Initialize dashboard
+            await initializeDashboard();
+        });
+
+        async function initializeDashboard() {
+            try {
+                // Load user data
+                await loadUserProfile();
+                await loadUserOrders();
+                
+                // Update UI
+                updateUserInfo();
+                updateQuickStats();
+                displayOrders();
+                displayTreatmentTimeline();
+                
+                // Set up real-time updates
+                setupRealTimeUpdates();
+                
+                // Hide loading, show content
+                document.getElementById('loadingState').classList.add('hidden');
+                document.getElementById('dashboardContent').classList.remove('hidden');
+                
+            } catch (error) {
+                console.error('Error initializing dashboard:', error);
+                showError('Failed to load dashboard. Please refresh the page.');
+            }
+        }
+
+        async function loadUserProfile() {
+            const result = await window.eDocDatabase.getUserProfile(currentUser.id);
+            if (result.success) {
+                userProfile = result.profile;
+            } else {
+                console.warn('No user profile found, creating default profile');
+                // Create a basic profile if none exists
+                const createResult = await window.eDocDatabase.createUserProfile(currentUser.id, {
+                    email: currentUser.email,
+                    first_name: '',
+                    last_name: '',
+                    preferred_language: 'en',
+                    created_at: new Date().toISOString()
+                });
+                if (createResult.success) {
+                    userProfile = createResult.profile;
+                }
+            }
+        }
+
+        async function loadUserOrders() {
+            const result = await window.eDocDatabase.getUserOrders(currentUser.id);
+            if (result.success) {
+                userOrders = result.orders;
+            } else {
+                console.error('Error loading orders:', result.error);
+                userOrders = [];
+            }
+        }
+
+        function updateUserInfo() {
+            document.getElementById('userEmail').textContent = currentUser.email;
+            
+            if (userProfile) {
+                // Populate profile form
+                document.getElementById('firstName').value = userProfile.first_name || '';
+                document.getElementById('lastName').value = userProfile.last_name || '';
+                document.getElementById('email').value = userProfile.email || currentUser.email;
+                document.getElementById('dateOfBirth').value = userProfile.date_of_birth || '';
+                document.getElementById('billingStreet').value = userProfile.billing_street || '';
+                document.getElementById('billingCity').value = userProfile.billing_city || '';
+                document.getElementById('billingPostalCode').value = userProfile.billing_postal_code || '';
+                document.getElementById('billingCountry').value = userProfile.billing_country || 'DE';
+                document.getElementById('preferredLanguage').value = userProfile.preferred_language || 'en';
+            }
+        }
+
+        function updateQuickStats() {
+            const totalOrders = userOrders.length;
+            const activeTreatments = userOrders.filter(order => 
+                order.rx_status === 'approved' && 
+                ['ready', 'shipped'].includes(order.shipping_status)
+            ).length;
+            const totalSpent = userOrders.reduce((sum, order) => sum + (order.payment_amount || 0), 0);
+
+            document.getElementById('totalOrders').textContent = totalOrders;
+            document.getElementById('activeTreatments').textContent = activeTreatments;
+            document.getElementById('totalSpent').textContent = window.eDocUtils.formatPrice(totalSpent);
+        }
+
+        function displayOrders() {
+            const container = document.getElementById('ordersContainer');
+            
+            if (userOrders.length === 0) {
+                container.innerHTML = `
+                    <div class="p-6 text-center">
+                        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        <h3 class="mt-2 text-sm font-medium text-gray-900" data-en="No orders yet" data-de="Noch keine Bestellungen">No orders yet</h3>
+                        <p class="mt-1 text-sm text-gray-500" data-en="Start your TRT journey by taking our assessment" data-de="Beginnen Sie Ihre TRT-Reise mit unserem Assessment">Start your TRT journey by taking our assessment</p>
+                        <div class="mt-6">
+                            <a href="assessment.html" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+                                <span data-en="Take Assessment" data-de="Assessment starten">Take Assessment</span>
+                            </a>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = userOrders.map(order => {
+                const statusInfo = window.eDocUtils.formatOrderStatus(order);
+                const orderDate = window.eDocUtils.formatDate(order.created_at);
+                
+                return `
+                    <div class="p-6">
+                        <div class="flex items-center justify-between">
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between">
+                                    <h4 class="text-lg font-medium text-gray-900">${order.treatment_name || 'TRT Treatment'}</h4>
+                                    <span class="text-lg font-semibold text-gray-900">${window.eDocUtils.formatPrice(order.payment_amount)}</span>
+                                </div>
+                                <p class="text-sm text-gray-500">Order #${order.id.substring(0, 8)} • ${orderDate}</p>
+                                <div class="mt-2 flex space-x-4">
+                                    <div class="flex items-center">
+                                        <span class="text-sm font-medium text-gray-500">Prescription:</span>
+                                        <span class="ml-2 text-sm ${getStatusColor(statusInfo.prescription.color)}">${statusInfo.prescription.label}</span>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <span class="text-sm font-medium text-gray-500">Shipping:</span>
+                                        <span class="ml-2 text-sm ${getStatusColor(statusInfo.shipping.color)}">${statusInfo.shipping.label}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <button onclick="viewOrderDetails('${order.id}')" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                    <span data-en="View Details" data-de="Details anzeigen">View Details</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function displayTreatmentTimeline() {
+            const container = document.getElementById('treatmentTimeline');
+            
+            if (userOrders.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center">
+                        <p class="text-gray-500" data-en="No treatment history available" data-de="Keine Behandlungshistorie verfügbar">No treatment history available</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Create timeline from orders
+            const timelineEvents = [];
+            
+            userOrders.forEach(order => {
+                timelineEvents.push({
+                    date: order.created_at,
+                    title: `Order Placed: ${order.treatment_name}`,
+                    description: `Payment of ${window.eDocUtils.formatPrice(order.payment_amount)} processed`,
+                    type: 'order'
+                });
+                
+                if (order.rx_status === 'approved') {
+                    timelineEvents.push({
+                        date: order.updated_at || order.created_at,
+                        title: 'Prescription Approved',
+                        description: 'Your prescription has been reviewed and approved by our medical team',
+                        type: 'approval'
+                    });
+                }
+                
+                if (order.shipping_status === 'shipped') {
+                    timelineEvents.push({
+                        date: order.updated_at || order.created_at,
+                        title: 'Order Shipped',
+                        description: 'Your medication has been shipped and is on its way',
+                        type: 'shipping'
+                    });
+                }
+            });
+
+            // Sort by date
+            timelineEvents.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            container.innerHTML = `
+                <div class="flow-root">
+                    <ul class="-mb-8">
+                        ${timelineEvents.map((event, index) => `
+                            <li>
+                                <div class="relative pb-8">
+                                    ${index < timelineEvents.length - 1 ? '<span class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200"></span>' : ''}
+                                    <div class="relative flex space-x-3">
+                                        <div>
+                                            <span class="h-8 w-8 rounded-full ${getTimelineIconColor(event.type)} flex items-center justify-center ring-8 ring-white">
+                                                ${getTimelineIcon(event.type)}
+                                            </span>
+                                        </div>
+                                        <div class="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
+                                            <div>
+                                                <p class="text-sm text-gray-900 font-medium">${event.title}</p>
+                                                <p class="text-sm text-gray-500">${event.description}</p>
+                                            </div>
+                                            <div class="text-right text-sm whitespace-nowrap text-gray-500">
+                                                ${window.eDocUtils.formatDate(event.date)}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        `).join('')}
+                    </ul>
+                </div>
+            `;
+        }
+
+        function setupRealTimeUpdates() {
+            if (window.EDOC_CONFIG.features.enableRealTimeUpdates) {
+                realTimeSubscription = window.eDocDatabase.subscribeToOrderChanges(currentUser.id, (payload) => {
+                    console.log('Real-time order update:', payload);
+                    // Reload orders and update display
+                    loadUserOrders().then(() => {
+                        updateQuickStats();
+                        displayOrders();
+                        displayTreatmentTimeline();
+                    });
+                });
+            }
+        }
+
+        // Tab switching
+        function showTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+            
+            // Reset all tab buttons
+            document.querySelectorAll('[id$="Tab"]').forEach(tab => {
+                tab.className = 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 border-b-2 py-2 px-1 text-sm font-medium';
+            });
+            
+            // Show selected tab content
+            document.getElementById(tabName + 'Content').classList.remove('hidden');
+            
+            // Highlight selected tab
+            document.getElementById(tabName + 'Tab').className = 'border-transparent text-blue-600 border-b-2 border-blue-600 py-2 px-1 text-sm font-medium';
+        }
+
+        // Profile update handler
+        async function handleProfileUpdate(event) {
+            event.preventDefault();
+            
+            const formData = new FormData(event.target);
+            const profileData = {
+                first_name: formData.get('firstName'),
+                last_name: formData.get('lastName'),
+                date_of_birth: formData.get('dateOfBirth') || null,
+                billing_street: formData.get('billingStreet'),
+                billing_city: formData.get('billingCity'),
+                billing_postal_code: formData.get('billingPostalCode'),
+                billing_country: formData.get('billingCountry'),
+                preferred_language: formData.get('preferredLanguage'),
+                updated_at: new Date().toISOString()
+            };
+            
+            try {
+                const result = await window.eDocDatabase.updateUserProfile(currentUser.id, profileData);
+                if (result.success) {
+                    userProfile = result.profile;
+                    showSuccess('Profile updated successfully!');
+                } else {
+                    showError('Failed to update profile: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Profile update error:', error);
+                showError('An unexpected error occurred while updating your profile.');
+            }
+        }
+
+        // Logout handler
+        async function handleLogout() {
+            try {
+                // Unsubscribe from real-time updates
+                if (realTimeSubscription) {
+                    realTimeSubscription.unsubscribe();
+                }
+                
+                await window.eDocAuth.signOut();
+                window.location.href = 'index.html';
+            } catch (error) {
+                console.error('Logout error:', error);
+            }
+        }
+
+        // Utility functions
+        function getStatusColor(color) {
+            const colorMap = {
+                'yellow': 'text-yellow-600',
+                'green': 'text-green-600',
+                'red': 'text-red-600',
+                'gray': 'text-gray-600',
+                'blue': 'text-blue-600',
+                'purple': 'text-purple-600'
+            };
+            return colorMap[color] || 'text-gray-600';
+        }
+
+        function getTimelineIconColor(type) {
+            const colorMap = {
+                'order': 'bg-blue-500',
+                'approval': 'bg-green-500',
+                'shipping': 'bg-purple-500'
+            };
+            return colorMap[type] || 'bg-gray-500';
+        }
+
+        function getTimelineIcon(type) {
+            const iconMap = {
+                'order': '<svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>',
+                'approval': '<svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>',
+                'shipping': '<svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20"><path d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"></path><path d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H10a1 1 0 001-1V5a1 1 0 00-1-1H3zM14 7a1 1 0 00-1 1v6.05A2.5 2.5 0 0115.95 16H17a1 1 0 001-1V8a1 1 0 00-.293-.707L15 4.586A1 1 0 0014.414 4H14v3z"></path></svg>'
+            };
+            return iconMap[type] || '<svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>';
+        }
+
+        function viewOrderDetails(orderId) {
+            // For now, just show an alert. In a full implementation, this would open a modal or navigate to a details page
+            const order = userOrders.find(o => o.id === orderId);
+            if (order) {
+                alert(`Order Details:\n\nOrder ID: ${order.id}\nTreatment: ${order.treatment_name}\nAmount: ${window.eDocUtils.formatPrice(order.payment_amount)}\nDate: ${window.eDocUtils.formatDate(order.created_at)}`);
+            }
+        }
+
+        function setupLanguageDropdown() {
+            const dropdownButton = document.getElementById('languageDropdown');
+            const dropdownMenu = document.getElementById('languageMenu');
+            
+            if (dropdownButton && dropdownMenu) {
+                dropdownButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dropdownMenu.classList.toggle('hidden');
+                });
+                
+                document.addEventListener('click', function(e) {
+                    if (!dropdownButton.contains(e.target) && !dropdownMenu.contains(e.target)) {
+                        dropdownMenu.classList.add('hidden');
+                    }
+                });
+                
+                dropdownMenu.addEventListener('click', function() {
+                    dropdownMenu.classList.add('hidden');
+                });
+            }
+        }
+
+        function waitForSupabase() {
+            return new Promise((resolve) => {
+                const checkSupabase = () => {
+                    if (window.eDocAuth && window.eDocDatabase) {
+                        resolve();
+                    } else {
+                        setTimeout(checkSupabase, 100);
+                    }
+                };
+                checkSupabase();
+            });
+        }
+
+        function showSuccess(message) {
+            // Simple success notification
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        function showError(message) {
+            // Simple error notification
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 5000);
+        }
+    </script>
+</body>
+</html> 

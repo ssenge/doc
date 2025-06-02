@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>eDoc Refactoring Test - TRT Clinic</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        .test-section { background: white; padding: 20px; margin: 20px 0; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .success { border-left: 4px solid #10b981; }
+        .error { border-left: 4px solid #ef4444; }
+        .warning { border-left: 4px solid #f59e0b; }
+        pre { background: #f8f9fa; padding: 15px; border-radius: 4px; overflow-x: auto; font-size: 12px; }
+        .status { padding: 8px 12px; border-radius: 4px; margin: 5px 0; }
+        .status.pass { background: #d1fae5; color: #065f46; }
+        .status.fail { background: #fee2e2; color: #991b1b; }
+        .status.warn { background: #fef3c7; color: #92400e; }
+    </style>
+</head>
+<body>
+    <h1>🧪 eDoc Platform Refactoring Test</h1>
+    <p>This test verifies that the TRT → eDoc refactoring was successful while maintaining backward compatibility.</p>
+
+    <div class="test-section">
+        <h2>📋 Test Results</h2>
+        <div id="test-results"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>🔧 Configuration Test</h2>
+        <div id="config-test"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>🔄 Backward Compatibility Test</h2>
+        <div id="compatibility-test"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>💾 localStorage Test</h2>
+        <div id="storage-test"></div>
+    </div>
+
+    <!-- Load all the scripts -->
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/language.js"></script>
+    <script src="assets/js/data-collection.js"></script>
+    <script src="assets/js/supabase-client.js"></script>
+    <script src="assets/js/enhanced-data-collection.js"></script>
+
+    <script>
+        // Test runner
+        const tests = [];
+        const results = document.getElementById('test-results');
+        const configTest = document.getElementById('config-test');
+        const compatibilityTest = document.getElementById('compatibility-test');
+        const storageTest = document.getElementById('storage-test');
+
+        function addTest(name, testFn) {
+            tests.push({ name, testFn });
+        }
+
+        function runTest(name, testFn) {
+            try {
+                const result = testFn();
+                return { name, status: 'pass', result };
+            } catch (error) {
+                return { name, status: 'fail', error: error.message };
+            }
+        }
+
+        function displayResult(test) {
+            const div = document.createElement('div');
+            div.className = `status ${test.status}`;
+            div.innerHTML = `
+                <strong>${test.name}</strong>: 
+                ${test.status === 'pass' ? '✅ PASS' : '❌ FAIL'}
+                ${test.error ? ` - ${test.error}` : ''}
+                ${test.result ? ` - ${test.result}` : ''}
+            `;
+            return div;
+        }
+
+        // Configuration Tests
+        addTest('EDOC_CONFIG exists', () => {
+            if (!window.EDOC_CONFIG) throw new Error('EDOC_CONFIG not found');
+            return 'Found EDOC_CONFIG';
+        });
+
+        addTest('EDOC_CONFIG has correct structure', () => {
+            const config = window.EDOC_CONFIG;
+            if (!config.app) throw new Error('Missing app config');
+            if (config.app.name !== 'eDoc') throw new Error('App name should be "eDoc"');
+            if (config.app.displayName !== 'TRT Clinic') throw new Error('Display name should be "TRT Clinic"');
+            return 'Structure is correct';
+        });
+
+        addTest('TRT_CONFIG backward compatibility', () => {
+            if (!window.TRT_CONFIG) throw new Error('TRT_CONFIG not found');
+            if (window.TRT_CONFIG !== window.EDOC_CONFIG) throw new Error('TRT_CONFIG should equal EDOC_CONFIG');
+            return 'Backward compatibility working';
+        });
+
+        // Function Tests
+        addTest('eDocLanguage exists', () => {
+            if (!window.eDocLanguage) throw new Error('eDocLanguage not found');
+            if (typeof window.eDocLanguage.getCurrentLanguage !== 'function') throw new Error('getCurrentLanguage not a function');
+            return 'eDocLanguage working';
+        });
+
+        addTest('TRTLanguage backward compatibility', () => {
+            if (!window.TRTLanguage) throw new Error('TRTLanguage not found');
+            if (window.TRTLanguage !== window.eDocLanguage) throw new Error('TRTLanguage should equal eDocLanguage');
+            return 'Language backward compatibility working';
+        });
+
+        addTest('eDocDataCollection exists', () => {
+            if (!window.eDocDataCollection) throw new Error('eDocDataCollection not found');
+            if (typeof window.eDocDataCollection.saveAssessmentData !== 'function') throw new Error('saveAssessmentData not a function');
+            return 'eDocDataCollection working';
+        });
+
+        addTest('TRTDataCollection backward compatibility', () => {
+            if (!window.TRTDataCollection) throw new Error('TRTDataCollection not found');
+            if (window.TRTDataCollection !== window.eDocDataCollection) throw new Error('TRTDataCollection should equal eDocDataCollection');
+            return 'DataCollection backward compatibility working';
+        });
+
+        addTest('eDocAuth exists', () => {
+            if (!window.eDocAuth) throw new Error('eDocAuth not found');
+            if (typeof window.eDocAuth.signIn !== 'function') throw new Error('signIn not a function');
+            return 'eDocAuth working';
+        });
+
+        addTest('TRTAuth backward compatibility', () => {
+            if (!window.TRTAuth) throw new Error('TRTAuth not found');
+            if (window.TRTAuth !== window.eDocAuth) throw new Error('TRTAuth should equal eDocAuth');
+            return 'Auth backward compatibility working';
+        });
+
+        addTest('eDocDatabase exists', () => {
+            if (!window.eDocDatabase) throw new Error('eDocDatabase not found');
+            if (typeof window.eDocDatabase.getUserOrders !== 'function') throw new Error('getUserOrders not a function');
+            return 'eDocDatabase working';
+        });
+
+        addTest('TRTDatabase backward compatibility', () => {
+            if (!window.TRTDatabase) throw new Error('TRTDatabase not found');
+            if (window.TRTDatabase !== window.eDocDatabase) throw new Error('TRTDatabase should equal eDocDatabase');
+            return 'Database backward compatibility working';
+        });
+
+        addTest('eDocUtils exists', () => {
+            if (!window.eDocUtils) throw new Error('eDocUtils not found');
+            if (typeof window.eDocUtils.formatPrice !== 'function') throw new Error('formatPrice not a function');
+            return 'eDocUtils working';
+        });
+
+        addTest('TRTUtils backward compatibility', () => {
+            if (!window.TRTUtils) throw new Error('TRTUtils not found');
+            if (window.TRTUtils !== window.eDocUtils) throw new Error('TRTUtils should equal eDocUtils');
+            return 'Utils backward compatibility working';
+        });
+
+        // localStorage Tests
+        addTest('localStorage uses edoc- prefix', () => {
+            // Clear any existing data
+            localStorage.clear();
+            
+            // Test language
+            window.eDocLanguage.setLanguage('en');
+            if (!localStorage.getItem('edoc-language')) throw new Error('Language not using edoc- prefix');
+            
+            // Test data collection
+            window.eDocDataCollection.saveAssessmentData({ test: true });
+            if (!localStorage.getItem('edoc-assessment')) throw new Error('Assessment not using edoc- prefix');
+            
+            // Clean up
+            localStorage.clear();
+            return 'localStorage using correct prefixes';
+        });
+
+        // Run all tests
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                console.log('🧪 Running eDoc refactoring tests...');
+                
+                let passCount = 0;
+                let failCount = 0;
+
+                tests.forEach(test => {
+                    const result = runTest(test.name, test.testFn);
+                    results.appendChild(displayResult(result));
+                    
+                    if (result.status === 'pass') {
+                        passCount++;
+                    } else {
+                        failCount++;
+                    }
+                });
+
+                // Summary
+                const summary = document.createElement('div');
+                summary.className = `status ${failCount === 0 ? 'pass' : 'fail'}`;
+                summary.innerHTML = `
+                    <strong>Test Summary</strong>: 
+                    ${passCount} passed, ${failCount} failed
+                    ${failCount === 0 ? ' - 🎉 All tests passed!' : ' - ❌ Some tests failed'}
+                `;
+                results.insertBefore(summary, results.firstChild);
+
+                // Configuration display
+                configTest.innerHTML = `
+                    <pre>${JSON.stringify(window.EDOC_CONFIG, null, 2)}</pre>
+                `;
+
+                // Compatibility display
+                compatibilityTest.innerHTML = `
+                    <div class="status ${window.TRT_CONFIG === window.EDOC_CONFIG ? 'pass' : 'fail'}">
+                        TRT_CONFIG === EDOC_CONFIG: ${window.TRT_CONFIG === window.EDOC_CONFIG}
+                    </div>
+                    <div class="status ${window.TRTAuth === window.eDocAuth ? 'pass' : 'fail'}">
+                        TRTAuth === eDocAuth: ${window.TRTAuth === window.eDocAuth}
+                    </div>
+                    <div class="status ${window.TRTDatabase === window.eDocDatabase ? 'pass' : 'fail'}">
+                        TRTDatabase === eDocDatabase: ${window.TRTDatabase === window.eDocDatabase}
+                    </div>
+                    <div class="status ${window.TRTUtils === window.eDocUtils ? 'pass' : 'fail'}">
+                        TRTUtils === eDocUtils: ${window.TRTUtils === window.eDocUtils}
+                    </div>
+                    <div class="status ${window.TRTDataCollection === window.eDocDataCollection ? 'pass' : 'fail'}">
+                        TRTDataCollection === eDocDataCollection: ${window.TRTDataCollection === window.eDocDataCollection}
+                    </div>
+                    <div class="status ${window.TRTLanguage === window.eDocLanguage ? 'pass' : 'fail'}">
+                        TRTLanguage === eDocLanguage: ${window.TRTLanguage === window.eDocLanguage}
+                    </div>
+                `;
+
+                // Storage test
+                storageTest.innerHTML = `
+                    <p>Testing localStorage keys...</p>
+                    <div id="storage-keys"></div>
+                `;
+
+                // Test localStorage
+                localStorage.clear();
+                window.eDocLanguage.setLanguage('en');
+                window.eDocDataCollection.saveAssessmentData({ test: true });
+                
+                const keys = Object.keys(localStorage);
+                const storageKeys = document.getElementById('storage-keys');
+                keys.forEach(key => {
+                    const div = document.createElement('div');
+                    div.className = `status ${key.startsWith('edoc-') ? 'pass' : 'fail'}`;
+                    div.textContent = `${key}: ${key.startsWith('edoc-') ? '✅ Correct prefix' : '❌ Wrong prefix'}`;
+                    storageKeys.appendChild(div);
+                });
+
+                localStorage.clear();
+
+                console.log(`✅ Tests completed: ${passCount} passed, ${failCount} failed`);
+            }, 1000);
+        });
+    </script>
+</body>
+</html> 

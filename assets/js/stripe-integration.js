@@ -114,7 +114,7 @@ async function handleStripePayment(event) {
         console.error('Payment error:', err);
         showStripeError('Payment setup failed. Please try again.');
         submitButton.disabled = false;
-        submitButton.textContent = window.TRTLanguage?.t('Proceed to Secure Checkout') || 'Proceed to Secure Checkout';
+        submitButton.textContent = window.eDocLanguage?.t('Proceed to Secure Checkout') || 'Proceed to Secure Checkout';
         return false;
     }
 }

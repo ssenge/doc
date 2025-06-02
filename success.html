@@ -35,6 +35,20 @@
                         </ul>
                     </div>
                 </div>
+                
+                <!-- Auth buttons -->
+                <div class="flex items-center space-x-2">
+                    <button data-auth="login" onclick="window.location.href='login.html'" class="text-gray-500 hover:text-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-4 py-2.5 border border-gray-300 bg-white">
+                        Login
+                    </button>
+                    <a data-auth="dashboard" href="dashboard.html" class="text-gray-500 hover:text-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-4 py-2.5 border border-gray-300 bg-white" style="display: none;">
+                        Dashboard
+                    </a>
+                    <button data-auth="logout" onclick="window.eDocAuth.signOut().then(() => window.location.reload())" class="text-gray-500 hover:text-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-4 py-2.5 border border-gray-300 bg-white" style="display: none;">
+                        Logout
+                    </button>
+                    <span data-auth="user-info" class="text-sm text-gray-600" style="display: none;"></span>
+                </div>
             </div>
         </div>
     </nav>
@@ -51,6 +65,12 @@
             <h1 class="mb-4 text-4xl tracking-tight font-extrabold text-gray-900" data-en="Assessment Submitted!" data-de="Assessment eingereicht!">Assessment Submitted!</h1>
             
             <p class="mb-8 text-lg text-gray-600" data-en="Thank you for your submission. Our doctor will now review your health data and we'll keep you posted with personalized recommendations." data-de="Vielen Dank für Ihre Einreichung. Unser Arzt wird nun Ihre Gesundheitsdaten überprüfen und wir werden Sie mit personalisierten Empfehlungen auf dem Laufenden halten.">Thank you for your submission. Our doctor will now review your health data and we'll keep you posted with personalized recommendations.</p>
+            
+            <!-- Order Details Container (for authenticated users) -->
+            <div id="order-details-container"></div>
+            
+            <!-- Account Creation Container (for guest users) -->
+            <div id="account-creation-container"></div>
             
             <div class="bg-blue-50 rounded-lg p-6 mb-8">
                 <h2 class="text-xl font-semibold text-blue-900 mb-4" data-en="What happens next?" data-de="Was passiert als nächstes?">What happens next?</h2>
@@ -76,6 +96,9 @@
                 </ul>
             </div>
             
+            <!-- Dashboard Link Container (for authenticated users) -->
+            <div id="dashboard-link-container"></div>
+            
             <div class="space-y-4 max-w-sm mx-auto">
                 <a href="consultation.html" class="w-full inline-flex justify-center items-center py-3 px-6 text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 font-medium rounded-lg text-sm transition-colors">
                     <span data-en="Book Consultation Now" data-de="Beratung jetzt buchen">Book Consultation Now</span>
@@ -90,7 +113,10 @@
     <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.js"></script>
     <script src="assets/js/language.js"></script>
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/supabase-client.js"></script>
     <script src="assets/js/data-collection.js"></script>
+    <script src="assets/js/enhanced-data-collection.js"></script>
     <script>
         // Simple dropdown toggle for language selector
         document.addEventListener('DOMContentLoaded', function() {
@@ -117,10 +143,41 @@
                 });
             }
             
-            // Check for payment confirmation parameters and send data to Zapier
-            checkPaymentConfirmationAndSendData();
+            // Initialize enhanced success page functionality
+            initializeEnhancedSuccessPage();
         });
         
+        async function initializeEnhancedSuccessPage() {
+            try {
+                // Wait for Supabase to initialize
+                await new Promise(resolve => {
+                    const checkSupabase = () => {
+                        if (window.eDocAuth && window.eDocDatabase) {
+                            resolve();
+                        } else {
+                            setTimeout(checkSupabase, 100);
+                        }
+                    };
+                    checkSupabase();
+                });
+                
+                // Initialize enhanced success page
+                if (window.eDocSuccessPageEnhanced) {
+                    await window.eDocSuccessPageEnhanced.initializeSuccessPage();
+                } else {
+                    // Fallback to legacy functionality
+                    console.warn('Enhanced success page not available, using legacy functionality');
+                    checkPaymentConfirmationAndSendData();
+                }
+                
+            } catch (error) {
+                console.error('Error initializing enhanced success page:', error);
+                // Fallback to legacy functionality
+                checkPaymentConfirmationAndSendData();
+            }
+        }
+        
+        // Legacy function for backward compatibility
         async function checkPaymentConfirmationAndSendData() {
             const urlParams = new URLSearchParams(window.location.search);
             const amount = urlParams.get('amount');
@@ -134,11 +191,11 @@
                 showPaymentConfirmation(amount, product, email, sessionId, treatment);
                 
                 // Send data to Zapier if not already sent
-                if (window.TRTDataCollection && !window.TRTDataCollection.hasDataBeenSent()) {
+                if (window.eDocDataCollection && !window.eDocDataCollection.hasDataBeenSent()) {
                     console.log('🚀 Sending data to Zapier...');
                     
                     try {
-                        const result = await window.TRTDataCollection.sendToZapier({
+                        const result = await window.eDocDataCollection.sendToZapier({
                             source: 'success_page',
                             paymentConfirmed: true,
                             successPageUrl: window.location.href
@@ -146,8 +203,6 @@
                         
                         if (result.success) {
                             console.log('✅ Data successfully sent to Zapier!');
-                            
-                            // Show success indicator (optional)
                             showDataSentIndicator();
                         } else {
                             console.error('❌ Failed to send data to Zapier:', result.error);
@@ -155,13 +210,13 @@
                             // Try to retry after a delay
                             setTimeout(async () => {
                                 console.log('🔄 Retrying data send...');
-                                await window.TRTDataCollection.retryFailedSend();
+                                await window.eDocDataCollection.retryFailedSend();
                             }, 5000);
                         }
                     } catch (error) {
                         console.error('❌ Error sending data to Zapier:', error);
                     }
-                } else if (window.TRTDataCollection?.hasDataBeenSent()) {
+                } else if (window.eDocDataCollection?.hasDataBeenSent()) {
                     console.log('ℹ️ Data already sent to Zapier, skipping...');
                 }
             }
@@ -182,7 +237,6 @@
         
         function checkPaymentConfirmation() {
             // This function is kept for backward compatibility
-            // The new function checkPaymentConfirmationAndSendData() handles both
             checkPaymentConfirmationAndSendData();
         }
         
@@ -196,11 +250,11 @@
                 if (isTreatmentPurchase) {
                     heading.setAttribute('data-en', 'Treatment Order Confirmed!');
                     heading.setAttribute('data-de', 'Behandlungsbestellung bestätigt!');
-                    heading.textContent = window.TRTLanguage?.t('Treatment Order Confirmed!') || 'Treatment Order Confirmed!';
+                    heading.textContent = window.eDocLanguage?.t('Treatment Order Confirmed!') || 'Treatment Order Confirmed!';
                 } else {
                     heading.setAttribute('data-en', 'Payment Successful!');
                     heading.setAttribute('data-de', 'Zahlung erfolgreich!');
-                    heading.textContent = window.TRTLanguage?.t('Payment Successful!') || 'Payment Successful!';
+                    heading.textContent = window.eDocLanguage?.t('Payment Successful!') || 'Payment Successful!';
                 }
             }
             
@@ -210,11 +264,11 @@
                 if (isTreatmentPurchase) {
                     description.setAttribute('data-en', 'Your treatment order has been confirmed! We will prepare your medication and ship it discreetly to your address. You will receive tracking information via email.');
                     description.setAttribute('data-de', 'Ihre Behandlungsbestellung wurde bestätigt! Wir werden Ihr Medikament vorbereiten und diskret an Ihre Adresse versenden. Sie erhalten Tracking-Informationen per E-Mail.');
-                    description.textContent = window.TRTLanguage?.t('Your treatment order has been confirmed! We will prepare your medication and ship it discreetly to your address. You will receive tracking information via email.') || 'Your treatment order has been confirmed! We will prepare your medication and ship it discreetly to your address. You will receive tracking information via email.';
+                    description.textContent = window.eDocLanguage?.t('Your treatment order has been confirmed! We will prepare your medication and ship it discreetly to your address. You will receive tracking information via email.') || 'Your treatment order has been confirmed! We will prepare your medication and ship it discreetly to your address. You will receive tracking information via email.';
                 } else {
                     description.setAttribute('data-en', 'Your payment has been processed successfully. Our doctor will now review your health data and we\'ll keep you posted with personalized recommendations.');
                     description.setAttribute('data-de', 'Ihre Zahlung wurde erfolgreich verarbeitet. Unser Arzt wird nun Ihre Gesundheitsdaten überprüfen und wir werden Sie mit personalisierten Empfehlungen auf dem Laufenden halten.');
-                    description.textContent = window.TRTLanguage?.t('Your payment has been processed successfully. Our doctor will now review your health data and we\'ll keep you posted with personalized recommendations.') || 'Your payment has been processed successfully. Our doctor will now review your health data and we\'ll keep you posted with personalized recommendations.';
+                    description.textContent = window.eDocLanguage?.t('Your payment has been processed successfully. Our doctor will now review your health data and we\'ll keep you posted with personalized recommendations.') || 'Your payment has been processed successfully. Our doctor will now review your health data and we\'ll keep you posted with personalized recommendations.';
                 }
             }
             

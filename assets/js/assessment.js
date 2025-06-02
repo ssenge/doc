@@ -163,44 +163,34 @@ function validateStep1() {
     
     let isValid = true;
     
-    // Age validation
-    if (age && (age.value < 18 || age.value > 80)) {
-        showFieldError(age, window.TRTLanguage.getValidationMessage('age'));
+    // Validate age
+    if (!age || age < 18 || age > 100) {
+        showFieldError(age, window.eDocLanguage.getValidationMessage('age'));
         isValid = false;
-    } else if (age) {
-        clearFieldError(age);
     }
     
-    // Height validation
-    if (height && (height.value < 150 || height.value > 220)) {
-        showFieldError(height, window.TRTLanguage.getValidationMessage('height'));
+    // Validate height
+    if (!height || height < 100 || height > 250) {
+        showFieldError(height, window.eDocLanguage.getValidationMessage('height'));
         isValid = false;
-    } else if (height) {
-        clearFieldError(height);
     }
     
-    // Weight validation
-    if (weight && (weight.value < 50 || weight.value > 200)) {
-        showFieldError(weight, window.TRTLanguage.getValidationMessage('weight'));
+    // Validate weight
+    if (!weight || weight < 30 || weight > 300) {
+        showFieldError(weight, window.eDocLanguage.getValidationMessage('weight'));
         isValid = false;
-    } else if (weight) {
-        clearFieldError(weight);
     }
     
-    // Email validation
-    if (email && !isValidEmail(email.value)) {
-        showFieldError(email, window.TRTLanguage.getValidationMessage('email'));
+    // Validate email
+    if (!email || !isValidEmail(email.value)) {
+        showFieldError(email, window.eDocLanguage.getValidationMessage('email'));
         isValid = false;
-    } else if (email) {
-        clearFieldError(email);
     }
     
-    // Phone validation
-    if (phone && !isValidPhone(phone.value)) {
-        showFieldError(phone, window.TRTLanguage.getValidationMessage('phone'));
+    // Validate phone
+    if (!phone || phone.length < 8) {
+        showFieldError(phone, window.eDocLanguage.getValidationMessage('phone'));
         isValid = false;
-    } else if (phone) {
-        clearFieldError(phone);
     }
     
     return isValid;
@@ -221,7 +211,7 @@ function validateStep2() {
     });
     
     if (!hasRating) {
-        showAlert(window.TRTLanguage.t('Please rate at least one symptom'), 'error');
+        showAlert(window.eDocLanguage.t('Please rate at least one symptom'), 'error');
         return false;
     }
     
@@ -231,7 +221,7 @@ function validateStep2() {
 function validateField(field) {
     if (field.hasAttribute('required') && !field.value.trim()) {
         const fieldName = field.previousElementSibling?.textContent || field.name;
-        showFieldError(field, window.TRTLanguage.getValidationMessage('required', fieldName));
+        showFieldError(field, window.eDocLanguage.getValidationMessage('required', fieldName));
         return false;
     }
     
@@ -326,12 +316,19 @@ function saveFormData() {
     }
     
     // Save to localStorage
-    localStorage.setItem('trt-assessment-data', JSON.stringify(formObject));
+    localStorage.setItem('edoc-assessment-data', JSON.stringify(formObject));
     formData = formObject;
+    
+    // Also save to the main data collection system
+    const savedData = localStorage.getItem('edoc-assessment-data');
+    if (savedData) {
+        const parsedData = JSON.parse(savedData);
+        console.log('Assessment data saved to localStorage:', parsedData);
+    }
 }
 
 function loadSavedData() {
-    const savedData = localStorage.getItem('trt-assessment-data');
+    const savedData = localStorage.getItem('edoc-assessment-data');
     if (savedData) {
         try {
             formData = JSON.parse(savedData);
@@ -402,38 +399,30 @@ function handleSubmit(event) {
         submitBtn.disabled = true;
     }
     
-    // Save to TRT Data Collection system
-    if (window.TRTDataCollection) {
-        try {
-            // Process form data into the expected format
-            const processedData = processAssessmentData(formData);
-            window.TRTDataCollection.saveAssessmentData(processedData);
-            console.log('Assessment data saved to TRT Data Collection system');
-            
-            // Clear old saved data
-            localStorage.removeItem('trt-assessment-data');
-            
-            // Redirect to consultation page
-            window.location.href = 'consultation.html';
-        } catch (error) {
-            console.error('Error saving assessment data:', error);
-            showAlert(window.TRTLanguage.t('error'), 'error');
-            
-            // Remove loading state
-            if (submitBtn) {
-                submitBtn.classList.remove('loading');
-                submitBtn.disabled = false;
-            }
-        }
-    } else {
-        console.error('TRTDataCollection not available');
-        showAlert('System error. Please try again.', 'error');
+    // Save to data collection system
+    if (window.eDocDataCollection) {
+        console.log('Saving assessment data to collection system...');
         
-        // Remove loading state
-        if (submitBtn) {
-            submitBtn.classList.remove('loading');
-            submitBtn.disabled = false;
-        }
+        // Process and save the data
+        const processedData = processAssessmentData(formData);
+        window.eDocDataCollection.saveAssessmentData(processedData);
+        
+        console.log('✅ Assessment data saved successfully');
+        
+        // Show success message
+        showAlert('Assessment completed successfully!', 'success');
+        
+        // Clear old saved data
+        localStorage.removeItem('edoc-assessment-data');
+        
+        // Redirect to consultation page
+        setTimeout(() => {
+            window.location.href = 'consultation.html';
+        }, 1500);
+        
+    } else {
+        console.error('eDocDataCollection not available');
+        showAlert('System error. Please try again.', 'error');
     }
 }
 

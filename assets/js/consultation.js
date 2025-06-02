@@ -38,18 +38,21 @@ function setupEventListeners() {
 }
 
 function loadAssessmentData() {
-    // Load assessment data from localStorage
-    const assessmentData = localStorage.getItem('trt-assessment-data');
-    if (assessmentData) {
-        try {
-            const data = JSON.parse(assessmentData);
-            bookingData.assessmentData = data;
-            
-            // Pre-fill form with assessment data
-            prefillPersonalInfo(data);
-        } catch (error) {
-            console.error('Error loading assessment data:', error);
-        }
+    // Check if assessment data exists
+    const assessmentData = localStorage.getItem('edoc-assessment-data');
+    if (!assessmentData) {
+        console.warn('No assessment data found');
+        return;
+    }
+    
+    try {
+        const data = JSON.parse(assessmentData);
+        bookingData.assessmentData = data;
+        
+        // Pre-fill form with assessment data
+        prefillPersonalInfo(data);
+    } catch (error) {
+        console.error('Error loading assessment data:', error);
     }
 }
 
@@ -128,7 +131,7 @@ function updateSelectedPackageDisplay() {
             }
         };
         
-        const currentLang = window.TRTLanguage?.getCurrentLanguage() || 'en';
+        const currentLang = window.eDocLanguage?.getCurrentLanguage() || 'en';
         const packageName = packageNames[currentLang][selectedPackage.type] || selectedPackage.type;
         
         packageNameElement.textContent = packageName;
@@ -138,10 +141,10 @@ function updateSelectedPackageDisplay() {
             packagePriceElement.textContent = '€29';
             packagePriceElement.className = 'text-2xl font-bold text-blue-900';
         } else if (selectedPackage.price === 0) {
-            packagePriceElement.textContent = window.TRTLanguage?.getCurrentLanguage() === 'de' ? 'KOSTENLOS' : 'FREE';
+            packagePriceElement.textContent = window.eDocLanguage?.getCurrentLanguage() === 'de' ? 'KOSTENLOS' : 'FREE';
             packagePriceElement.className = 'text-2xl font-bold text-green-600';
         } else {
-            packagePriceElement.textContent = window.TRTLanguage?.formatCurrency(selectedPackage.price) || `€${selectedPackage.price}`;
+            packagePriceElement.textContent = window.eDocLanguage?.formatCurrency(selectedPackage.price) || `€${selectedPackage.price}`;
             packagePriceElement.className = 'text-2xl font-bold text-blue-900';
         }
     }
@@ -164,23 +167,23 @@ function validateField(field) {
     // Required field validation
     if (field.hasAttribute('required') && !field.value.trim()) {
         const fieldName = field.previousElementSibling?.textContent || field.name;
-        message = window.TRTLanguage?.getValidationMessage('required', fieldName) || `${fieldName} is required`;
+        message = window.eDocLanguage?.getValidationMessage('required', fieldName) || `${fieldName} is required`;
         isValid = false;
     }
     
     // Specific field validations
     if (field.type === 'email' && field.value && !isValidEmail(field.value)) {
-        message = window.TRTLanguage?.getValidationMessage('email') || 'Please enter a valid email address';
+        message = window.eDocLanguage?.getValidationMessage('email') || 'Please enter a valid email address';
         isValid = false;
     }
     
     if (field.id === 'cardNumber' && field.value && !isValidCardNumber(field.value)) {
-        message = window.TRTLanguage?.getValidationMessage('cardNumber') || 'Please enter a valid card number';
+        message = window.eDocLanguage?.getValidationMessage('cardNumber') || 'Please enter a valid card number';
         isValid = false;
     }
     
     if (field.id === 'cvv' && field.value && !isValidCVV(field.value)) {
-        message = window.TRTLanguage?.getValidationMessage('cvv') || 'Please enter a valid CVV';
+        message = window.eDocLanguage?.getValidationMessage('cvv') || 'Please enter a valid CVV';
         isValid = false;
     }
     
@@ -188,7 +191,7 @@ function validateField(field) {
         const month = document.getElementById('expiryMonth')?.value;
         const year = document.getElementById('expiryYear')?.value;
         if (month && year && !isValidExpiryDate(month, year)) {
-            message = window.TRTLanguage?.getValidationMessage('expiry') || 'Please select a valid expiry date';
+            message = window.eDocLanguage?.getValidationMessage('expiry') || 'Please select a valid expiry date';
             isValid = false;
         }
     }
@@ -317,7 +320,7 @@ function saveBookingData() {
         delete safeData.personalInfo.cvv;
     }
     
-    localStorage.setItem('trt-booking-data', JSON.stringify(safeData));
+    localStorage.setItem('edoc-booking-data', JSON.stringify(safeData));
 }
 
 function validateForm() {
@@ -335,14 +338,14 @@ function validateForm() {
     
     // Check if package is selected
     if (!selectedPackage) {
-        showAlert(window.TRTLanguage?.t('Please select a consultation package') || 'Please select a consultation package', 'error');
+        showAlert(window.eDocLanguage?.t('Please select a consultation package') || 'Please select a consultation package', 'error');
         isValid = false;
     }
     
     // Validate terms acceptance
     const termsCheckbox = document.getElementById('terms');
     if (termsCheckbox && !termsCheckbox.checked) {
-        showAlert(window.TRTLanguage?.t('Please accept the terms and conditions') || 'Please accept the terms and conditions', 'error');
+        showAlert(window.eDocLanguage?.t('Please accept the terms and conditions') || 'Please accept the terms and conditions', 'error');
         isValid = false;
     }
     
@@ -376,44 +379,32 @@ function handleLegacyPayment(event) {
     if (submitBtn) {
         submitBtn.classList.add('loading');
         submitBtn.disabled = true;
-        submitBtn.textContent = window.TRTLanguage?.t('loading') || 'Processing...';
+        submitBtn.textContent = window.eDocLanguage?.t('loading') || 'Processing...';
     }
     
     // Save consultation data to TRT Data Collection system
-    if (window.TRTDataCollection && selectedPackage) {
-        try {
-            window.TRTDataCollection.saveConsultationData(selectedPackage.type, selectedPackage.price);
-            console.log('Consultation data saved to TRT Data Collection system');
-            
-            // Clear saved data
-            localStorage.removeItem('trt-booking-data');
-            
-            // Redirect based on consultation type
-            if (selectedPackage.type === 'none') {
-                window.location.href = 'treatments.html';
-            } else {
-                window.location.href = 'treatments.html';
-            }
-        } catch (error) {
-            console.error('Error saving consultation data:', error);
-            showAlert(window.TRTLanguage?.t('error') || 'Booking failed. Please try again.', 'error');
-            
-            // Remove loading state
-            if (submitBtn) {
-                submitBtn.classList.remove('loading');
-                submitBtn.disabled = false;
-                submitBtn.textContent = window.TRTLanguage?.t('Complete Booking') || 'Complete Booking';
-            }
+    if (window.eDocDataCollection && selectedPackage) {
+        console.log('Saving consultation data...');
+        window.eDocDataCollection.saveConsultationData(selectedPackage.type, selectedPackage.price);
+        
+        // Clear assessment data as it's no longer needed
+        localStorage.removeItem('edoc-booking-data');
+        
+        // Redirect based on consultation type
+        if (selectedPackage.type === 'none') {
+            window.location.href = 'treatments.html';
+        } else {
+            window.location.href = 'treatments.html';
         }
     } else {
-        console.error('TRTDataCollection not available or no package selected');
+        console.error('eDocDataCollection not available or no package selected');
         showAlert('System error. Please try again.', 'error');
         
         // Remove loading state
         if (submitBtn) {
             submitBtn.classList.remove('loading');
             submitBtn.disabled = false;
-            submitBtn.textContent = window.TRTLanguage?.t('Complete Booking') || 'Complete Booking';
+            submitBtn.textContent = window.eDocLanguage?.t('Complete Booking') || 'Complete Booking';
         }
     }
 }
@@ -436,28 +427,28 @@ function showSuccessPage(bookingData) {
                         </svg>
                     </div>
                     <h2 class="mt-6 text-3xl font-extrabold text-gray-900">
-                        ${window.TRTLanguage?.getCurrentLanguage() === 'de' ? 'Buchung erfolgreich!' : 'Booking Successful!'}
+                        ${window.eDocLanguage?.getCurrentLanguage() === 'de' ? 'Buchung erfolgreich!' : 'Booking Successful!'}
                     </h2>
                     <p class="mt-2 text-sm text-gray-600">
-                        ${window.TRTLanguage?.getCurrentLanguage() === 'de' ? 'Ihre Beratung wurde erfolgreich gebucht.' : 'Your consultation has been successfully booked.'}
+                        ${window.eDocLanguage?.getCurrentLanguage() === 'de' ? 'Ihre Beratung wurde erfolgreich gebucht.' : 'Your consultation has been successfully booked.'}
                     </p>
                 </div>
                 <div class="bg-white p-6 rounded-lg shadow">
                     <h3 class="text-lg font-medium text-gray-900 mb-4">
-                        ${window.TRTLanguage?.getCurrentLanguage() === 'de' ? 'Buchungsdetails' : 'Booking Details'}
+                        ${window.eDocLanguage?.getCurrentLanguage() === 'de' ? 'Buchungsdetails' : 'Booking Details'}
                     </h3>
                     <div class="space-y-2 text-sm text-gray-600">
-                        <p><strong>${window.TRTLanguage?.getCurrentLanguage() === 'de' ? 'Buchungs-ID:' : 'Booking ID:'}</strong> ${bookingData.bookingId}</p>
-                        <p><strong>${window.TRTLanguage?.getCurrentLanguage() === 'de' ? 'Paket:' : 'Package:'}</strong> ${selectedPackage.type}</p>
-                        <p><strong>${window.TRTLanguage?.getCurrentLanguage() === 'de' ? 'Preis:' : 'Price:'}</strong> €${selectedPackage.price}</p>
+                        <p><strong>${window.eDocLanguage?.getCurrentLanguage() === 'de' ? 'Buchungs-ID:' : 'Booking ID:'}</strong> ${bookingData.bookingId}</p>
+                        <p><strong>${window.eDocLanguage?.getCurrentLanguage() === 'de' ? 'Paket:' : 'Package:'}</strong> ${selectedPackage.type}</p>
+                        <p><strong>${window.eDocLanguage?.getCurrentLanguage() === 'de' ? 'Preis:' : 'Price:'}</strong> €${selectedPackage.price}</p>
                     </div>
                 </div>
                 <div class="text-sm text-gray-600">
-                    <p>${window.TRTLanguage?.getCurrentLanguage() === 'de' ? 'Sie erhalten in Kürze eine Bestätigungs-E-Mail mit weiteren Informationen.' : 'You will receive a confirmation email shortly with further details.'}</p>
+                    <p>${window.eDocLanguage?.getCurrentLanguage() === 'de' ? 'Sie erhalten in Kürze eine Bestätigungs-E-Mail mit weiteren Informationen.' : 'You will receive a confirmation email shortly with further details.'}</p>
                 </div>
                 <div>
                     <a href="index.html" class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                        ${window.TRTLanguage?.getCurrentLanguage() === 'de' ? 'Zur Startseite' : 'Back to Home'}
+                        ${window.eDocLanguage?.getCurrentLanguage() === 'de' ? 'Zur Startseite' : 'Back to Home'}
                     </a>
                 </div>
             </div>

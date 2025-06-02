@@ -116,7 +116,7 @@
         }
 
         function updateDataPreview() {
-            const allData = window.TRTDataCollection.getAllCollectedData();
+            const allData = window.eDocDataCollection.getAllCollectedData();
             dataPreview.textContent = JSON.stringify(allData, null, 2);
         }
 
@@ -126,13 +126,13 @@
 
         // Event listeners
         document.getElementById('simulateAssessment').addEventListener('click', () => {
-            window.TRTDataCollection.saveAssessmentData(testAssessmentData);
+            window.eDocDataCollection.saveAssessmentData(testAssessmentData);
             updateStatus('✅ Assessment data saved to localStorage', 'success');
             updateDataPreview();
         });
 
         document.getElementById('simulateTreatment').addEventListener('click', () => {
-            window.TRTDataCollection.saveTreatmentData('testo-gel', testTreatmentData);
+            window.eDocDataCollection.saveTreatmentData('testo-gel', testTreatmentData);
             updateStatus('✅ Treatment selection saved to localStorage', 'success');
             updateDataPreview();
         });
@@ -157,7 +157,7 @@
             updateStatus('🚀 Sending data to Zapier...', 'info');
             
             try {
-                const result = await window.TRTDataCollection.sendToZapier({
+                const result = await window.eDocDataCollection.sendToZapier({
                     source: 'test_page',
                     testMode: true
                 });
@@ -176,7 +176,7 @@
         });
 
         document.getElementById('clearData').addEventListener('click', () => {
-            window.TRTDataCollection.clearStoredData();
+            window.eDocDataCollection.clearStoredData();
             
             // Clear URL parameters
             const currentUrl = new URL(window.location.href);
