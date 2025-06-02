@@ -1,6 +1,10 @@
 {
   "cleanUrls": true,
   "trailingSlash": false,
+  "github": {
+    "enabled": true,
+    "autoAlias": false
+  },
   "headers": [
     {
       "source": "/(.*)",
@@ -35,16 +39,28 @@
   ],
   "rewrites": [
     {
-      "source": "/auth-confirm",
-      "destination": "/auth-confirm.html"
-    },
-    {
       "source": "/dashboard",
       "destination": "/dashboard.html"
     },
     {
       "source": "/login",
       "destination": "/login.html"
+    },
+    {
+      "source": "/assessment",
+      "destination": "/assessment.html"
+    },
+    {
+      "source": "/consultation",
+      "destination": "/consultation.html"
+    },
+    {
+      "source": "/treatments",
+      "destination": "/treatments.html"
+    },
+    {
+      "source": "/success",
+      "destination": "/success.html"
     }
   ]
 } 
