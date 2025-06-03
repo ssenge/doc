@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="assets/css/custom.css">
 </head>
 <body class="bg-gray-50">
-    <div id="header"></div>
+    <nav id="header"></nav>
     <!-- Hero Section -->
     <section class="bg-gradient-to-r from-blue-600 to-blue-800 text-white relative">
         <div class="py-8 px-4 mx-auto max-w-screen-xl text-center lg:py-16 lg:px-12 relative z-10">
@@ -235,7 +235,18 @@
     <script src="assets/js/language.js?v=3.0"></script>
     <script src="assets/js/config.js?v=3.0"></script>
     <script src="assets/js/supabase-client.js?v=3.0"></script>
-    <script src="assets/js/header.js?v=3.0"></script>
+    <script src="assets/js/header-component.js?v=3.0"></script>
     <script src="assets/js/footer.js?v=3.0"></script>
+    <script>
+        // On page load, set window.userProfile from localStorage if available
+        (function() {
+            try {
+                const cachedProfile = localStorage.getItem('edoc-user-profile');
+                if (cachedProfile) {
+                    window.userProfile = JSON.parse(cachedProfile);
+                }
+            } catch (e) {}
+        })();
+    </script>
 </body>
 </html> 

@@ -78,6 +78,12 @@ document.addEventListener('DOMContentLoaded', async function() {
             // Make profile data globally available for header component
             window.userProfile = userProfile;
             
+            // Cache profile immediately after loading
+            if (window.HeaderComponent && userProfile) {
+                console.log('🔄 Immediate caching of user profile after loading');
+                window.HeaderComponent.cacheUserProfile(userProfile);
+            }
+            
         } catch (error) {
             console.warn('⚠️ Dashboard data loading failed, but continuing:', error);
             // Don't redirect on data loading failure - just show empty state
@@ -95,6 +101,23 @@ document.addEventListener('DOMContentLoaded', async function() {
         if (window.headerComponent && currentUser) {
             console.log('🔄 Directly updating header with authenticated user...');
             window.headerComponent.forceAuthUpdate(currentUser);
+        }
+        
+        // Cache user profile for use on all pages
+        if (window.HeaderComponent && window.userProfile) {
+            console.log('🔄 Caching user profile:', window.userProfile);
+            window.HeaderComponent.cacheUserProfile(window.userProfile);
+            console.log('✅ User profile cached successfully');
+            
+            // Verify cache was set
+            const cachedProfile = localStorage.getItem('edoc-user-profile');
+            console.log('🔍 Cached profile verification:', cachedProfile ? 'Found in localStorage' : 'NOT found in localStorage');
+        } else {
+            console.warn('⚠️ Could not cache user profile:', {
+                HeaderComponent: !!window.HeaderComponent,
+                userProfile: !!window.userProfile,
+                userProfileData: window.userProfile
+            });
         }
         
         // Try immediate refresh
@@ -149,6 +172,13 @@ async function loadDashboardData() {
         if (profileResult.success) {
             userProfile = profileResult.profile;
             console.log('✅ Loaded user profile successfully:', userProfile);
+            
+            // Cache profile immediately after loading
+            window.userProfile = userProfile; // Make globally available
+            if (window.HeaderComponent && userProfile) {
+                console.log('🔄 Immediate caching of user profile after loading');
+                window.HeaderComponent.cacheUserProfile(userProfile);
+            }
         }
         
         console.log('🔄 Loading user orders...');

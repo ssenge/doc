@@ -8,6 +8,15 @@ class HeaderComponent {
         this.currentUser = null;
         this.isInitialized = false;
         this.authStateCallbacks = [];
+        // Load cached profile if available
+        try {
+            const cachedProfile = localStorage.getItem('edoc-user-profile');
+            if (cachedProfile) {
+                window.userProfile = JSON.parse(cachedProfile);
+            }
+        } catch (e) {
+            window.userProfile = undefined;
+        }
     }
 
     // Initialize the header component
@@ -176,7 +185,6 @@ class HeaderComponent {
 
                 <!-- Navigation Menu (Desktop) -->
                 <div class="hidden lg:flex lg:items-center lg:space-x-8">
-                    <a href="index.html" class="text-gray-700 hover:text-blue-600 font-medium" data-en="Home" data-de="Startseite">Home</a>
                     <a href="index.html#how-it-works" class="text-gray-700 hover:text-blue-600 font-medium" data-en="How it Works" data-de="So funktioniert's">How it Works</a>
                     <a href="index.html#testimonials" class="text-gray-700 hover:text-blue-600 font-medium" data-en="Testimonials" data-de="Erfahrungsberichte">Testimonials</a>
                     <a href="index.html#faq" class="text-gray-700 hover:text-blue-600 font-medium" data-en="FAQ" data-de="FAQ">FAQ</a>
@@ -199,18 +207,19 @@ class HeaderComponent {
         if (!container) return;
 
         if (this.currentUser) {
-            // User is authenticated - show user info and logout
+            // User is authenticated - show welcome, dashboard, lang, logout
             container.innerHTML = this.getAuthenticatedButtonsHTML();
         } else {
-            // User is not authenticated - show login and CTA
+            // User is not authenticated - show lang, login
             container.innerHTML = this.getUnauthenticatedButtonsHTML();
         }
+        // Always re-attach event listeners after updating buttons
+        this.setupEventListeners();
     }
 
     // Get HTML for authenticated user buttons
     getAuthenticatedButtonsHTML() {
         const firstName = this.getUserFirstName();
-        
         return `
             ${firstName ? `
                 <span class="text-sm text-gray-700" data-auth="user-info">
@@ -218,6 +227,9 @@ class HeaderComponent {
                     <span id="userFirstName">${firstName}</span>
                 </span>
             ` : ''}
+            <button onclick="window.location.href='dashboard.html'" class="text-gray-500 hover:text-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-4 py-2.5 border border-gray-300 bg-white" data-auth="dashboard">
+                <span data-en="Dashboard" data-de="Dashboard">Dashboard</span>
+            </button>
             <div class="relative">
                 <button id="languageDropdown" class="text-gray-500 hover:text-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-4 py-2.5 text-center inline-flex items-center border border-gray-300 bg-white" type="button">
                     <span id="currentFlag" class="mr-2">🇺🇸</span>
@@ -228,10 +240,10 @@ class HeaderComponent {
                 </button>
                 <div id="languageMenu" class="z-50 hidden absolute right-0 mt-2 bg-white divide-y divide-gray-100 rounded-lg shadow-lg w-40 border border-gray-200">
                     <ul class="py-2 text-sm text-gray-700">
-                        <li><a href="#" onclick="switchLanguage('en')" class="flex items-center px-4 py-2 hover:bg-gray-100 text-gray-900 font-medium">
+                        <li><a href="#" onclick="window.eDocLanguage.setLanguage('en')" class="flex items-center px-4 py-2 hover:bg-gray-100 text-gray-900 font-medium">
                             <span class="mr-2">🇺🇸</span>English
                         </a></li>
-                        <li><a href="#" onclick="switchLanguage('de')" class="flex items-center px-4 py-2 hover:bg-gray-100 text-gray-900 font-medium">
+                        <li><a href="#" onclick="window.eDocLanguage.setLanguage('de')" class="flex items-center px-4 py-2 hover:bg-gray-100 text-gray-900 font-medium">
                             <span class="mr-2">🇩🇪</span>Deutsch
                         </a></li>
                     </ul>
@@ -347,16 +359,14 @@ class HeaderComponent {
                 if (window.eDocAuth) {
                     await window.eDocAuth.signOut();
                 }
-                
+                // Remove cached profile
+                localStorage.removeItem('edoc-user-profile');
                 // Update auth state
                 await this.updateAuthState();
-                
                 // Update buttons
                 this.updateAuthButtons();
-                
                 // Redirect to home page
                 window.location.href = 'index.html';
-                
             } catch (error) {
                 console.error('Logout error:', error);
                 alert('Logout failed. Please try again.');
@@ -404,12 +414,25 @@ class HeaderComponent {
         this.updateAuthButtons();
         console.log('✅ Header: Force auth update completed');
     }
+
+    // Static method to update cached profile
+    static cacheUserProfile(profile) {
+        try {
+            localStorage.setItem('edoc-user-profile', JSON.stringify(profile));
+            window.userProfile = profile;
+        } catch (e) {
+            // Ignore
+        }
+    }
 }
 
 // Initialize header component when DOM is loaded
 document.addEventListener('DOMContentLoaded', async () => {
     // Create global header component instance
     window.headerComponent = new HeaderComponent();
+    
+    // Also make the class available globally for static methods
+    window.HeaderComponent = HeaderComponent;
     
     // Initialize the header
     await window.headerComponent.init();
