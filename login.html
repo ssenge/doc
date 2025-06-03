@@ -8,37 +8,7 @@
     <link rel="stylesheet" href="assets/css/custom.css">
 </head>
 <body class="bg-gray-50">
-    <!-- Navigation -->
-    <nav class="bg-white border-gray-200 px-4 lg:px-6 py-2.5">
-        <div class="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl">
-            <a href="index.html" class="flex items-center">
-                <span class="self-center text-xl font-semibold whitespace-nowrap text-blue-600">TRT Clinic</span>
-            </a>
-            <div class="flex items-center">
-                <!-- Language Switcher -->
-                <div class="relative mr-4">
-                    <button id="languageDropdown" data-dropdown-toggle="languageMenu" class="text-gray-500 hover:text-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-4 py-2.5 text-center inline-flex items-center dark:text-gray-400 dark:hover:text-white border border-gray-300 bg-white" type="button">
-                        <span id="currentFlag" class="mr-2">🇺🇸</span>
-                        <span id="currentLanguage" class="font-semibold">EN</span>
-                        <svg class="w-4 h-4 ml-2" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                        </svg>
-                    </button>
-                    <div id="languageMenu" class="z-50 hidden absolute right-0 mt-2 bg-white divide-y divide-gray-100 rounded-lg shadow-lg w-40 border border-gray-200">
-                        <ul class="py-2 text-sm text-gray-700">
-                            <li><a href="#" onclick="switchLanguage('en')" class="flex items-center px-4 py-2 hover:bg-gray-100 text-gray-900 font-medium">
-                                <span class="mr-2">🇺🇸</span>English
-                            </a></li>
-                            <li><a href="#" onclick="switchLanguage('de')" class="flex items-center px-4 py-2 hover:bg-gray-100 text-gray-900 font-medium">
-                                <span class="mr-2">🇩🇪</span>Deutsch
-                            </a></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </nav>
-
+    <div id="header"></div>
     <!-- Login/Register Content -->
     <section class="bg-gray-50 py-8 lg:py-16">
         <div class="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
@@ -157,12 +127,13 @@
             </div>
         </div>
     </section>
-
-    <!-- Scripts -->
+    <div id="footer"></div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.js"></script>
-    <script src="assets/js/language.js?v=1.2"></script>
-    <script src="assets/js/config.js?v=1.2"></script>
-    <script src="assets/js/supabase-client.js?v=1.2"></script>
+    <script src="assets/js/language.js?v=3.0"></script>
+    <script src="assets/js/config.js?v=3.0"></script>
+    <script src="assets/js/supabase-client.js?v=3.0"></script>
+    <script src="assets/js/header.js?v=3.0"></script>
+    <script src="assets/js/footer.js?v=3.0"></script>
     <script>
         // Form handling
         function showLoginForm() {
@@ -312,10 +283,7 @@
                 forgotPasswordForm.addEventListener('submit', handleForgotPassword);
             }
             
-            // Initialize language system
-            if (window.eDocLanguage) {
-                window.eDocLanguage.init();
-            }
+            // Language system initializes automatically - no need to call init()
         });
     </script>
 </body>

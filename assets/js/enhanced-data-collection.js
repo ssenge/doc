@@ -584,10 +584,31 @@ const eDocDataCollectionEnhanced = {
                     }
                 }
                 
-                // Redirect to dashboard after a short delay
-                setTimeout(() => {
-                    window.location.href = 'dashboard.html';
-                }, 2000);
+                // Wait for authentication state to be properly established
+                // then redirect to dashboard
+                setTimeout(async () => {
+                    // Double-check that user is authenticated before redirecting
+                    let attempts = 0;
+                    const maxAttempts = 10;
+                    
+                    const checkAuthAndRedirect = async () => {
+                        attempts++;
+                        const user = await window.eDocAuth.getCurrentUser();
+                        
+                        if (user) {
+                            console.log('✅ User authenticated, redirecting to dashboard');
+                            window.location.href = 'dashboard.html';
+                        } else if (attempts < maxAttempts) {
+                            console.log(`⏳ Waiting for authentication... (attempt ${attempts}/${maxAttempts})`);
+                            setTimeout(checkAuthAndRedirect, 500);
+                        } else {
+                            console.warn('❌ Authentication not established after registration, redirecting to login');
+                            window.location.href = 'login.html?message=Please log in with your new account';
+                        }
+                    };
+                    
+                    checkAuthAndRedirect();
+                }, 1000);
                 
             } else {
                 this.showFormMessage(messagesDiv, 

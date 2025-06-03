@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auth Test - TRT Clinic</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .container { max-width: 600px; margin: 0 auto; }
+        .status { padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        input, button { padding: 10px; margin: 5px 0; width: 100%; box-sizing: border-box; }
+        button { background: #007bff; color: white; border: none; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        .debug { background: #f8f9fa; padding: 10px; margin: 10px 0; border: 1px solid #dee2e6; font-family: monospace; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>TRT Clinic - Authentication Test</h1>
+        
+        <div id="status" class="status info">Loading...</div>
+        
+        <div id="loginSection">
+            <h2>Login</h2>
+            <input type="email" id="email" placeholder="Email" value="mail@sebastian-senge.de">
+            <input type="password" id="password" placeholder="Password">
+            <button onclick="testLogin()">Login</button>
+        </div>
+        
+        <div id="userSection" style="display: none;">
+            <h2>Logged In</h2>
+            <div id="userInfo"></div>
+            <button onclick="testLogout()">Logout</button>
+            <button onclick="goToDashboard()">Go to Dashboard</button>
+        </div>
+        
+        <div class="debug" id="debug"></div>
+    </div>
+
+    <script src="assets/js/config.js?v=1.9"></script>
+    <script src="assets/js/supabase-client.js?v=1.9"></script>
+    <script>
+        let debugLog = [];
+        
+        function log(message) {
+            console.log(message);
+            debugLog.push(new Date().toLocaleTimeString() + ': ' + message);
+            document.getElementById('debug').innerHTML = debugLog.join('<br>');
+        }
+        
+        function showStatus(message, type = 'info') {
+            const statusEl = document.getElementById('status');
+            statusEl.textContent = message;
+            statusEl.className = `status ${type}`;
+        }
+        
+        async function checkAuth() {
+            try {
+                log('Checking authentication...');
+                
+                // Wait for Supabase
+                let attempts = 0;
+                while (!window.eDocAuth && attempts < 50) {
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                    attempts++;
+                }
+                
+                if (!window.eDocAuth) {
+                    throw new Error('Supabase not loaded after 5 seconds');
+                }
+                
+                log('Supabase loaded, checking user...');
+                const user = await window.eDocAuth.getCurrentUser();
+                
+                if (user) {
+                    log(`User found: ${user.email}`);
+                    showUserSection(user);
+                    showStatus(`Logged in as ${user.email}`, 'success');
+                } else {
+                    log('No user found');
+                    showLoginSection();
+                    showStatus('Not logged in', 'info');
+                }
+                
+            } catch (error) {
+                log(`Error: ${error.message}`);
+                showStatus(`Error: ${error.message}`, 'error');
+                showLoginSection();
+            }
+        }
+        
+        function showLoginSection() {
+            document.getElementById('loginSection').style.display = 'block';
+            document.getElementById('userSection').style.display = 'none';
+        }
+        
+        function showUserSection(user) {
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('userSection').style.display = 'block';
+            document.getElementById('userInfo').innerHTML = `
+                <p><strong>Email:</strong> ${user.email}</p>
+                <p><strong>ID:</strong> ${user.id}</p>
+                <p><strong>Created:</strong> ${new Date(user.created_at).toLocaleString()}</p>
+            `;
+        }
+        
+        async function testLogin() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            if (!email || !password) {
+                showStatus('Please enter email and password', 'error');
+                return;
+            }
+            
+            try {
+                log(`Attempting login for ${email}...`);
+                showStatus('Logging in...', 'info');
+                
+                const result = await window.eDocAuth.signIn(email, password);
+                
+                if (result.success) {
+                    log('Login successful!');
+                    showStatus('Login successful!', 'success');
+                    await checkAuth();
+                } else {
+                    log(`Login failed: ${result.error}`);
+                    showStatus(`Login failed: ${result.error}`, 'error');
+                }
+                
+            } catch (error) {
+                log(`Login error: ${error.message}`);
+                showStatus(`Login error: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testLogout() {
+            try {
+                log('Logging out...');
+                showStatus('Logging out...', 'info');
+                
+                await window.eDocAuth.signOut();
+                
+                log('Logout successful!');
+                showStatus('Logged out successfully', 'success');
+                showLoginSection();
+                
+            } catch (error) {
+                log(`Logout error: ${error.message}`);
+                showStatus(`Logout error: ${error.message}`, 'error');
+            }
+        }
+        
+        function goToDashboard() {
+            window.location.href = 'dashboard.html';
+        }
+        
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', checkAuth);
+    </script>
+</body>
+</html> 

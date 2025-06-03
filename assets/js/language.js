@@ -256,7 +256,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Apply the language
-    switchLanguage(currentLanguage);
+    window.eDocLanguage.setLanguage(currentLanguage);
     updateLanguageIndicator();
 });
 

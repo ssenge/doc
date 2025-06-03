@@ -28,6 +28,9 @@
                 <button onclick="testGetOrders()" class="w-full bg-purple-600 text-white py-2 px-4 rounded hover:bg-purple-700">
                     Test Get Orders
                 </button>
+                <button onclick="testGetOrdersByEmail()" class="w-full bg-orange-600 text-white py-2 px-4 rounded hover:bg-orange-700">
+                    Test Get Orders by Email
+                </button>
             </div>
         </div>
     </div>
@@ -84,8 +87,11 @@
             }
             
             try {
+                // Create a proper guest order (user_id must be null for RLS policy)
                 const testOrder = {
+                    user_id: null,  // Explicitly null for guest order
                     email: 'test@example.com',
+                    session_id: 'cs_test_123',
                     treatment_type: 'injections',
                     treatment_name: 'Testosterone Injections',
                     price: 149.00,
@@ -106,7 +112,7 @@
                     shipping_status: 'not_ready'
                 };
                 
-                log(`📝 Creating order: ${JSON.stringify(testOrder, null, 2)}`);
+                log(`📝 Creating guest order: ${JSON.stringify(testOrder, null, 2)}`);
                 
                 const { data, error } = await supabase
                     .from('orders')
@@ -156,6 +162,42 @@
                 }
             } catch (error) {
                 log(`❌ Get orders exception: ${error.message}`);
+                console.error('Full error:', error);
+            }
+        }
+
+        async function testGetOrdersByEmail() {
+            log('🧪 Testing get orders by email (guest access)...');
+            
+            if (!supabase) {
+                log('❌ Supabase not initialized. Run initialization test first.');
+                return;
+            }
+            
+            try {
+                const testEmail = 'test@example.com';
+                const { data, error } = await supabase
+                    .from('orders')
+                    .select('*')
+                    .eq('email', testEmail)
+                    .is('user_id', null)  // Only guest orders
+                    .order('created_at', { ascending: false });
+                
+                if (error) {
+                    log(`❌ Get orders by email failed: ${error.message}`);
+                    log(`Error details: ${JSON.stringify(error, null, 2)}`);
+                } else {
+                    log(`✅ Retrieved ${data.length} guest orders for ${testEmail}!`);
+                    if (data.length > 0) {
+                        data.forEach((order, index) => {
+                            log(`📋 Order ${index + 1}: ID=${order.id}, Treatment=${order.treatment_name}, Price=${order.price}`);
+                        });
+                    } else {
+                        log('📋 No guest orders found for this email');
+                    }
+                }
+            } catch (error) {
+                log(`❌ Get orders by email exception: ${error.message}`);
                 console.error('Full error:', error);
             }
         }

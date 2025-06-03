@@ -109,15 +109,37 @@ const eDocAuth = {
     // Get current user
     async getCurrentUser() {
         try {
+            console.log('🔍 getCurrentUser called...');
+            
             if (!supabase) {
-                console.warn('Supabase client not initialized yet');
+                console.warn('⚠️ Supabase client not initialized yet');
                 return null;
             }
+            
+            console.log('🔍 Calling supabase.auth.getUser()...');
             const { data: { user }, error } = await supabase.auth.getUser();
-            if (error) throw error;
+            
+            console.log('🔍 Supabase auth response:', {
+                user: user,
+                hasUser: !!user,
+                userEmail: user?.email,
+                error: error
+            });
+            
+            if (error) {
+                console.error('❌ Supabase auth error:', error);
+                throw error;
+            }
+            
+            if (user) {
+                console.log('✅ User found:', user.email);
+            } else {
+                console.log('❌ No user found in session');
+            }
+            
             return user;
         } catch (error) {
-            console.error('Error getting current user:', error);
+            console.error('❌ Error getting current user:', error);
             return null;
         }
     },
