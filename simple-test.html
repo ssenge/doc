@@ -31,12 +31,39 @@
         </div>
     </div>
 
-    <!-- Load scripts -->
-    <script src="assets/js/config.js?v=1.2"></script>
-    <script src="assets/js/language.js?v=1.2"></script>
-    <script src="assets/js/data-collection.js?v=1.2"></script>
-    <script src="assets/js/supabase-client.js?v=1.2"></script>
-    <script src="assets/js/enhanced-data-collection.js?v=1.2"></script>
+    <!-- Load scripts with aggressive cache busting -->
+    <script>
+        // Timestamp-based cache buster
+        const cacheBuster = Date.now();
+        const scripts = [
+            `assets/js/config.js?v=1.3&t=${cacheBuster}`,
+            `assets/js/language.js?v=1.3&t=${cacheBuster}`,
+            `assets/js/data-collection.js?v=1.3&t=${cacheBuster}`,
+            `assets/js/supabase-client.js?v=1.3&t=${cacheBuster}`,
+            `assets/js/enhanced-data-collection.js?v=1.3&t=${cacheBuster}`
+        ];
+        
+        // Load scripts sequentially
+        function loadScript(src) {
+            return new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = src;
+                script.onload = resolve;
+                script.onerror = reject;
+                document.head.appendChild(script);
+            });
+        }
+        
+        async function loadAllScripts() {
+            for (const src of scripts) {
+                await loadScript(src);
+                console.log(`Loaded: ${src}`);
+            }
+            console.log('All scripts loaded!');
+        }
+        
+        loadAllScripts();
+    </script>
 
     <script>
         function log(message) {
@@ -111,11 +138,14 @@
 
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
-            log('Page loaded. Scripts available:');
-            log(`- eDocDataCollectionEnhanced: ${typeof window.eDocDataCollectionEnhanced}`);
-            log(`- eDocDatabase: ${typeof window.eDocDatabase}`);
-            log(`- eDocAuth: ${typeof window.eDocAuth}`);
-            log(`- eDocSupabase: ${typeof window.eDocSupabase}`);
+            // Wait a bit for scripts to load
+            setTimeout(() => {
+                log('Page loaded. Scripts available:');
+                log(`- eDocDataCollectionEnhanced: ${typeof window.eDocDataCollectionEnhanced}`);
+                log(`- eDocDatabase: ${typeof window.eDocDatabase}`);
+                log(`- eDocAuth: ${typeof window.eDocAuth}`);
+                log(`- eDocSupabase: ${typeof window.eDocSupabase}`);
+            }, 1000);
         });
     </script>
 </body>
