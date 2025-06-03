@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Schema Fix Test</title>
+    <script src="assets/js/config.js?v=1.2"></script>
+    <script src="assets/js/supabase-client.js?v=1.2"></script>
+    <script src="assets/js/data-collection.js?v=1.2"></script>
+    <script src="assets/js/enhanced-data-collection.js?v=1.2"></script>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 3px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Database Schema Fix Test</h1>
+    <p>Testing the corrected database schema for order creation.</p>
+    
+    <div class="test-section">
+        <h3>1. Function Availability Test</h3>
+        <button onclick="testFunctionAvailability()">Test Functions</button>
+        <div id="function-results"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>2. Payment Data Extraction Test</h3>
+        <button onclick="testPaymentDataExtraction()">Test Payment Data</button>
+        <div id="payment-results"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>3. Order Creation Test (Fixed Schema)</h3>
+        <button onclick="testOrderCreationFixed()">Test Order Creation</button>
+        <div id="order-results"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>4. Database Connection Test</h3>
+        <button onclick="testDatabaseConnection()">Test Database</button>
+        <div id="database-results"></div>
+    </div>
+
+    <script>
+        // Simulate URL parameters for testing
+        if (!window.location.search) {
+            const testParams = '?email=test@example.com&amount=149&product=Testosterone%20Injections&treatment=injections&session_id=cs_test_123';
+            window.history.replaceState({}, '', window.location.pathname + testParams);
+        }
+
+        function testFunctionAvailability() {
+            const results = document.getElementById('function-results');
+            let html = '<h4>Function Availability:</h4>';
+            
+            const functions = [
+                'window.eDocDataCollectionEnhanced',
+                'window.eDocDataCollectionEnhanced.getEnhancedPaymentDataFromURL',
+                'window.eDocDataCollectionEnhanced.createOrderAfterPayment',
+                'window.eDocDatabase',
+                'window.eDocDatabase.createOrder',
+                'window.eDocDatabase.getOrders',
+                'window.eDocAuth'
+            ];
+            
+            functions.forEach(func => {
+                try {
+                    const exists = eval(func);
+                    html += `<p>✅ ${func}: ${typeof exists}</p>`;
+                } catch (e) {
+                    html += `<p>❌ ${func}: Not available</p>`;
+                }
+            });
+            
+            results.innerHTML = html;
+            results.className = 'test-section success';
+        }
+
+        async function testPaymentDataExtraction() {
+            const results = document.getElementById('payment-results');
+            try {
+                const paymentData = await window.eDocDataCollectionEnhanced.getEnhancedPaymentDataFromURL();
+                results.innerHTML = `
+                    <h4>✅ Payment Data Extracted:</h4>
+                    <pre>${JSON.stringify(paymentData, null, 2)}</pre>
+                `;
+                results.className = 'test-section success';
+            } catch (error) {
+                results.innerHTML = `
+                    <h4>❌ Payment Data Extraction Failed:</h4>
+                    <pre>${error.message}</pre>
+                `;
+                results.className = 'test-section error';
+            }
+        }
+
+        async function testOrderCreationFixed() {
+            const results = document.getElementById('order-results');
+            try {
+                // Get payment data
+                const paymentData = await window.eDocDataCollectionEnhanced.getEnhancedPaymentDataFromURL();
+                
+                // Create order with fixed schema
+                const orderResult = await window.eDocDataCollectionEnhanced.createOrderAfterPayment(paymentData, paymentData.email);
+                
+                if (orderResult.success) {
+                    results.innerHTML = `
+                        <h4>✅ Order Created Successfully:</h4>
+                        <pre>${JSON.stringify(orderResult.order, null, 2)}</pre>
+                    `;
+                    results.className = 'test-section success';
+                } else {
+                    results.innerHTML = `
+                        <h4>❌ Order Creation Failed:</h4>
+                        <pre>${orderResult.error}</pre>
+                    `;
+                    results.className = 'test-section error';
+                }
+            } catch (error) {
+                results.innerHTML = `
+                    <h4>❌ Order Creation Exception:</h4>
+                    <pre>${error.message}</pre>
+                `;
+                results.className = 'test-section error';
+            }
+        }
+
+        async function testDatabaseConnection() {
+            const results = document.getElementById('database-results');
+            try {
+                // Test getOrders function
+                const ordersResult = await window.eDocDatabase.getOrders(5);
+                
+                if (ordersResult.success) {
+                    results.innerHTML = `
+                        <h4>✅ Database Connection Working:</h4>
+                        <p>Found ${ordersResult.orders.length} orders</p>
+                        <pre>${JSON.stringify(ordersResult.orders.slice(0, 2), null, 2)}</pre>
+                    `;
+                    results.className = 'test-section success';
+                } else {
+                    results.innerHTML = `
+                        <h4>❌ Database Query Failed:</h4>
+                        <pre>${ordersResult.error}</pre>
+                    `;
+                    results.className = 'test-section error';
+                }
+            } catch (error) {
+                results.innerHTML = `
+                    <h4>❌ Database Connection Exception:</h4>
+                    <pre>${error.message}</pre>
+                `;
+                results.className = 'test-section error';
+            }
+        }
+
+        // Auto-run tests when page loads
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                testFunctionAvailability();
+            }, 1000);
+        });
+    </script>
+</body>
+</html> 
