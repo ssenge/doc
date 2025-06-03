@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Direct Supabase Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-2xl mx-auto">
+        <h1 class="text-2xl font-bold mb-6">Direct Supabase Test</h1>
+        
+        <div class="bg-white p-6 rounded-lg shadow mb-6">
+            <h2 class="text-lg font-semibold mb-4">Test Results</h2>
+            <div id="results" class="space-y-2 text-sm"></div>
+        </div>
+        
+        <div class="bg-white p-6 rounded-lg shadow">
+            <h2 class="text-lg font-semibold mb-4">Actions</h2>
+            <div class="space-y-3">
+                <button onclick="testSupabaseInit()" class="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">
+                    Test Supabase Initialization
+                </button>
+                <button onclick="testOrderCreation()" class="w-full bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700">
+                    Test Order Creation
+                </button>
+                <button onclick="testGetOrders()" class="w-full bg-purple-600 text-white py-2 px-4 rounded hover:bg-purple-700">
+                    Test Get Orders
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Direct Supabase configuration
+        const SUPABASE_URL = 'https://clsknohsqcqiymjgrrxc.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNsc2tub2hzcWNxaXltamdycnhjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg4NjE1NjAsImV4cCI6MjA2NDQzNzU2MH0.QLPc_v5Au5LwpZECH5-u-7zyfzz-qIltvwFOGD22zwE';
+        
+        let supabase = null;
+
+        function log(message) {
+            const results = document.getElementById('results');
+            const timestamp = new Date().toLocaleTimeString();
+            results.innerHTML += `<p>[${timestamp}] ${message}</p>`;
+            console.log(message);
+        }
+
+        async function testSupabaseInit() {
+            log('🔄 Testing Supabase initialization...');
+            
+            try {
+                // Initialize Supabase client directly
+                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                
+                if (supabase) {
+                    log('✅ Supabase client created successfully');
+                    log(`- Client type: ${typeof supabase}`);
+                    log(`- Has auth: ${typeof supabase.auth}`);
+                    log(`- Has from: ${typeof supabase.from}`);
+                    
+                    // Test basic connection
+                    const { data, error } = await supabase.auth.getUser();
+                    if (error && error.message !== 'Auth session missing!') {
+                        log(`❌ Auth test failed: ${error.message}`);
+                    } else {
+                        log('✅ Supabase connection working');
+                    }
+                } else {
+                    log('❌ Failed to create Supabase client');
+                }
+            } catch (error) {
+                log(`❌ Supabase initialization error: ${error.message}`);
+                console.error('Full error:', error);
+            }
+        }
+
+        async function testOrderCreation() {
+            log('🧪 Testing order creation...');
+            
+            if (!supabase) {
+                log('❌ Supabase not initialized. Run initialization test first.');
+                return;
+            }
+            
+            try {
+                const testOrder = {
+                    email: 'test@example.com',
+                    treatment_type: 'injections',
+                    treatment_name: 'Testosterone Injections',
+                    price: 149.00,
+                    currency: 'EUR',
+                    assessment_data: {
+                        age: 35,
+                        height: 180,
+                        weight: 80,
+                        symptoms: {},
+                        medical_history: {},
+                        lifestyle: {}
+                    },
+                    consultation_type: 'none',
+                    stripe_session_id: 'cs_test_123',
+                    payment_status: 'completed',
+                    payment_method: 'stripe',
+                    rx_status: 'pending',
+                    shipping_status: 'not_ready'
+                };
+                
+                log(`📝 Creating order: ${JSON.stringify(testOrder, null, 2)}`);
+                
+                const { data, error } = await supabase
+                    .from('orders')
+                    .insert([testOrder])
+                    .select()
+                    .single();
+                
+                if (error) {
+                    log(`❌ Order creation failed: ${error.message}`);
+                    log(`Error details: ${JSON.stringify(error, null, 2)}`);
+                } else {
+                    log('✅ Order created successfully!');
+                    log(`📋 Order ID: ${data.id}`);
+                    log(`📋 Order data: ${JSON.stringify(data, null, 2)}`);
+                }
+            } catch (error) {
+                log(`❌ Order creation exception: ${error.message}`);
+                console.error('Full error:', error);
+            }
+        }
+
+        async function testGetOrders() {
+            log('🧪 Testing get orders...');
+            
+            if (!supabase) {
+                log('❌ Supabase not initialized. Run initialization test first.');
+                return;
+            }
+            
+            try {
+                const { data, error } = await supabase
+                    .from('orders')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(5);
+                
+                if (error) {
+                    log(`❌ Get orders failed: ${error.message}`);
+                    log(`Error details: ${JSON.stringify(error, null, 2)}`);
+                } else {
+                    log(`✅ Retrieved ${data.length} orders successfully!`);
+                    if (data.length > 0) {
+                        log(`📋 Latest order: ${JSON.stringify(data[0], null, 2)}`);
+                    } else {
+                        log('📋 No orders found in database');
+                    }
+                }
+            } catch (error) {
+                log(`❌ Get orders exception: ${error.message}`);
+                console.error('Full error:', error);
+            }
+        }
+
+        // Auto-initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            log('🚀 Page loaded. Click "Test Supabase Initialization" to start.');
+        });
+    </script>
+</body>
+</html> 
