@@ -109,6 +109,10 @@ const eDocAuth = {
     // Get current user
     async getCurrentUser() {
         try {
+            if (!supabase) {
+                console.warn('Supabase client not initialized yet');
+                return null;
+            }
             const { data: { user }, error } = await supabase.auth.getUser();
             if (error) throw error;
             return user;
@@ -320,6 +324,24 @@ const eDocDatabase = {
         }
     },
 
+    // Get all orders (for testing/admin)
+    async getOrders(limit = 50) {
+        try {
+            const { data, error } = await supabase
+                .from('orders')
+                .select('*')
+                .order('created_at', { ascending: false })
+                .limit(limit);
+            
+            if (error) throw error;
+            
+            return { success: true, orders: data };
+        } catch (error) {
+            console.error('❌ Error getting orders:', error);
+            return { success: false, error: error.message };
+        }
+    },
+
     // Get order by ID
     async getOrder(orderId) {
         try {
@@ -439,8 +461,16 @@ const eDocUtils = {
 
 // Initialize when DOM is ready and config is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    // Wait a bit for config.js to load
-    setTimeout(initSupabase, 100);
+    // Wait for config to be available
+    const waitForConfig = () => {
+        if (window.EDOC_CONFIG) {
+            initSupabase();
+        } else {
+            console.log('Waiting for EDOC_CONFIG...');
+            setTimeout(waitForConfig, 50);
+        }
+    };
+    waitForConfig();
 });
 
 // Export for global access (new naming)

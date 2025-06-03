@@ -1,24 +1,23 @@
 {
-  "name": "doc",
+  "name": "trt-clinic",
   "version": "1.0.0",
-  "description": "A professional, bilingual (English/German) website for Testosterone Replacement Therapy (TRT) services built with Flowbite components and vanilla JavaScript.",
+  "description": "TRT Clinic - Testosterone Replacement Therapy Platform",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "python3 -m http.server 8000",
+    "deploy": "./deploy.sh"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ssenge/doc.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
-  "bugs": {
-    "url": "https://github.com/ssenge/doc/issues"
-  },
-  "homepage": "https://github.com/ssenge/doc#readme",
   "dependencies": {
-    "@supabase/supabase-js": "^2.49.9"
-  }
+    "stripe": "^14.0.0"
+  },
+  "devDependencies": {},
+  "keywords": [
+    "trt",
+    "testosterone",
+    "healthcare",
+    "stripe",
+    "vercel"
+  ],
+  "author": "Sebastian Senge",
+  "license": "MIT"
 }

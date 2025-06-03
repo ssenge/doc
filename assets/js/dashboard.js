@@ -1,434 +1,42 @@
-// Dashboard functionality for TRT Clinic
-// This file handles user dashboard operations, order management, and profile updates
+/**
+ * Dashboard functionality for TRT Clinic
+ * Handles user profile, orders, and account management
+ */
 
-// Global variables
+// Dashboard state
 let currentUser = null;
 let userProfile = null;
 let userOrders = [];
-let realTimeSubscription = null;
 
-// Initialize dashboard when DOM is loaded
+// Initialize dashboard when page loads
 document.addEventListener('DOMContentLoaded', async function() {
-    console.log('Dashboard initializing...');
-    
     try {
-        // Wait for Supabase to be available
+        // Wait for Supabase to initialize
         await waitForSupabase();
         
         // Check authentication
-        const { data: { user }, error } = await window.eDocAuth.getUser();
+        currentUser = await window.eDocAuth.getCurrentUser();
         
-        if (error || !user) {
-            console.log('User not authenticated, redirecting to login');
-            window.location.href = 'login.html?return=' + encodeURIComponent(window.location.pathname);
+        if (!currentUser) {
+            // Redirect to login if not authenticated
+            const returnUrl = encodeURIComponent(window.location.pathname + window.location.search);
+            window.location.href = `login.html?return=${returnUrl}`;
             return;
         }
         
-        currentUser = user;
-        console.log('User authenticated:', currentUser.email);
+        // Load dashboard data
+        await loadDashboardData();
         
-        // Update UI with user info
-        document.getElementById('userEmail').textContent = currentUser.email;
-        
-        // Load user data
-        await loadUserProfile();
-        await loadUserOrders();
-        
-        // Update dashboard
-        updateQuickStats();
-        displayOrders();
-        displayTreatmentTimeline();
-        populateProfileForm();
-        
-        // Setup real-time updates
-        setupRealTimeUpdates();
-        
-        // Setup language dropdown
-        setupLanguageDropdown();
-        
-        // Apply current language
-        if (window.switchLanguage) {
-            const currentLang = localStorage.getItem('selectedLanguage') || 'en';
-            window.switchLanguage(currentLang);
-        }
-        
-        // Hide loading and show dashboard
-        document.getElementById('loadingState').classList.add('hidden');
-        document.getElementById('dashboardContent').classList.remove('hidden');
+        // Initialize dashboard UI
+        initializeDashboard();
         
     } catch (error) {
-        console.error('Dashboard initialization error:', error);
-        showError('Failed to load dashboard. Please try refreshing the page.');
+        console.error('Error initializing dashboard:', error);
+        showError('Failed to load dashboard. Please refresh the page.');
     }
 });
 
-// Load user profile from database
-async function loadUserProfile() {
-    try {
-        const result = await window.eDocDatabase.getUserProfile(currentUser.id);
-        if (result.success) {
-            userProfile = result.profile;
-            console.log('User profile loaded:', userProfile);
-        } else {
-            console.log('No profile found, will create one on first update');
-            userProfile = {
-                user_id: currentUser.id,
-                email: currentUser.email,
-                first_name: '',
-                last_name: '',
-                date_of_birth: null,
-                billing_street: '',
-                billing_city: '',
-                billing_postal_code: '',
-                billing_country: 'DE',
-                preferred_language: 'en'
-            };
-        }
-    } catch (error) {
-        console.error('Error loading user profile:', error);
-        showError('Failed to load profile information.');
-    }
-}
-
-// Load user orders from database
-async function loadUserOrders() {
-    try {
-        const result = await window.eDocDatabase.getUserOrders(currentUser.id);
-        if (result.success) {
-            userOrders = result.orders;
-            console.log('User orders loaded:', userOrders.length, 'orders');
-        } else {
-            console.error('Failed to load orders:', result.error);
-            userOrders = [];
-        }
-    } catch (error) {
-        console.error('Error loading user orders:', error);
-        userOrders = [];
-    }
-}
-
-// Update quick stats in dashboard
-function updateQuickStats() {
-    const totalOrders = userOrders.length;
-    const activeTreatments = userOrders.filter(order => 
-        ['pending', 'approved', 'shipped'].includes(order.status)
-    ).length;
-    const totalSpent = userOrders.reduce((sum, order) => sum + (order.payment_amount || 0), 0);
-    
-    document.getElementById('totalOrders').textContent = totalOrders;
-    document.getElementById('activeTreatments').textContent = activeTreatments;
-    document.getElementById('totalSpent').textContent = window.eDocUtils.formatPrice(totalSpent);
-}
-
-// Display orders in the orders tab
-function displayOrders() {
-    const container = document.getElementById('ordersContainer');
-    
-    if (userOrders.length === 0) {
-        container.innerHTML = `
-            <div class="p-6 text-center">
-                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                </svg>
-                <h3 class="mt-2 text-sm font-medium text-gray-900" data-en="No orders yet" data-de="Noch keine Bestellungen">No orders yet</h3>
-                <p class="mt-1 text-sm text-gray-500" data-en="Start your treatment journey by placing your first order." data-de="Beginnen Sie Ihre Behandlung mit Ihrer ersten Bestellung.">Start your treatment journey by placing your first order.</p>
-                <div class="mt-6">
-                    <a href="treatments.html" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                        <span data-en="Browse Treatments" data-de="Behandlungen ansehen">Browse Treatments</span>
-                    </a>
-                </div>
-            </div>
-        `;
-        return;
-    }
-    
-    container.innerHTML = userOrders.map(order => `
-        <div class="p-6">
-            <div class="flex items-center justify-between">
-                <div class="flex-1">
-                    <div class="flex items-center justify-between">
-                        <h4 class="text-lg font-medium text-gray-900">${order.treatment_name || 'Treatment'}</h4>
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusBadgeClass(order.status)}">
-                            ${getStatusText(order.status)}
-                        </span>
-                    </div>
-                    <div class="mt-2 flex items-center text-sm text-gray-500 space-x-4">
-                        <span>Order #${order.id.slice(0, 8)}</span>
-                        <span>${window.eDocUtils.formatDate(order.created_at)}</span>
-                        <span class="font-medium text-gray-900">${window.eDocUtils.formatPrice(order.payment_amount)}</span>
-                    </div>
-                    ${order.notes ? `<p class="mt-2 text-sm text-gray-600">${order.notes}</p>` : ''}
-                </div>
-                <div class="ml-4">
-                    <button onclick="viewOrderDetails('${order.id}')" class="text-blue-600 hover:text-blue-500 text-sm font-medium">
-                        <span data-en="View Details" data-de="Details anzeigen">View Details</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-    `).join('');
-}
-
-// Get status badge CSS class
-function getStatusBadgeClass(status) {
-    const statusClasses = {
-        'pending': 'bg-yellow-100 text-yellow-800',
-        'approved': 'bg-green-100 text-green-800',
-        'shipped': 'bg-blue-100 text-blue-800',
-        'delivered': 'bg-purple-100 text-purple-800',
-        'cancelled': 'bg-red-100 text-red-800'
-    };
-    return statusClasses[status] || 'bg-gray-100 text-gray-800';
-}
-
-// Get status text
-function getStatusText(status) {
-    const statusTexts = {
-        'pending': 'Pending',
-        'approved': 'Approved',
-        'shipped': 'Shipped',
-        'delivered': 'Delivered',
-        'cancelled': 'Cancelled'
-    };
-    return statusTexts[status] || status;
-}
-
-// Populate profile form with user data
-function populateProfileForm() {
-    if (!userProfile) return;
-    
-    document.getElementById('firstName').value = userProfile.first_name || '';
-    document.getElementById('lastName').value = userProfile.last_name || '';
-    document.getElementById('email').value = userProfile.email || currentUser.email;
-    document.getElementById('dateOfBirth').value = userProfile.date_of_birth || '';
-    document.getElementById('billingStreet').value = userProfile.billing_street || '';
-    document.getElementById('billingCity').value = userProfile.billing_city || '';
-    document.getElementById('billingPostalCode').value = userProfile.billing_postal_code || '';
-    document.getElementById('billingCountry').value = userProfile.billing_country || 'DE';
-    document.getElementById('preferredLanguage').value = userProfile.preferred_language || 'en';
-}
-
-// Display treatment timeline
-function displayTreatmentTimeline() {
-    const container = document.getElementById('treatmentTimeline');
-    if (!container) return;
-    
-    if (userOrders.length === 0) {
-        container.innerHTML = `
-            <div class="text-center py-6">
-                <p class="text-gray-500" data-en="No treatment history available." data-de="Keine Behandlungshistorie verfügbar.">No treatment history available.</p>
-            </div>
-        `;
-        return;
-    }
-    
-    // Create timeline events from orders
-    const timelineEvents = [];
-    userOrders.forEach(order => {
-        timelineEvents.push({
-            id: `order-${order.id}`,
-            title: `Order Placed: ${order.treatment_name}`,
-            description: `Order #${order.id.slice(0, 8)} - ${window.eDocUtils.formatPrice(order.payment_amount)}`,
-            date: order.created_at,
-            type: 'order'
-        });
-        
-        if (order.status === 'approved' || order.status === 'shipped' || order.status === 'delivered') {
-            timelineEvents.push({
-                id: `approval-${order.id}`,
-                title: 'Order Approved',
-                description: 'Your order has been reviewed and approved by our medical team.',
-                date: order.updated_at,
-                type: 'approval'
-            });
-        }
-        
-        if (order.status === 'shipped' || order.status === 'delivered') {
-            timelineEvents.push({
-                id: `shipping-${order.id}`,
-                title: 'Order Shipped',
-                description: 'Your treatment has been shipped and is on its way.',
-                date: order.updated_at,
-                type: 'shipping'
-            });
-        }
-    });
-    
-    // Sort events by date (newest first)
-    timelineEvents.sort((a, b) => new Date(b.date) - new Date(a.date));
-    
-    container.innerHTML = `
-        <div class="flow-root">
-            <ul class="-mb-8">
-                ${timelineEvents.map((event, index) => `
-                    <li>
-                        <div class="relative pb-8">
-                            ${index < timelineEvents.length - 1 ? '<span class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>' : ''}
-                            <div class="relative flex space-x-3">
-                                <div>
-                                    <span class="h-8 w-8 rounded-full ${getTimelineIconColor(event.type)} flex items-center justify-center ring-8 ring-white">
-                                        ${getTimelineIcon(event.type)}
-                                    </span>
-                                </div>
-                                <div class="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
-                                    <div>
-                                        <p class="text-sm text-gray-900 font-medium">${event.title}</p>
-                                        <p class="text-sm text-gray-500">${event.description}</p>
-                                    </div>
-                                    <div class="text-right text-sm whitespace-nowrap text-gray-500">
-                                        ${window.eDocUtils.formatDate(event.date)}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-                `).join('')}
-            </ul>
-        </div>
-    `;
-}
-
-function setupRealTimeUpdates() {
-    if (window.EDOC_CONFIG.features.enableRealTimeUpdates) {
-        realTimeSubscription = window.eDocDatabase.subscribeToOrderChanges(currentUser.id, (payload) => {
-            console.log('Real-time order update:', payload);
-            // Reload orders and update display
-            loadUserOrders().then(() => {
-                updateQuickStats();
-                displayOrders();
-                displayTreatmentTimeline();
-            });
-        });
-    }
-}
-
-// Tab switching
-function showTab(tabName) {
-    // Hide all tab contents
-    document.querySelectorAll('.tab-content').forEach(content => {
-        content.classList.add('hidden');
-    });
-    
-    // Reset all tab buttons
-    document.querySelectorAll('[id$="Tab"]').forEach(tab => {
-        tab.className = 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 border-b-2 py-2 px-1 text-sm font-medium';
-    });
-    
-    // Show selected tab content
-    document.getElementById(tabName + 'Content').classList.remove('hidden');
-    
-    // Highlight selected tab
-    document.getElementById(tabName + 'Tab').className = 'border-transparent text-blue-600 border-b-2 border-blue-600 py-2 px-1 text-sm font-medium';
-}
-
-// Profile update handler
-async function handleProfileUpdate(event) {
-    event.preventDefault();
-    
-    const formData = new FormData(event.target);
-    const profileData = {
-        first_name: formData.get('firstName'),
-        last_name: formData.get('lastName'),
-        date_of_birth: formData.get('dateOfBirth') || null,
-        billing_street: formData.get('billingStreet'),
-        billing_city: formData.get('billingCity'),
-        billing_postal_code: formData.get('billingPostalCode'),
-        billing_country: formData.get('billingCountry'),
-        preferred_language: formData.get('preferredLanguage'),
-        updated_at: new Date().toISOString()
-    };
-    
-    try {
-        const result = await window.eDocDatabase.updateUserProfile(currentUser.id, profileData);
-        if (result.success) {
-            userProfile = result.profile;
-            showSuccess('Profile updated successfully!');
-        } else {
-            showError('Failed to update profile: ' + result.error);
-        }
-    } catch (error) {
-        console.error('Profile update error:', error);
-        showError('An unexpected error occurred while updating your profile.');
-    }
-}
-
-// Logout handler
-async function handleLogout() {
-    try {
-        // Unsubscribe from real-time updates
-        if (realTimeSubscription) {
-            realTimeSubscription.unsubscribe();
-        }
-        
-        await window.eDocAuth.signOut();
-        window.location.href = 'index.html';
-    } catch (error) {
-        console.error('Logout error:', error);
-    }
-}
-
-// Utility functions
-function getStatusColor(color) {
-    const colorMap = {
-        'yellow': 'text-yellow-600',
-        'green': 'text-green-600',
-        'red': 'text-red-600',
-        'gray': 'text-gray-600',
-        'blue': 'text-blue-600',
-        'purple': 'text-purple-600'
-    };
-    return colorMap[color] || 'text-gray-600';
-}
-
-function getTimelineIconColor(type) {
-    const colorMap = {
-        'order': 'bg-blue-500',
-        'approval': 'bg-green-500',
-        'shipping': 'bg-purple-500'
-    };
-    return colorMap[type] || 'bg-gray-500';
-}
-
-function getTimelineIcon(type) {
-    const iconMap = {
-        'order': '<svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>',
-        'approval': '<svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>',
-        'shipping': '<svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20"><path d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"></path><path d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H10a1 1 0 001-1V5a1 1 0 00-1-1H3zM14 7a1 1 0 00-1 1v6.05A2.5 2.5 0 0115.95 16H17a1 1 0 001-1V8a1 1 0 00-.293-.707L15 4.586A1 1 0 0014.414 4H14v3z"></path></svg>'
-    };
-    return iconMap[type] || '<svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>';
-}
-
-function viewOrderDetails(orderId) {
-    // For now, just show an alert. In a full implementation, this would open a modal or navigate to a details page
-    const order = userOrders.find(o => o.id === orderId);
-    if (order) {
-        alert(`Order Details:\n\nOrder ID: ${order.id}\nTreatment: ${order.treatment_name}\nAmount: ${window.eDocUtils.formatPrice(order.payment_amount)}\nDate: ${window.eDocUtils.formatDate(order.created_at)}`);
-    }
-}
-
-function setupLanguageDropdown() {
-    const dropdownButton = document.getElementById('languageDropdown');
-    const dropdownMenu = document.getElementById('languageMenu');
-    
-    if (dropdownButton && dropdownMenu) {
-        dropdownButton.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            dropdownMenu.classList.toggle('hidden');
-        });
-        
-        document.addEventListener('click', function(e) {
-            if (!dropdownButton.contains(e.target) && !dropdownMenu.contains(e.target)) {
-                dropdownMenu.classList.add('hidden');
-            }
-        });
-        
-        dropdownMenu.addEventListener('click', function() {
-            dropdownMenu.classList.add('hidden');
-        });
-    }
-}
-
+// Wait for Supabase to be available
 function waitForSupabase() {
     return new Promise((resolve) => {
         const checkSupabase = () => {
@@ -442,32 +50,354 @@ function waitForSupabase() {
     });
 }
 
-function showSuccess(message) {
-    // Simple success notification
-    const notification = document.createElement('div');
-    notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
-    notification.textContent = message;
-    document.body.appendChild(notification);
-    
-    setTimeout(() => {
-        notification.remove();
-    }, 3000);
+// Load all dashboard data
+async function loadDashboardData() {
+    try {
+        // Load user profile
+        const profileResult = await window.eDocDatabase.getUserProfile(currentUser.id);
+        if (profileResult.success) {
+            userProfile = profileResult.profile;
+        }
+        
+        // Load user orders
+        const ordersResult = await window.eDocDatabase.getUserOrders(currentUser.id);
+        if (ordersResult.success) {
+            userOrders = ordersResult.orders;
+        }
+        
+        console.log('Dashboard data loaded:', { userProfile, userOrders });
+        
+    } catch (error) {
+        console.error('Error loading dashboard data:', error);
+        throw error;
+    }
 }
 
+// Initialize dashboard UI
+function initializeDashboard() {
+    try {
+        // Update welcome message
+        updateWelcomeMessage();
+        
+        // Update profile section
+        updateProfileSection();
+        
+        // Update orders section
+        updateOrdersSection();
+        
+        // Update auth buttons
+        updateAuthButtons();
+        
+        // Set up event listeners
+        setupEventListeners();
+        
+    } catch (error) {
+        console.error('Error initializing dashboard UI:', error);
+        showError('Failed to initialize dashboard interface.');
+    }
+}
+
+// Update welcome message
+function updateWelcomeMessage() {
+    const welcomeElement = document.getElementById('welcome-message');
+    if (welcomeElement && userProfile) {
+        const firstName = userProfile.first_name || 'User';
+        welcomeElement.textContent = `Welcome, ${firstName}`;
+    }
+}
+
+// Update profile section
+function updateProfileSection() {
+    const profileContainer = document.getElementById('profile-container');
+    if (!profileContainer) return;
+    
+    const profileHtml = `
+        <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Profile Information</h3>
+            
+            ${userProfile ? `
+                <div class="space-y-3">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">First Name</label>
+                            <p class="mt-1 text-sm text-gray-900">${userProfile.first_name || 'Not provided'}</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Last Name</label>
+                            <p class="mt-1 text-sm text-gray-900">${userProfile.last_name || 'Not provided'}</p>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Email</label>
+                        <p class="mt-1 text-sm text-gray-900">${currentUser.email}</p>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Language</label>
+                        <p class="mt-1 text-sm text-gray-900">${userProfile.language || 'English'}</p>
+                    </div>
+                    
+                    ${userProfile.billing_street ? `
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Billing Address</label>
+                            <div class="mt-1 text-sm text-gray-900">
+                                <p>${userProfile.billing_street}</p>
+                                <p>${userProfile.billing_city} ${userProfile.billing_postal_code}</p>
+                                <p>${userProfile.billing_country}</p>
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
+                
+                <div class="mt-6">
+                    <button onclick="editProfile()" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors">
+                        Edit Profile
+                    </button>
+                </div>
+            ` : `
+                <div class="text-center py-8">
+                    <p class="text-gray-500 mb-4">No profile information available</p>
+                    <button onclick="createProfile()" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors">
+                        Create Profile
+                    </button>
+                </div>
+            `}
+        </div>
+    `;
+    
+    profileContainer.innerHTML = profileHtml;
+}
+
+// Update orders section
+function updateOrdersSection() {
+    const ordersContainer = document.getElementById('orders-container');
+    if (!ordersContainer) return;
+    
+    const ordersHtml = `
+        <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Your Orders</h3>
+            
+            ${userOrders.length > 0 ? `
+                <div class="space-y-4">
+                    ${userOrders.map(order => `
+                        <div class="border border-gray-200 rounded-lg p-4">
+                            <div class="flex justify-between items-start mb-2">
+                                <div>
+                                    <h4 class="font-medium text-gray-900">${order.treatment_name}</h4>
+                                    <p class="text-sm text-gray-500">Order #${order.id.slice(0, 8)}</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="font-medium text-gray-900">€${parseFloat(order.price || 0).toFixed(2)}</p>
+                                    <p class="text-sm ${getStatusColor(order.rx_status)}">${formatStatus(order.rx_status)}</p>
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600">
+                                <div>
+                                    <span class="font-medium">Payment:</span>
+                                    <span class="${order.payment_status === 'completed' ? 'text-green-600' : 'text-yellow-600'}">
+                                        ${order.payment_status === 'completed' ? 'Completed' : 'Pending'}
+                                    </span>
+                                </div>
+                                <div>
+                                    <span class="font-medium">Prescription:</span>
+                                    <span class="${getStatusColor(order.rx_status)}">${formatStatus(order.rx_status)}</span>
+                                </div>
+                                <div>
+                                    <span class="font-medium">Shipping:</span>
+                                    <span class="${getStatusColor(order.shipping_status)}">${formatStatus(order.shipping_status)}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-3 text-xs text-gray-500">
+                                Ordered on ${new Date(order.created_at).toLocaleDateString()}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            ` : `
+                <div class="text-center py-8">
+                    <div class="text-gray-400 mb-4">
+                        <svg class="mx-auto h-12 w-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                        </svg>
+                    </div>
+                    <p class="text-gray-500 mb-4">No orders found</p>
+                    <a href="treatments.html" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors">
+                        Browse Treatments
+                    </a>
+                </div>
+            `}
+        </div>
+    `;
+    
+    ordersContainer.innerHTML = ordersHtml;
+}
+
+// Helper functions for order status
+function getStatusColor(status) {
+    switch (status) {
+        case 'completed':
+        case 'delivered':
+        case 'approved':
+            return 'text-green-600';
+        case 'pending':
+        case 'processing':
+        case 'review':
+            return 'text-yellow-600';
+        case 'shipped':
+        case 'ready':
+            return 'text-blue-600';
+        case 'cancelled':
+        case 'rejected':
+            return 'text-red-600';
+        default:
+            return 'text-gray-600';
+    }
+}
+
+function formatStatus(status) {
+    if (!status) return 'Unknown';
+    
+    return status
+        .split('_')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+}
+
+// Update auth buttons
+function updateAuthButtons() {
+    // Hide login button, show logout and user info
+    const loginBtn = document.querySelector('[data-auth="login"]');
+    const logoutBtn = document.querySelector('[data-auth="logout"]');
+    const userInfo = document.querySelector('[data-auth="user-info"]');
+    
+    if (loginBtn) loginBtn.style.display = 'none';
+    if (logoutBtn) logoutBtn.style.display = 'inline-block';
+    
+    if (userInfo && currentUser) {
+        const firstName = userProfile?.first_name || currentUser.email.split('@')[0];
+        userInfo.textContent = `Hello, ${firstName}`;
+        userInfo.style.display = 'inline-block';
+    }
+}
+
+// Set up event listeners
+function setupEventListeners() {
+    // Refresh button
+    const refreshBtn = document.getElementById('refresh-dashboard');
+    if (refreshBtn) {
+        refreshBtn.addEventListener('click', refreshDashboard);
+    }
+    
+    // Logout button
+    const logoutBtn = document.querySelector('[data-auth="logout"]');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', handleLogout);
+    }
+}
+
+// Refresh dashboard data
+async function refreshDashboard() {
+    try {
+        showLoading('Refreshing dashboard...');
+        await loadDashboardData();
+        initializeDashboard();
+        hideLoading();
+        showSuccess('Dashboard refreshed successfully');
+    } catch (error) {
+        console.error('Error refreshing dashboard:', error);
+        hideLoading();
+        showError('Failed to refresh dashboard');
+    }
+}
+
+// Handle logout
+async function handleLogout() {
+    try {
+        await window.eDocAuth.signOut();
+        window.location.href = 'index.html';
+    } catch (error) {
+        console.error('Error signing out:', error);
+        showError('Failed to sign out');
+    }
+}
+
+// Edit profile (placeholder)
+function editProfile() {
+    showInfo('Profile editing feature coming soon!');
+}
+
+// Create profile (placeholder)
+function createProfile() {
+    showInfo('Profile creation feature coming soon!');
+}
+
+// Utility functions for notifications
 function showError(message) {
-    // Simple error notification
+    showNotification(message, 'error');
+}
+
+function showSuccess(message) {
+    showNotification(message, 'success');
+}
+
+function showInfo(message) {
+    showNotification(message, 'info');
+}
+
+function showNotification(message, type = 'info') {
+    // Create notification element
     const notification = document.createElement('div');
-    notification.className = 'fixed top-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
-    notification.textContent = message;
+    notification.className = `fixed top-4 right-4 z-50 p-4 rounded-md shadow-lg max-w-sm ${
+        type === 'error' ? 'bg-red-50 border border-red-200 text-red-800' :
+        type === 'success' ? 'bg-green-50 border border-green-200 text-green-800' :
+        'bg-blue-50 border border-blue-200 text-blue-800'
+    }`;
+    
+    notification.innerHTML = `
+        <div class="flex items-center">
+            <div class="flex-1">
+                <p class="text-sm font-medium">${message}</p>
+            </div>
+            <button onclick="this.parentElement.parentElement.remove()" class="ml-3 text-gray-400 hover:text-gray-600">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+    `;
+    
     document.body.appendChild(notification);
     
+    // Auto-remove after 5 seconds
     setTimeout(() => {
-        notification.remove();
+        if (notification.parentElement) {
+            notification.remove();
+        }
     }, 5000);
 }
 
-// Make functions globally available
-window.showTab = showTab;
-window.handleProfileUpdate = handleProfileUpdate;
-window.handleLogout = handleLogout;
-window.viewOrderDetails = viewOrderDetails; 
+function showLoading(message = 'Loading...') {
+    const loadingElement = document.getElementById('loading-indicator');
+    if (loadingElement) {
+        loadingElement.textContent = message;
+        loadingElement.style.display = 'block';
+    }
+}
+
+function hideLoading() {
+    const loadingElement = document.getElementById('loading-indicator');
+    if (loadingElement) {
+        loadingElement.style.display = 'none';
+    }
+}
+
+// Export functions for global access
+window.TRTDashboard = {
+    refreshDashboard,
+    editProfile,
+    createProfile,
+    handleLogout
+}; 

@@ -6,7 +6,7 @@ const TREATMENTS = {
         currency: 'eur',
         description: 'Daily topical application with steady hormone levels throughout the day. Perfect for those who prefer non-invasive treatment.',
         interval: 'month',
-        paymentLink: 'https://buy.stripe.com/test_14AaEZfrQePmedTfVq0Jq02'
+        paymentLink: 'https://buy.stripe.com/test_3cI5kF7ZobDad9PaB60Jq0k'
     },
     'injections': {
         name: 'Testosterone Injections',
@@ -14,39 +14,39 @@ const TREATMENTS = {
         currency: 'eur',
         description: 'Weekly intramuscular injections. Most effective method with peak hormone optimization. Includes all supplies and detailed instructions.',
         interval: 'month',
-        paymentLink: 'https://buy.stripe.com/test_eVqeVfbbAePm3zfaB60Jq03'
+        paymentLink: 'https://buy.stripe.com/test_4gMfZj5Rgaz6b1H38E0Jq0l'
     },
     'patches': {
         name: 'Testosterone Patches',
         price: 10900, // Price in cents (€109.00)
         currency: 'eur',
-        description: 'Daily transdermal patches. Convenient and discreet with consistent hormone delivery. Simply apply and forget.',
+        description: 'Convenient daily patches for consistent hormone delivery. Discreet and easy to use with minimal skin irritation.',
         interval: 'month',
-        paymentLink: 'https://buy.stripe.com/test_8x2eVfa7w5eM3zfbFa0Jq04'
+        paymentLink: 'https://buy.stripe.com/test_9B67sN7Zo7mU7PvdNi0Jq0m'
     },
     'pellets': {
         name: 'Testosterone Pellets',
         price: 29900, // Price in cents (€299.00)
         currency: 'eur',
-        description: 'Long-lasting subcutaneous pellets. Inserted once every 3-4 months for ultimate convenience. No daily routine required.',
-        interval: '3-month',
-        paymentLink: 'https://buy.stripe.com/test_6oUdRbgvU5eMd9PgZu0Jq05'
+        description: 'Long-lasting pellet implants providing 3-6 months of treatment. Minimal maintenance required after insertion.',
+        interval: 'quarter',
+        paymentLink: 'https://buy.stripe.com/test_eVq8wR6VkbDad9PgZu0Jq0n'
     },
     'nasal-gel': {
         name: 'Testosterone Nasal Gel',
         price: 14900, // Price in cents (€149.00)
         currency: 'eur',
-        description: 'Innovative nasal application. Fast absorption with no skin transfer risk. Perfect for those with sensitive skin or active lifestyles.',
+        description: 'Innovative nasal application for rapid absorption. Quick-acting with excellent bioavailability.',
         interval: 'month',
-        paymentLink: 'https://buy.stripe.com/test_cNiaEZ3J8gXu6Lr38E0Jq06'
+        paymentLink: 'https://buy.stripe.com/test_14A9AVa7wdLiedTbFa0Jq0o'
     },
-    'custom': {
-        name: 'Custom Compound',
-        price: 18900, // Price in cents (€189.00)
+    'cream': {
+        name: 'Testosterone Cream',
+        price: 9900, // Price in cents (€99.00)
         currency: 'eur',
-        description: 'Personalized testosterone formulation. Tailored to your specific needs and preferences based on your assessment and lab results.',
+        description: 'Customizable compounded cream for personalized dosing. Ideal for patients requiring specific concentrations.',
         interval: 'month',
-        paymentLink: 'https://buy.stripe.com/test_bJe6oJ7ZofTq5HngZu0Jq07'
+        paymentLink: 'https://buy.stripe.com/test_28E9AVcfEePmfhX8sY0Jq0p'
     }
 };
 

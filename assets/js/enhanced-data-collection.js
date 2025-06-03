@@ -73,7 +73,8 @@ const eDocDataCollectionEnhanced = {
             
             // 1. Sign up the user
             const signUpResult = await window.eDocAuth.signUp(email, password, {
-                full_name: personalData.fullName || '',
+                full_name: personalData.firstName && personalData.lastName ? 
+                    `${personalData.firstName} ${personalData.lastName}` : '',
                 preferred_language: window.eDocLanguage?.getCurrentLanguage() || 'en'
             });
             
@@ -83,31 +84,37 @@ const eDocDataCollectionEnhanced = {
             
             const user = signUpResult.user;
             
-            // 2. Create user profile
+            // 2. Create user profile with enhanced data
             const profileData = {
-                email: email,
                 first_name: personalData.firstName || '',
                 last_name: personalData.lastName || '',
-                date_of_birth: personalData.dateOfBirth || null,
-                preferred_language: window.eDocLanguage?.getCurrentLanguage() || 'en',
+                language: window.eDocLanguage?.getCurrentLanguage() || 'en',
                 billing_street: personalData.street || '',
                 billing_city: personalData.city || '',
                 billing_postal_code: personalData.postalCode || '',
-                billing_country: personalData.country || 'DE',
-                created_at: new Date().toISOString()
+                billing_country: personalData.country || 'Germany'
             };
+            
+            console.log('Creating profile with data:', profileData);
             
             const profileResult = await window.eDocDatabase.createUserProfile(user.id, profileData);
             
             if (!profileResult.success) {
-                console.warn('Failed to create user profile, but account was created');
+                console.warn('Failed to create user profile:', profileResult.error);
+                // Don't fail the entire process if profile creation fails
+            } else {
+                console.log('✅ User profile created successfully:', profileResult.profile);
             }
             
             // 3. Sync existing localStorage data to database
             await this.syncAllDataToDatabase(user.id);
             
             window.debugLog('Account created successfully during checkout');
-            return { success: true, user, profile: profileResult.profile };
+            return { 
+                success: true, 
+                user, 
+                profile: profileResult.success ? profileResult.profile : null 
+            };
             
         } catch (error) {
             console.error('Error creating account during checkout:', error);
@@ -130,49 +137,41 @@ const eDocDataCollectionEnhanced = {
             // Get all collected data
             const collectedData = window.eDocDataCollection.getAllCollectedData();
             
-            // Prepare order data
+            // Prepare order data with correct column names
             const orderData = {
                 user_id: user?.id || null,
-                guest_email: user ? null : userEmail,
-                
-                // Assessment data
-                assessment_age: collectedData.assessment.age,
-                assessment_height: collectedData.assessment.height,
-                assessment_weight: collectedData.assessment.weight,
-                assessment_symptoms: collectedData.assessment.symptoms || {},
-                assessment_medical_history: collectedData.assessment.medicalHistory || {},
-                assessment_lifestyle: collectedData.assessment.lifestyle || {},
+                email: user ? null : userEmail, // Correct column name
+                session_id: collectedData.session?.sessionId || null,
                 
                 // Treatment data
                 treatment_type: collectedData.treatment.treatmentId || paymentData.treatment,
                 treatment_name: collectedData.treatment.treatmentName || paymentData.product,
-                treatment_price: parseFloat(paymentData.amount) || collectedData.treatment.price,
-                treatment_currency: 'EUR',
-                treatment_interval: collectedData.treatment.interval,
+                price: paymentData.amount ? parseFloat(paymentData.amount) : (collectedData.treatment.price ? collectedData.treatment.price / 100 : 0),
+                currency: 'EUR',
+                
+                // Assessment data as JSON (correct column name)
+                assessment_data: {
+                    age: collectedData.assessment.age,
+                    height: collectedData.assessment.height,
+                    weight: collectedData.assessment.weight,
+                    symptoms: collectedData.assessment.symptoms || {},
+                    medical_history: collectedData.assessment.medicalHistory || {},
+                    lifestyle: collectedData.assessment.lifestyle || {},
+                    treatment_interval: collectedData.treatment.interval,
+                    consultation_price: collectedData.consultation.price || 0
+                },
                 
                 // Consultation data
                 consultation_type: collectedData.consultation.type || 'none',
-                consultation_price: collectedData.consultation.price || 0,
                 
                 // Payment data
                 stripe_session_id: paymentData.sessionId,
-                payment_amount: parseFloat(paymentData.amount),
-                payment_currency: 'EUR',
                 payment_status: paymentData.status || 'completed',
-                payment_method: paymentData.paymentMethod,
+                payment_method: paymentData.paymentMethod || 'stripe',
                 
                 // Status
                 rx_status: 'pending',
-                shipping_status: 'not_ready',
-                
-                // Metadata
-                session_id: collectedData.session.sessionId,
-                user_agent: navigator.userAgent,
-                referrer: document.referrer,
-                browser_language: navigator.language,
-                site_language: window.eDocLanguage?.getCurrentLanguage() || 'en',
-                
-                created_at: new Date().toISOString()
+                shipping_status: 'not_ready'
             };
             
             // Create order in database
@@ -193,6 +192,42 @@ const eDocDataCollectionEnhanced = {
             console.error('Error creating order after payment:', error);
             return { success: false, error: error.message };
         }
+    },
+
+    // Get customer email from Stripe session (if session_id is available)
+    async getCustomerEmailFromStripe(sessionId) {
+        try {
+            // Since we can't call Stripe API from frontend without backend,
+            // we'll return null and handle this case in the UI
+            console.log('Session ID available but cannot retrieve customer email from frontend:', sessionId);
+            console.log('Email collection will need to be handled through form input');
+            return null;
+        } catch (error) {
+            console.error('Error retrieving customer email from Stripe:', error);
+            return null;
+        }
+    },
+
+    // Enhanced payment data extraction that handles missing email
+    async getEnhancedPaymentDataFromURL() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const paymentData = {
+            email: urlParams.get('email'),
+            amount: urlParams.get('amount'),
+            product: urlParams.get('product'),
+            treatment: urlParams.get('treatment'),
+            sessionId: urlParams.get('session_id'),
+            status: 'completed' // Assume completed if we're on success page
+        };
+
+        // If we don't have email but have session_id, we can't retrieve it without backend
+        // So we'll prompt user to enter their email in the form
+        if (!paymentData.email && paymentData.sessionId) {
+            console.log('Email not provided in URL parameters and session ID cannot be used without backend');
+            console.log('User will need to provide email in the account creation form');
+        }
+
+        return paymentData;
     },
 
     // Sync assessment data to database
@@ -265,7 +300,7 @@ const eDocDataCollectionEnhanced = {
     async sendToZapierAndDatabase(additionalData = {}) {
         try {
             // First, try to create order in database
-            const paymentData = window.eDocDataCollection.getPaymentDataFromURL();
+            const paymentData = await this.getEnhancedPaymentDataFromURL();
             const orderResult = await this.createOrderAfterPayment(paymentData, paymentData.email);
             
             // Then send to Zapier (existing functionality)
@@ -318,213 +353,332 @@ const eDocDataCollectionEnhanced = {
             treatmentName: collectedData.treatment.treatmentName,
             totalValue: (collectedData.treatment.price || 0) + (collectedData.consultation.price || 0)
         };
-    }
-};
-
-// Enhanced success page functionality
-const eDocSuccessPageEnhanced = {
-    
-    // Initialize success page with account creation option
-    async initializeSuccessPage() {
-        try {
-            // Check if user is already authenticated
-            const user = await window.eDocAuth.getCurrentUser();
-            
-            if (user) {
-                // User is logged in, show order details
-                await this.showAuthenticatedSuccessPage(user);
-            } else {
-                // User is not logged in, show account creation option
-                await this.showGuestSuccessPage();
-            }
-            
-            // Send data to Zapier and database
-            await eDocDataCollectionEnhanced.sendToZapierAndDatabase();
-            
-        } catch (error) {
-            console.error('Error initializing success page:', error);
-            // Fallback to basic success page
-            this.showBasicSuccessPage();
-        }
-    },
-
-    // Show success page for authenticated users
-    async showAuthenticatedSuccessPage(user) {
-        // Get user's orders
-        const ordersResult = await window.eDocDatabase.getUserOrders(user.id);
-        
-        if (ordersResult.success && ordersResult.orders.length > 0) {
-            const latestOrder = ordersResult.orders[0];
-            this.displayOrderDetails(latestOrder, user);
-        }
-        
-        this.showAccountDashboardLink();
-    },
-
-    // Show success page for guest users with account creation option
-    async showGuestSuccessPage() {
-        const dataSummary = eDocDataCollectionEnhanced.getDataSummary();
-        this.showAccountCreationPrompt(dataSummary);
-    },
-
-    // Display order details
-    displayOrderDetails(order, user) {
-        const orderDetailsHtml = `
-            <div class="bg-green-50 border border-green-200 rounded-lg p-6 mb-6">
-                <h3 class="text-lg font-semibold text-green-800 mb-4">Order Confirmation</h3>
-                <div class="space-y-2 text-sm">
-                    <p><strong>Order ID:</strong> ${order.id}</p>
-                    <p><strong>Treatment:</strong> ${order.treatment_name}</p>
-                    <p><strong>Amount:</strong> ${window.eDocUtils.formatPrice(order.payment_amount)}</p>
-                    <p><strong>Status:</strong> ${window.eDocUtils.formatOrderStatus(order).prescription.label}</p>
-                    <p><strong>Email:</strong> ${user.email}</p>
-                </div>
-            </div>
-        `;
-        
-        const container = document.getElementById('order-details-container');
-        if (container) {
-            container.innerHTML = orderDetailsHtml;
-        }
     },
 
     // Show account creation prompt
-    showAccountCreationPrompt(dataSummary) {
+    async showAccountCreationPrompt(dataSummary) {
         // Get email from Stripe payment data
-        const paymentData = window.eDocDataCollection.getPaymentDataFromURL();
+        const paymentData = await this.getEnhancedPaymentDataFromURL();
         const stripeEmail = paymentData.email;
         
         const promptHtml = `
             <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6">
-                <h3 class="text-lg font-semibold text-blue-800 mb-4">Create Your Account</h3>
-                <p class="text-blue-700 mb-4">
-                    Create an account to track your order, view your treatment history, and communicate with our medical team.
-                </p>
+                <div class="text-center mb-6">
+                    <h3 class="text-2xl font-bold text-blue-800 mb-2">🎉 Payment Successful!</h3>
+                    <p class="text-blue-700 text-lg">
+                        Complete your account setup to track your order and access your treatment plan.
+                    </p>
+                </div>
                 
                 ${paymentData.amount && paymentData.product ? `
-                <div class="bg-white border border-blue-200 rounded-md p-3 mb-4">
-                    <h4 class="text-sm font-medium text-gray-800 mb-2">Your Purchase:</h4>
-                    <div class="text-sm text-gray-600">
-                        <p><strong>Treatment:</strong> ${paymentData.product}</p>
-                        <p><strong>Amount:</strong> €${paymentData.amount}</p>
-                        ${stripeEmail ? `<p><strong>Email:</strong> ${stripeEmail}</p>` : ''}
+                <div class="bg-white border border-blue-200 rounded-md p-4 mb-6">
+                    <h4 class="text-lg font-semibold text-gray-800 mb-3">📋 Order Summary</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                        <div>
+                            <span class="font-medium text-gray-600">Treatment:</span>
+                            <p class="text-gray-800">${paymentData.product}</p>
+                        </div>
+                        <div>
+                            <span class="font-medium text-gray-600">Amount:</span>
+                            <p class="text-gray-800 font-semibold">€${paymentData.amount}</p>
+                        </div>
+                        <div>
+                            <span class="font-medium text-gray-600">Email:</span>
+                            <p class="text-gray-800">${stripeEmail || 'Confirmed'}</p>
+                        </div>
                     </div>
                 </div>
                 ` : ''}
                 
-                <div class="space-y-4">
-                    ${stripeEmail ? `
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                        <input type="email" id="account-email" value="${stripeEmail}" readonly class="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-600 cursor-not-allowed">
-                        <p class="text-xs text-gray-500 mt-1">Email from your payment information</p>
+                <div class="bg-white border border-blue-200 rounded-md p-4 mb-4">
+                    <h4 class="text-lg font-semibold text-gray-800 mb-3">✨ Account Benefits</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-gray-700">
+                        <div class="flex items-center">
+                            <span class="text-green-500 mr-2">✅</span>
+                            Track your order status in real-time
+                        </div>
+                        <div class="flex items-center">
+                            <span class="text-green-500 mr-2">✅</span>
+                            Access your personalized treatment plan
+                        </div>
+                        <div class="flex items-center">
+                            <span class="text-green-500 mr-2">✅</span>
+                            Communicate with our medical team
+                        </div>
+                        <div class="flex items-center">
+                            <span class="text-green-500 mr-2">✅</span>
+                            View your complete treatment history
+                        </div>
                     </div>
-                    ` : `
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                        <input type="email" id="account-email" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter your email address">
-                    </div>
-                    `}
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                        <input type="password" id="account-password" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Choose a secure password">
-                        <p class="text-xs text-gray-500 mt-1">Minimum 8 characters with letters and numbers</p>
-                    </div>
-                    <button onclick="eDocSuccessPageEnhanced.createAccountFromPrompt()" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors">
-                        Create Account
-                    </button>
-                    <button onclick="eDocSuccessPageEnhanced.skipAccountCreation()" class="w-full bg-gray-300 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-400 transition-colors">
-                        Skip for Now
-                    </button>
                 </div>
+                
+                <form id="enhanced-account-form" class="space-y-4">
+                    <h4 class="text-lg font-semibold text-gray-800 mb-4">👤 Complete Your Profile</h4>
+                    
+                    <!-- Email (pre-filled from Stripe if available) -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                        ${stripeEmail ? `
+                        <input type="email" id="account-email" value="${stripeEmail}" readonly class="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-600 cursor-not-allowed">
+                        <p class="text-xs text-gray-500 mt-1">✅ Confirmed from your payment</p>
+                        ` : `
+                        <input type="email" id="account-email" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter your email address" required>
+                        `}
+                    </div>
+                    
+                    <!-- Name fields (separate first/last) -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">First Name *</label>
+                            <input type="text" id="account-first-name" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter your first name" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Last Name *</label>
+                            <input type="text" id="account-last-name" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter your last name" required>
+                        </div>
+                    </div>
+                    
+                    <!-- Billing Address -->
+                    <div class="border-t border-gray-200 pt-4">
+                        <h5 class="text-md font-medium text-gray-800 mb-3">🏠 Billing Address</h5>
+                        <p class="text-sm text-gray-600 mb-4">This should match the address you used during payment.</p>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Street Address *</label>
+                                <input type="text" id="account-street" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter your street address" required>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">City *</label>
+                                    <input type="text" id="account-city" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter your city" required>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Postal Code *</label>
+                                    <input type="text" id="account-postal" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter postal code" required>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Country *</label>
+                                    <select id="account-country" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                                        <option value="">Select your country</option>
+                                        <option value="Germany">Germany</option>
+                                        <option value="Austria">Austria</option>
+                                        <option value="Switzerland">Switzerland</option>
+                                        <option value="Netherlands">Netherlands</option>
+                                        <option value="Belgium">Belgium</option>
+                                        <option value="Luxembourg">Luxembourg</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Password -->
+                    <div class="border-t border-gray-200 pt-4">
+                        <h5 class="text-md font-medium text-gray-800 mb-3">🔒 Account Security</h5>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Password *</label>
+                            <input type="password" id="account-password" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Choose a secure password" required>
+                            <p class="text-xs text-gray-500 mt-1">Minimum 8 characters with letters and numbers</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Error/Success Messages -->
+                    <div id="account-form-messages" class="hidden"></div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="flex flex-col sm:flex-row gap-3 pt-4">
+                        <button type="submit" class="flex-1 bg-blue-600 text-white py-3 px-6 rounded-md hover:bg-blue-700 transition-colors font-medium">
+                            🚀 Create Account & Access Dashboard
+                        </button>
+                        <button type="button" onclick="eDocDataCollectionEnhanced.skipAccountCreation()" class="flex-1 bg-gray-200 text-gray-700 py-3 px-6 rounded-md hover:bg-gray-300 transition-colors font-medium">
+                            ⏭️ Skip for Now
+                        </button>
+                    </div>
+                </form>
             </div>
         `;
         
         const container = document.getElementById('account-creation-container');
         if (container) {
             container.innerHTML = promptHtml;
+            
+            // Add form submission handler
+            const form = document.getElementById('enhanced-account-form');
+            if (form) {
+                form.addEventListener('submit', this.handleEnhancedAccountCreation.bind(this));
+            }
         }
     },
 
-    // Create account from prompt
-    async createAccountFromPrompt() {
-        const email = document.getElementById('account-email')?.value;
-        const password = document.getElementById('account-password')?.value;
+    // Handle enhanced account creation form submission
+    async handleEnhancedAccountCreation(event) {
+        event.preventDefault();
         
-        if (!email || !password) {
-            alert('Please enter both email and password');
-            return;
+        const messagesDiv = document.getElementById('account-form-messages');
+        const submitButton = event.target.querySelector('button[type="submit"]');
+        
+        // Show loading state
+        if (submitButton) {
+            submitButton.disabled = true;
+            submitButton.innerHTML = '⏳ Creating Account...';
         }
         
-        // Validate email and password
-        if (!window.eDocUtils?.validateEmail(email)) {
-            alert('Please enter a valid email address');
-            return;
-        }
-        
-        const passwordValidation = window.eDocUtils?.validatePassword(password);
-        if (!passwordValidation?.isValid) {
-            alert('Password requirements:\n' + (passwordValidation?.errors?.join('\n') || 'Invalid password'));
-            return;
+        // Clear previous messages
+        if (messagesDiv) {
+            messagesDiv.classList.add('hidden');
+            messagesDiv.innerHTML = '';
         }
         
         try {
-            // Show loading state
-            const createButton = document.querySelector('button[onclick="eDocSuccessPageEnhanced.createAccountFromPrompt()"]');
-            if (createButton) {
-                createButton.disabled = true;
-                createButton.textContent = 'Creating Account...';
+            // Collect form data
+            const formData = {
+                email: document.getElementById('account-email')?.value?.trim(),
+                firstName: document.getElementById('account-first-name')?.value?.trim(),
+                lastName: document.getElementById('account-last-name')?.value?.trim(),
+                street: document.getElementById('account-street')?.value?.trim(),
+                city: document.getElementById('account-city')?.value?.trim(),
+                postalCode: document.getElementById('account-postal')?.value?.trim(),
+                country: document.getElementById('account-country')?.value,
+                password: document.getElementById('account-password')?.value
+            };
+            
+            // Validate form data
+            const validation = this.validateEnhancedAccountForm(formData);
+            if (!validation.isValid) {
+                this.showFormMessage(messagesDiv, validation.errors.join('<br>'), 'error');
+                return;
             }
             
-            // Get payment data for additional context
-            const paymentData = window.eDocDataCollection.getPaymentDataFromURL();
-            
-            const result = await eDocDataCollectionEnhanced.createAccountDuringCheckout(email, password, {
-                email: email,
-                source: 'success_page_prompt',
-                payment_session_id: paymentData.sessionId
-            });
+            // Create account with enhanced data
+            const result = await eDocDataCollectionEnhanced.createAccountDuringCheckout(
+                formData.email,
+                formData.password,
+                {
+                    firstName: formData.firstName,
+                    lastName: formData.lastName,
+                    street: formData.street,
+                    city: formData.city,
+                    postalCode: formData.postalCode,
+                    country: formData.country,
+                    source: 'enhanced_success_page'
+                }
+            );
             
             if (result.success) {
                 // Show success message
-                const container = document.getElementById('account-creation-container');
-                if (container) {
-                    container.innerHTML = `
-                        <div class="bg-green-50 border border-green-200 rounded-lg p-6 mb-6">
-                            <h3 class="text-lg font-semibold text-green-800 mb-2">Account Created Successfully!</h3>
-                            <p class="text-green-700 mb-4">
-                                Your account has been created and you are now logged in. Redirecting to your dashboard...
-                            </p>
-                        </div>
-                    `;
+                this.showFormMessage(messagesDiv, 
+                    '✅ Account created successfully! Redirecting to your dashboard...', 
+                    'success'
+                );
+                
+                // Create order record if payment data exists
+                const paymentData = await eDocDataCollectionEnhanced.getEnhancedPaymentDataFromURL();
+                if (paymentData.sessionId || paymentData.amount) {
+                    try {
+                        await this.createOrderAfterPayment(paymentData, formData.email);
+                    } catch (orderError) {
+                        console.warn('Failed to create order record:', orderError);
+                        // Don't fail the account creation for this
+                    }
                 }
                 
                 // Redirect to dashboard after a short delay
                 setTimeout(() => {
                     window.location.href = 'dashboard.html';
                 }, 2000);
-            } else {
-                // Reset button state
-                if (createButton) {
-                    createButton.disabled = false;
-                    createButton.textContent = 'Create Account';
-                }
                 
-                alert('Error creating account: ' + result.error);
+            } else {
+                this.showFormMessage(messagesDiv, 
+                    `❌ Account creation failed: ${result.error}`, 
+                    'error'
+                );
             }
             
         } catch (error) {
-            console.error('Error creating account:', error);
-            
+            console.error('Enhanced account creation error:', error);
+            this.showFormMessage(messagesDiv, 
+                `❌ An unexpected error occurred: ${error.message}`, 
+                'error'
+            );
+        } finally {
             // Reset button state
-            const createButton = document.querySelector('button[onclick="eDocSuccessPageEnhanced.createAccountFromPrompt()"]');
-            if (createButton) {
-                createButton.disabled = false;
-                createButton.textContent = 'Create Account';
+            if (submitButton) {
+                submitButton.disabled = false;
+                submitButton.innerHTML = '🚀 Create Account & Access Dashboard';
             }
-            
-            alert('Error creating account. Please try again.');
         }
+    },
+
+    // Validate enhanced account form
+    validateEnhancedAccountForm(formData) {
+        const errors = [];
+        
+        // Email validation
+        if (!formData.email) {
+            errors.push('Email address is required');
+        } else if (!window.eDocUtils?.validateEmail(formData.email)) {
+            errors.push('Please enter a valid email address');
+        }
+        
+        // Name validation
+        if (!formData.firstName || formData.firstName.length < 2) {
+            errors.push('First name must be at least 2 characters');
+        }
+        
+        if (!formData.lastName || formData.lastName.length < 2) {
+            errors.push('Last name must be at least 2 characters');
+        }
+        
+        // Address validation
+        if (!formData.street || formData.street.length < 5) {
+            errors.push('Street address must be at least 5 characters');
+        }
+        
+        if (!formData.city || formData.city.length < 2) {
+            errors.push('City must be at least 2 characters');
+        }
+        
+        if (!formData.postalCode || formData.postalCode.length < 4) {
+            errors.push('Postal code must be at least 4 characters');
+        }
+        
+        if (!formData.country) {
+            errors.push('Please select a country');
+        }
+        
+        // Password validation
+        if (!formData.password) {
+            errors.push('Password is required');
+        } else {
+            const passwordValidation = window.eDocUtils?.validatePassword(formData.password);
+            if (passwordValidation && !passwordValidation.isValid) {
+                errors.push(...(passwordValidation.errors || ['Password does not meet requirements']));
+            }
+        }
+        
+        return {
+            isValid: errors.length === 0,
+            errors: errors
+        };
+    },
+
+    // Show form message (success or error)
+    showFormMessage(messagesDiv, message, type) {
+        if (!messagesDiv) return;
+        
+        const bgColor = type === 'success' ? 'bg-green-50 border-green-200 text-green-800' : 'bg-red-50 border-red-200 text-red-800';
+        
+        messagesDiv.innerHTML = `
+            <div class="${bgColor} border rounded-md p-3">
+                ${message}
+            </div>
+        `;
+        messagesDiv.classList.remove('hidden');
+        
+        // Scroll to message
+        messagesDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     },
 
     // Skip account creation
@@ -564,13 +718,108 @@ const eDocSuccessPageEnhanced = {
     showBasicSuccessPage() {
         console.log('Showing basic success page');
         // Existing success page functionality
+    },
+
+    // Initialize success page with account creation option
+    async initializeSuccessPage() {
+        try {
+            // Get payment data from URL
+            const paymentData = await this.getEnhancedPaymentDataFromURL();
+            console.log('Payment data from URL:', paymentData);
+            
+            // Check if user is already authenticated
+            const user = await window.eDocAuth.getCurrentUser();
+            
+            if (user) {
+                // User is logged in, create order and show order details
+                await this.createOrderAfterPayment(paymentData, user.email);
+                await this.showAuthenticatedSuccessPage(user);
+            } else {
+                // User is not logged in, create guest order if we have payment data
+                if (paymentData.amount && paymentData.product) {
+                    await this.createOrderAfterPayment(paymentData, paymentData.email);
+                }
+                // Show account creation option
+                await this.showGuestSuccessPage();
+            }
+            
+            // Send data to Zapier and database
+            await this.sendToZapierAndDatabase();
+            
+        } catch (error) {
+            console.error('Error initializing success page:', error);
+            // Fallback to basic success page
+            this.showBasicSuccessPage();
+        }
+    },
+
+    // Show success page for authenticated users
+    async showAuthenticatedSuccessPage(user) {
+        // Get user's orders
+        const ordersResult = await window.eDocDatabase.getUserOrders(user.id);
+        
+        if (ordersResult.success && ordersResult.orders.length > 0) {
+            const latestOrder = ordersResult.orders[0];
+            this.displayOrderDetails(latestOrder, user);
+        }
+        
+        this.showAccountDashboardLink();
+    },
+
+    // Show success page for guest users with account creation option
+    async showGuestSuccessPage() {
+        const dataSummary = this.getDataSummary();
+        await this.showAccountCreationPrompt(dataSummary);
+    },
+
+    // Display order details
+    displayOrderDetails(order, user) {
+        const orderDetailsHtml = `
+            <div class="bg-green-50 border border-green-200 rounded-lg p-6 mb-6">
+                <h3 class="text-lg font-semibold text-green-800 mb-4">Order Confirmation</h3>
+                <div class="space-y-2 text-sm">
+                    <p><strong>Order ID:</strong> ${order.id}</p>
+                    <p><strong>Treatment:</strong> ${order.treatment_name}</p>
+                    <p><strong>Amount:</strong> ${window.eDocUtils.formatPrice(order.price)}</p>
+                    <p><strong>Status:</strong> ${window.eDocUtils.formatOrderStatus(order).prescription.label}</p>
+                    <p><strong>Email:</strong> ${user.email}</p>
+                </div>
+            </div>
+        `;
+        
+        const container = document.getElementById('order-details-container');
+        if (container) {
+            container.innerHTML = orderDetailsHtml;
+        }
     }
 };
 
 // Export enhanced functions globally (new naming)
 window.eDocDataCollectionEnhanced = eDocDataCollectionEnhanced;
-window.eDocSuccessPageEnhanced = eDocSuccessPageEnhanced;
+window.eDocSuccessPageEnhanced = eDocDataCollectionEnhanced;
 
 // Backward compatibility - keep old naming working
 window.TRTDataCollectionEnhanced = eDocDataCollectionEnhanced;
-window.TRTSuccessPageEnhanced = eDocSuccessPageEnhanced; 
+window.TRTSuccessPageEnhanced = eDocDataCollectionEnhanced;
+
+// Force override critical functions to ensure they work (direct override)
+window.eDocDataCollectionEnhanced.getEnhancedPaymentDataFromURL = async function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const paymentData = {
+        email: urlParams.get('email'),
+        amount: urlParams.get('amount'),
+        product: urlParams.get('product'),
+        treatment: urlParams.get('treatment'),
+        sessionId: urlParams.get('session_id'),
+        status: 'completed' // Assume completed if we're on success page
+    };
+
+    // If we don't have email but have session_id, we can't retrieve it without backend
+    // So we'll prompt user to enter their email in the form
+    if (!paymentData.email && paymentData.sessionId) {
+        console.log('Email not provided in URL parameters and session ID cannot be used without backend');
+        console.log('User will need to provide email in the account creation form');
+    }
+
+    return paymentData;
+}; 

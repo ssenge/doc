@@ -41,148 +41,117 @@
 
     <!-- Login/Register Content -->
     <section class="bg-gray-50 py-8 lg:py-16">
-        <div class="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
-            <div class="w-full bg-white rounded-lg shadow-lg md:mt-0 sm:max-w-md xl:p-0">
-                <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
-                    <!-- Tab Navigation -->
-                    <div class="flex border-b border-gray-200">
-                        <button id="loginTab" class="flex-1 py-2 px-4 text-center font-medium text-blue-600 border-b-2 border-blue-600 transition-colors" onclick="showLoginForm()">
-                            <span data-en="Login" data-de="Anmelden">Login</span>
-                        </button>
-                        <button id="registerTab" class="flex-1 py-2 px-4 text-center font-medium text-gray-500 border-b-2 border-transparent hover:text-gray-700 transition-colors" onclick="showRegisterForm()">
-                            <span data-en="Register" data-de="Registrieren">Register</span>
-                        </button>
-                    </div>
+        <div class="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+            <div class="sm:mx-auto sm:w-full sm:max-w-md">
+                <div class="text-center">
+                    <h1 class="text-3xl font-bold text-gray-900" data-en="TRT Clinic" data-de="TRT Klinik">TRT Clinic</h1>
+                    <p class="mt-2 text-sm text-gray-600" data-en="Professional Testosterone Replacement Therapy" data-de="Professionelle Testosteron-Ersatztherapie">Professional Testosterone Replacement Therapy</p>
+                </div>
+            </div>
 
+            <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+                <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+                    
                     <!-- Login Form -->
-                    <div id="loginForm" class="space-y-4 md:space-y-6">
-                        <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
-                            <span data-en="Sign in to your account" data-de="Melden Sie sich in Ihrem Konto an">Sign in to your account</span>
-                        </h1>
+                    <div id="loginForm">
+                        <h2 class="text-2xl font-bold text-gray-900 text-center mb-6" data-en="Login to Your Account" data-de="In Ihr Konto einloggen">Login to Your Account</h2>
                         
-                        <div id="loginError" class="hidden bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg"></div>
+                        <form id="loginFormElement" class="space-y-6">
+                            <div>
+                                <label for="loginEmail" class="block text-sm font-medium text-gray-700" data-en="Email" data-de="E-Mail">Email</label>
+                                <input id="loginEmail" name="email" type="email" required class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+
+                            <div>
+                                <label for="loginPassword" class="block text-sm font-medium text-gray-700" data-en="Password" data-de="Passwort">Password</label>
+                                <input id="loginPassword" name="password" type="password" required class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+
+                            <div>
+                                <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                    <span data-en="Sign In" data-de="Anmelden">Sign In</span>
+                                </button>
+                            </div>
+                        </form>
+
+                        <!-- Success/Error Messages -->
+                        <div id="loginSuccess" class="hidden mt-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded"></div>
+                        <div id="loginError" class="hidden mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded"></div>
                         
-                        <form class="space-y-4 md:space-y-6" onsubmit="handleLogin(event)">
-                            <div>
-                                <label for="loginEmail" class="block mb-2 text-sm font-medium text-gray-900">
-                                    <span data-en="Your email" data-de="Ihre E-Mail">Your email</span>
-                                </label>
-                                <input type="email" name="email" id="loginEmail" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5" placeholder="name@company.com" required="">
-                            </div>
-                            <div>
-                                <label for="loginPassword" class="block mb-2 text-sm font-medium text-gray-900">
-                                    <span data-en="Password" data-de="Passwort">Password</span>
-                                </label>
-                                <input type="password" name="password" id="loginPassword" placeholder="••••••••" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5" required="">
-                            </div>
-                            <div class="flex items-center justify-between">
+                        <!-- Forgot Password -->
+                        <div class="mt-6 text-center">
+                            <button onclick="showForgotPassword()" class="text-sm text-blue-600 hover:text-blue-500" data-en="Forgot your password?" data-de="Passwort vergessen?">
+                                Forgot your password?
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- New Account Information -->
+                    <div class="mt-8 pt-6 border-t border-gray-200">
+                        <div class="text-center">
+                            <h3 class="text-lg font-medium text-gray-900 mb-3" data-en="Don't have an account?" data-de="Noch kein Konto?">Don't have an account?</h3>
+                            
+                            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
                                 <div class="flex items-start">
-                                    <div class="flex items-center h-5">
-                                        <input id="remember" aria-describedby="remember" type="checkbox" class="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300">
+                                    <div class="flex-shrink-0">
+                                        <svg class="h-5 w-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                                        </svg>
                                     </div>
-                                    <div class="ml-3 text-sm">
-                                        <label for="remember" class="text-gray-500">
-                                            <span data-en="Remember me" data-de="Angemeldet bleiben">Remember me</span>
-                                        </label>
+                                    <div class="ml-3 text-left">
+                                        <p class="text-sm text-blue-800" data-en="Accounts are created automatically when you complete a treatment order. This ensures all your information is properly collected and your order is linked to your account." data-de="Konten werden automatisch erstellt, wenn Sie eine Behandlungsbestellung abschließen. Dadurch wird sichergestellt, dass alle Ihre Informationen ordnungsgemäß erfasst und Ihre Bestellung mit Ihrem Konto verknüpft wird.">
+                                            Accounts are created automatically when you complete a treatment order. This ensures all your information is properly collected and your order is linked to your account.
+                                        </p>
                                     </div>
                                 </div>
-                                <a href="#" onclick="showForgotPassword()" class="text-sm font-medium text-blue-600 hover:underline">
-                                    <span data-en="Forgot password?" data-de="Passwort vergessen?">Forgot password?</span>
-                                </a>
                             </div>
-                            <button type="submit" id="loginButton" class="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center transition-colors">
-                                <span data-en="Sign in" data-de="Anmelden">Sign in</span>
-                            </button>
-                        </form>
+                            
+                            <div class="space-y-3">
+                                <p class="text-sm text-gray-600" data-en="To create an account:" data-de="Um ein Konto zu erstellen:">To create an account:</p>
+                                
+                                <div class="flex flex-col sm:flex-row gap-2">
+                                    <a href="assessment.html" class="flex-1 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors text-center font-medium">
+                                        <span data-en="1. Start Health Assessment" data-de="1. Gesundheitsbewertung starten">1. Start Health Assessment</span>
+                                    </a>
+                                    <a href="treatments.html" class="flex-1 bg-gray-600 text-white py-2 px-4 rounded-md hover:bg-gray-700 transition-colors text-center font-medium">
+                                        <span data-en="2. Choose Treatment" data-de="2. Behandlung wählen">2. Choose Treatment</span>
+                                    </a>
+                                </div>
+                                
+                                <p class="text-xs text-gray-500" data-en="After payment, you'll be prompted to set a password and your account will be created with all your details." data-de="Nach der Zahlung werden Sie aufgefordert, ein Passwort festzulegen, und Ihr Konto wird mit all Ihren Daten erstellt.">
+                                    After payment, you'll be prompted to set a password and your account will be created with all your details.
+                                </p>
+                            </div>
+                        </div>
                     </div>
 
-                    <!-- Register Form -->
-                    <div id="registerForm" class="space-y-4 md:space-y-6 hidden">
-                        <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
-                            <span data-en="Create your account" data-de="Erstellen Sie Ihr Konto">Create your account</span>
-                        </h1>
+                    <!-- Forgot Password Form (Hidden by default) -->
+                    <div id="forgotPasswordForm" class="hidden">
+                        <h2 class="text-2xl font-bold text-gray-900 text-center mb-6" data-en="Reset Password" data-de="Passwort zurücksetzen">Reset Password</h2>
                         
-                        <div id="registerError" class="hidden bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg"></div>
-                        <div id="registerSuccess" class="hidden bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg"></div>
-                        
-                        <form class="space-y-4 md:space-y-6" onsubmit="handleRegister(event)">
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label for="firstName" class="block mb-2 text-sm font-medium text-gray-900">
-                                        <span data-en="First name" data-de="Vorname">First name</span>
-                                    </label>
-                                    <input type="text" name="firstName" id="firstName" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5" placeholder="John" required="">
-                                </div>
-                                <div>
-                                    <label for="lastName" class="block mb-2 text-sm font-medium text-gray-900">
-                                        <span data-en="Last name" data-de="Nachname">Last name</span>
-                                    </label>
-                                    <input type="text" name="lastName" id="lastName" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5" placeholder="Doe" required="">
-                                </div>
-                            </div>
+                        <form id="forgotPasswordFormElement" class="space-y-6">
                             <div>
-                                <label for="registerEmail" class="block mb-2 text-sm font-medium text-gray-900">
-                                    <span data-en="Your email" data-de="Ihre E-Mail">Your email</span>
-                                </label>
-                                <input type="email" name="email" id="registerEmail" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5" placeholder="name@company.com" required="">
+                                <label for="resetEmail" class="block text-sm font-medium text-gray-700" data-en="Email" data-de="E-Mail">Email</label>
+                                <input id="resetEmail" name="email" type="email" required class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                             </div>
-                            <div>
-                                <label for="registerPassword" class="block mb-2 text-sm font-medium text-gray-900">
-                                    <span data-en="Password" data-de="Passwort">Password</span>
-                                </label>
-                                <input type="password" name="password" id="registerPassword" placeholder="••••••••" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5" required="">
-                                <div id="passwordRequirements" class="mt-2 text-xs text-gray-600">
-                                    <span data-en="Password must be at least 8 characters with uppercase, lowercase, and numbers" data-de="Passwort muss mindestens 8 Zeichen mit Groß-, Kleinbuchstaben und Zahlen enthalten">Password must be at least 8 characters with uppercase, lowercase, and numbers</span>
-                                </div>
-                            </div>
-                            <div>
-                                <label for="confirmPassword" class="block mb-2 text-sm font-medium text-gray-900">
-                                    <span data-en="Confirm password" data-de="Passwort bestätigen">Confirm password</span>
-                                </label>
-                                <input type="password" name="confirmPassword" id="confirmPassword" placeholder="••••••••" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5" required="">
-                            </div>
-                            <div class="flex items-start">
-                                <div class="flex items-center h-5">
-                                    <input id="terms" aria-describedby="terms" type="checkbox" class="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300" required="">
-                                </div>
-                                <div class="ml-3 text-sm">
-                                    <label for="terms" class="font-light text-gray-500">
-                                        <span data-en="I accept the " data-de="Ich akzeptiere die ">I accept the </span>
-                                        <a class="font-medium text-blue-600 hover:underline" href="#">
-                                            <span data-en="Terms and Conditions" data-de="Allgemeinen Geschäftsbedingungen">Terms and Conditions</span>
-                                        </a>
-                                    </label>
-                                </div>
-                            </div>
-                            <button type="submit" id="registerButton" class="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center transition-colors">
-                                <span data-en="Create account" data-de="Konto erstellen">Create account</span>
-                            </button>
-                        </form>
-                    </div>
 
-                    <!-- Forgot Password Form -->
-                    <div id="forgotPasswordForm" class="space-y-4 md:space-y-6 hidden">
-                        <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
-                            <span data-en="Reset your password" data-de="Passwort zurücksetzen">Reset your password</span>
-                        </h1>
-                        
-                        <div id="forgotPasswordError" class="hidden bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg"></div>
-                        <div id="forgotPasswordSuccess" class="hidden bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg"></div>
-                        
-                        <form class="space-y-4 md:space-y-6" onsubmit="handleForgotPassword(event)">
                             <div>
-                                <label for="forgotEmail" class="block mb-2 text-sm font-medium text-gray-900">
-                                    <span data-en="Your email" data-de="Ihre E-Mail">Your email</span>
-                                </label>
-                                <input type="email" name="email" id="forgotEmail" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5" placeholder="name@company.com" required="">
+                                <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                    <span data-en="Send Reset Link" data-de="Reset-Link senden">Send Reset Link</span>
+                                </button>
                             </div>
-                            <button type="submit" id="forgotPasswordButton" class="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center transition-colors">
-                                <span data-en="Send reset link" data-de="Reset-Link senden">Send reset link</span>
-                            </button>
-                            <button type="button" onclick="showLoginForm()" class="w-full text-blue-600 bg-white hover:bg-gray-50 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg border border-blue-600 text-sm px-5 py-2.5 text-center transition-colors">
-                                <span data-en="Back to login" data-de="Zurück zur Anmeldung">Back to login</span>
-                            </button>
                         </form>
+
+                        <!-- Success/Error Messages -->
+                        <div id="resetSuccess" class="hidden mt-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded"></div>
+                        <div id="resetError" class="hidden mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded"></div>
+                        
+                        <!-- Back to Login -->
+                        <div class="mt-6 text-center">
+                            <button onclick="showLoginForm()" class="text-sm text-blue-600 hover:text-blue-500" data-en="Back to Login" data-de="Zurück zur Anmeldung">
+                                Back to Login
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -195,48 +164,34 @@
     <script src="assets/js/config.js?v=1.2"></script>
     <script src="assets/js/supabase-client.js?v=1.2"></script>
     <script>
-        // Form switching functions
+        // Form handling
         function showLoginForm() {
             document.getElementById('loginForm').classList.remove('hidden');
-            document.getElementById('registerForm').classList.add('hidden');
             document.getElementById('forgotPasswordForm').classList.add('hidden');
-            
-            // Update tab styles
-            document.getElementById('loginTab').className = 'flex-1 py-2 px-4 text-center font-medium text-blue-600 border-b-2 border-blue-600 transition-colors';
-            document.getElementById('registerTab').className = 'flex-1 py-2 px-4 text-center font-medium text-gray-500 border-b-2 border-transparent hover:text-gray-700 transition-colors';
-        }
-
-        function showRegisterForm() {
-            document.getElementById('loginForm').classList.add('hidden');
-            document.getElementById('registerForm').classList.remove('hidden');
-            document.getElementById('forgotPasswordForm').classList.add('hidden');
-            
-            // Update tab styles
-            document.getElementById('loginTab').className = 'flex-1 py-2 px-4 text-center font-medium text-gray-500 border-b-2 border-transparent hover:text-gray-700 transition-colors';
-            document.getElementById('registerTab').className = 'flex-1 py-2 px-4 text-center font-medium text-blue-600 border-b-2 border-blue-600 transition-colors';
         }
 
         function showForgotPassword() {
             document.getElementById('loginForm').classList.add('hidden');
-            document.getElementById('registerForm').classList.add('hidden');
             document.getElementById('forgotPasswordForm').classList.remove('hidden');
         }
 
-        // Authentication handlers
+        // Handle login form submission
         async function handleLogin(event) {
             event.preventDefault();
             
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
-            const button = document.getElementById('loginButton');
+            const button = event.target.querySelector('button[type="submit"]');
             const errorDiv = document.getElementById('loginError');
+            const successDiv = document.getElementById('loginSuccess');
             
-            // Clear previous errors
+            // Clear previous messages
             errorDiv.classList.add('hidden');
+            successDiv.classList.add('hidden');
             
             // Show loading state
             button.disabled = true;
-            button.innerHTML = '<span data-en="Signing in..." data-de="Anmelden...">Signing in...</span>';
+            button.innerHTML = '<span data-en="Signing in..." data-de="Wird angemeldet...">Signing in...</span>';
             
             try {
                 // Wait for Supabase to be ready
@@ -245,9 +200,15 @@
                 const result = await window.eDocAuth.signIn(email, password);
                 
                 if (result.success) {
-                    // Redirect to dashboard or return to previous page
-                    const returnUrl = new URLSearchParams(window.location.search).get('return') || 'dashboard.html';
-                    window.location.href = returnUrl;
+                    showSuccess('loginSuccess', 'Login successful! Redirecting...');
+                    
+                    // Redirect to return URL or dashboard
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const returnUrl = urlParams.get('return') || 'dashboard.html';
+                    
+                    setTimeout(() => {
+                        window.location.href = returnUrl;
+                    }, 1000);
                 } else {
                     showError('loginError', result.error);
                 }
@@ -257,101 +218,18 @@
             } finally {
                 // Reset button
                 button.disabled = false;
-                button.innerHTML = '<span data-en="Sign in" data-de="Anmelden">Sign in</span>';
+                button.innerHTML = '<span data-en="Sign In" data-de="Anmelden">Sign In</span>';
             }
         }
 
-        async function handleRegister(event) {
-            event.preventDefault();
-            
-            const firstName = document.getElementById('firstName').value;
-            const lastName = document.getElementById('lastName').value;
-            const email = document.getElementById('registerEmail').value;
-            const password = document.getElementById('registerPassword').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
-            const button = document.getElementById('registerButton');
-            const errorDiv = document.getElementById('registerError');
-            const successDiv = document.getElementById('registerSuccess');
-            
-            // Clear previous messages
-            errorDiv.classList.add('hidden');
-            successDiv.classList.add('hidden');
-            
-            // Validate passwords match
-            if (password !== confirmPassword) {
-                showError('registerError', 'Passwords do not match');
-                return;
-            }
-            
-            // Validate email
-            if (!window.eDocUtils?.validateEmail(email)) {
-                showError('registerError', 'Please enter a valid email address');
-                return;
-            }
-            
-            // Validate password
-            const passwordValidation = window.eDocUtils?.validatePassword(password);
-            if (passwordValidation && !passwordValidation.isValid) {
-                showError('registerError', passwordValidation.errors.join('\n'));
-                return;
-            }
-            
-            // Show loading state
-            button.disabled = true;
-            button.innerHTML = '<span data-en="Creating account..." data-de="Konto wird erstellt...">Creating account...</span>';
-            
-            try {
-                // Wait for Supabase to be ready
-                await waitForSupabase();
-                
-                const result = await window.eDocAuth.signUp(email, password, {
-                    full_name: `${firstName} ${lastName}`,
-                    preferred_language: window.eDocLanguage?.getCurrentLanguage() || 'en'
-                });
-                
-                if (result.success) {
-                    // Create user profile
-                    if (result.user) {
-                        const profileResult = await window.eDocDatabase.createUserProfile(result.user.id, {
-                            email: email,
-                            first_name: firstName,
-                            last_name: lastName,
-                            preferred_language: window.eDocLanguage?.getCurrentLanguage() || 'en',
-                            created_at: new Date().toISOString()
-                        });
-                        
-                        if (!profileResult.success) {
-                            console.warn('Failed to create user profile:', profileResult.error);
-                        }
-                    }
-                    
-                    showSuccess('registerSuccess', 'Account created successfully! Please check your email to verify your account.');
-                    
-                    // Switch to login form after a delay
-                    setTimeout(() => {
-                        showLoginForm();
-                        document.getElementById('loginEmail').value = email;
-                    }, 3000);
-                } else {
-                    showError('registerError', result.error);
-                }
-            } catch (error) {
-                showError('registerError', 'An unexpected error occurred. Please try again.');
-                console.error('Registration error:', error);
-            } finally {
-                // Reset button
-                button.disabled = false;
-                button.innerHTML = '<span data-en="Create account" data-de="Konto erstellen">Create account</span>';
-            }
-        }
-
+        // Handle forgot password form submission
         async function handleForgotPassword(event) {
             event.preventDefault();
             
-            const email = document.getElementById('forgotEmail').value;
-            const button = document.getElementById('forgotPasswordButton');
-            const errorDiv = document.getElementById('forgotPasswordError');
-            const successDiv = document.getElementById('forgotPasswordSuccess');
+            const email = document.getElementById('resetEmail').value;
+            const button = event.target.querySelector('button[type="submit"]');
+            const errorDiv = document.getElementById('resetError');
+            const successDiv = document.getElementById('resetSuccess');
             
             // Clear previous messages
             errorDiv.classList.add('hidden');
@@ -359,7 +237,7 @@
             
             // Validate email
             if (!window.eDocUtils?.validateEmail(email)) {
-                showError('forgotPasswordError', 'Please enter a valid email address');
+                showError('resetError', 'Please enter a valid email address');
                 return;
             }
             
@@ -374,17 +252,17 @@
                 const result = await window.eDocAuth.resetPassword(email);
                 
                 if (result.success) {
-                    showSuccess('forgotPasswordSuccess', 'Password reset link sent! Please check your email.');
+                    showSuccess('resetSuccess', 'Password reset link sent! Please check your email.');
                 } else {
-                    showError('forgotPasswordError', result.error);
+                    showError('resetError', result.error);
                 }
             } catch (error) {
-                showError('forgotPasswordError', 'An unexpected error occurred. Please try again.');
+                showError('resetError', 'An unexpected error occurred. Please try again.');
                 console.error('Password reset error:', error);
             } finally {
                 // Reset button
                 button.disabled = false;
-                button.innerHTML = '<span data-en="Send reset link" data-de="Reset-Link senden">Send reset link</span>';
+                button.innerHTML = '<span data-en="Send Reset Link" data-de="Reset-Link senden">Send Reset Link</span>';
             }
         }
 
@@ -402,10 +280,16 @@
         }
 
         function waitForSupabase() {
-            return new Promise((resolve) => {
+            return new Promise((resolve, reject) => {
+                let attempts = 0;
+                const maxAttempts = 50;
+                
                 const checkSupabase = () => {
-                    if (window.eDocAuth && window.eDocDatabase) {
+                    attempts++;
+                    if (window.eDocAuth && window.eDocDatabase && window.eDocSupabase) {
                         resolve();
+                    } else if (attempts >= maxAttempts) {
+                        reject(new Error('Timeout waiting for Supabase'));
                     } else {
                         setTimeout(checkSupabase, 100);
                     }
@@ -414,40 +298,24 @@
             });
         }
 
-        // Language dropdown functionality
+        // Add form event listeners when page loads
         document.addEventListener('DOMContentLoaded', function() {
-            const dropdownButton = document.getElementById('languageDropdown');
-            const dropdownMenu = document.getElementById('languageMenu');
-            
-            if (dropdownButton && dropdownMenu) {
-                dropdownButton.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    dropdownMenu.classList.toggle('hidden');
-                });
-                
-                // Close dropdown when clicking outside
-                document.addEventListener('click', function(e) {
-                    if (!dropdownButton.contains(e.target) && !dropdownMenu.contains(e.target)) {
-                        dropdownMenu.classList.add('hidden');
-                    }
-                });
-                
-                // Close dropdown when selecting a language
-                dropdownMenu.addEventListener('click', function() {
-                    dropdownMenu.classList.add('hidden');
-                });
+            // Add login form handler
+            const loginForm = document.getElementById('loginFormElement');
+            if (loginForm) {
+                loginForm.addEventListener('submit', handleLogin);
             }
-
-            // Check if user is already logged in
-            waitForSupabase().then(async () => {
-                const user = await window.eDocAuth.getCurrentUser();
-                if (user) {
-                    // User is already logged in, redirect to dashboard
-                    const returnUrl = new URLSearchParams(window.location.search).get('return') || 'dashboard.html';
-                    window.location.href = returnUrl;
-                }
-            });
+            
+            // Add forgot password form handler
+            const forgotPasswordForm = document.getElementById('forgotPasswordFormElement');
+            if (forgotPasswordForm) {
+                forgotPasswordForm.addEventListener('submit', handleForgotPassword);
+            }
+            
+            // Initialize language system
+            if (window.eDocLanguage) {
+                window.eDocLanguage.init();
+            }
         });
     </script>
 </body>

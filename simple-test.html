@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Function Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-2xl mx-auto">
+        <h1 class="text-2xl font-bold mb-6">Simple Function Test</h1>
+        
+        <div class="bg-white p-6 rounded-lg shadow mb-6">
+            <h2 class="text-lg font-semibold mb-4">Test Results</h2>
+            <div id="results" class="space-y-2"></div>
+        </div>
+        
+        <div class="bg-white p-6 rounded-lg shadow">
+            <h2 class="text-lg font-semibold mb-4">Actions</h2>
+            <div class="space-y-3">
+                <button onclick="testFunction()" class="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">
+                    Test getEnhancedPaymentDataFromURL
+                </button>
+                <button onclick="testOrderCreation()" class="w-full bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700">
+                    Test Order Creation
+                </button>
+                <button onclick="checkDatabase()" class="w-full bg-purple-600 text-white py-2 px-4 rounded hover:bg-purple-700">
+                    Check Database Connection
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load scripts -->
+    <script src="assets/js/config.js?v=1.2"></script>
+    <script src="assets/js/language.js?v=1.2"></script>
+    <script src="assets/js/data-collection.js?v=1.2"></script>
+    <script src="assets/js/supabase-client.js?v=1.2"></script>
+    <script src="assets/js/enhanced-data-collection.js?v=1.2"></script>
+
+    <script>
+        function log(message) {
+            const results = document.getElementById('results');
+            results.innerHTML += `<p class="text-sm">${message}</p>`;
+        }
+
+        async function testFunction() {
+            log('Testing getEnhancedPaymentDataFromURL...');
+            
+            try {
+                // Check if function exists
+                log(`Function exists: ${typeof window.eDocDataCollectionEnhanced?.getEnhancedPaymentDataFromURL}`);
+                
+                if (window.eDocDataCollectionEnhanced?.getEnhancedPaymentDataFromURL) {
+                    const result = await window.eDocDataCollectionEnhanced.getEnhancedPaymentDataFromURL();
+                    log(`✅ Function works! Result: ${JSON.stringify(result)}`);
+                } else {
+                    log('❌ Function not available');
+                }
+            } catch (error) {
+                log(`❌ Error: ${error.message}`);
+            }
+        }
+
+        async function testOrderCreation() {
+            log('Testing order creation...');
+            
+            try {
+                // Create test payment data
+                const testPaymentData = {
+                    email: 'test@example.com',
+                    amount: '149',
+                    product: 'Testosterone Injections',
+                    treatment: 'injections',
+                    sessionId: 'cs_test_123',
+                    status: 'completed'
+                };
+                
+                log(`Creating order with data: ${JSON.stringify(testPaymentData)}`);
+                
+                if (window.eDocDataCollectionEnhanced?.createOrderAfterPayment) {
+                    const result = await window.eDocDataCollectionEnhanced.createOrderAfterPayment(testPaymentData, 'test@example.com');
+                    log(`✅ Order creation result: ${JSON.stringify(result)}`);
+                } else {
+                    log('❌ createOrderAfterPayment function not available');
+                }
+            } catch (error) {
+                log(`❌ Order creation error: ${error.message}`);
+                console.error('Full error:', error);
+            }
+        }
+
+        async function checkDatabase() {
+            log('Checking database connection...');
+            
+            try {
+                if (window.eDocDatabase) {
+                    log('✅ eDocDatabase available');
+                    
+                    // Try to get orders (this will test the connection)
+                    const ordersResult = await window.eDocDatabase.getOrders();
+                    log(`Database query result: ${JSON.stringify(ordersResult)}`);
+                } else {
+                    log('❌ eDocDatabase not available');
+                }
+            } catch (error) {
+                log(`❌ Database error: ${error.message}`);
+                console.error('Full error:', error);
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            log('Page loaded. Scripts available:');
+            log(`- eDocDataCollectionEnhanced: ${typeof window.eDocDataCollectionEnhanced}`);
+            log(`- eDocDatabase: ${typeof window.eDocDatabase}`);
+            log(`- eDocAuth: ${typeof window.eDocAuth}`);
+            log(`- eDocSupabase: ${typeof window.eDocSupabase}`);
+        });
+    </script>
+</body>
+</html> 
