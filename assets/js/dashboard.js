@@ -9,7 +9,17 @@ let userProfile = null;
 let userOrders = [];
 
 // Initialize dashboard when page loads
-document.addEventListener('DOMContentLoaded', async function() {
+document.addEventListener('DOMContentLoaded', initializeDashboardApp);
+
+// Also try immediate initialization in case DOMContentLoaded already fired
+if (document.readyState === 'loading') {
+    // Document still loading, DOMContentLoaded will fire
+} else {
+    // Document already loaded, run immediately
+    setTimeout(initializeDashboardApp, 100);
+}
+
+async function initializeDashboardApp() {
     try {
         console.log('🚀 Dashboard initialization started');
         
@@ -149,7 +159,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         // DON'T redirect on general errors - just show error
         // redirectToLogin();
     }
-});
+}
 
 function redirectToLogin() {
     console.log('🚨 REDIRECT TO LOGIN TRIGGERED');

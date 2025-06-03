@@ -426,13 +426,13 @@ class HeaderComponent {
     }
 }
 
+// Make the class available globally immediately
+window.HeaderComponent = HeaderComponent;
+
 // Initialize header component when DOM is loaded
 document.addEventListener('DOMContentLoaded', async () => {
     // Create global header component instance
     window.headerComponent = new HeaderComponent();
-    
-    // Also make the class available globally for static methods
-    window.HeaderComponent = HeaderComponent;
     
     // Initialize the header
     await window.headerComponent.init();
