@@ -106,6 +106,29 @@
                 log(`- createOrder: ${typeof window.eDocDatabase.createOrder}`);
                 log(`- getOrders: ${typeof window.eDocDatabase.getOrders}`);
             }
+            
+            // Wait for Supabase to initialize
+            waitForSupabaseInit();
+        }
+        
+        function waitForSupabaseInit() {
+            log('⏳ Waiting for Supabase initialization...');
+            
+            const checkSupabase = () => {
+                if (window.eDocSupabase) {
+                    log('✅ Supabase client initialized and ready!');
+                    log(`- Supabase client: ${typeof window.eDocSupabase}`);
+                    
+                    // Auto-run the first test
+                    setTimeout(() => {
+                        testFunction();
+                    }, 500);
+                } else {
+                    setTimeout(checkSupabase, 200);
+                }
+            };
+            
+            checkSupabase();
         }
 
         async function testFunction() {
@@ -135,6 +158,12 @@
             log('🧪 Testing order creation...');
             
             try {
+                // Ensure Supabase is ready
+                if (!window.eDocSupabase) {
+                    log('⏳ Waiting for Supabase to be ready...');
+                    await waitForSupabaseReady();
+                }
+                
                 // Create test payment data
                 const testPaymentData = {
                     email: 'test@example.com',
@@ -169,6 +198,12 @@
             log('🧪 Checking database connection...');
             
             try {
+                // Ensure Supabase is ready
+                if (!window.eDocSupabase) {
+                    log('⏳ Waiting for Supabase to be ready...');
+                    await waitForSupabaseReady();
+                }
+                
                 if (window.eDocDatabase) {
                     log('✅ eDocDatabase available');
                     
@@ -196,6 +231,20 @@
                 log(`❌ Database error: ${error.message}`);
                 console.error('Full error:', error);
             }
+        }
+        
+        // Helper function to wait for Supabase to be ready
+        function waitForSupabaseReady() {
+            return new Promise((resolve) => {
+                const checkSupabase = () => {
+                    if (window.eDocSupabase) {
+                        resolve();
+                    } else {
+                        setTimeout(checkSupabase, 100);
+                    }
+                };
+                checkSupabase();
+            });
         }
 
         // Initialize when DOM is ready
