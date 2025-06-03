@@ -31,66 +31,108 @@
         </div>
     </div>
 
-    <!-- Load scripts with aggressive cache busting -->
+    <!-- Load scripts with better error handling -->
     <script>
+        function log(message) {
+            const results = document.getElementById('results');
+            if (results) {
+                results.innerHTML += `<p class="text-sm">${message}</p>`;
+            }
+            console.log(message);
+        }
+
         // Timestamp-based cache buster
         const cacheBuster = Date.now();
-        const scripts = [
-            `assets/js/config.js?v=1.3&t=${cacheBuster}`,
-            `assets/js/language.js?v=1.3&t=${cacheBuster}`,
-            `assets/js/data-collection.js?v=1.3&t=${cacheBuster}`,
-            `assets/js/supabase-client.js?v=1.3&t=${cacheBuster}`,
-            `assets/js/enhanced-data-collection.js?v=1.3&t=${cacheBuster}`
-        ];
         
-        // Load scripts sequentially
+        // Load scripts with better error handling
         function loadScript(src) {
             return new Promise((resolve, reject) => {
                 const script = document.createElement('script');
                 script.src = src;
-                script.onload = resolve;
-                script.onerror = reject;
+                script.onload = () => {
+                    console.log(`✅ Loaded: ${src}`);
+                    resolve();
+                };
+                script.onerror = (error) => {
+                    console.error(`❌ Failed to load: ${src}`, error);
+                    log(`❌ Failed to load: ${src}`);
+                    // Don't reject, just continue with next script
+                    resolve();
+                };
                 document.head.appendChild(script);
             });
         }
         
         async function loadAllScripts() {
+            log('🔄 Loading scripts...');
+            
+            const scripts = [
+                `assets/js/config.js?v=1.3&t=${cacheBuster}`,
+                `assets/js/language.js?v=1.3&t=${cacheBuster}`,
+                `assets/js/data-collection.js?v=1.3&t=${cacheBuster}`,
+                `assets/js/supabase-client.js?v=1.3&t=${cacheBuster}`,
+                `assets/js/enhanced-data-collection.js?v=1.3&t=${cacheBuster}`
+            ];
+            
             for (const src of scripts) {
                 await loadScript(src);
-                console.log(`Loaded: ${src}`);
+                // Small delay between scripts
+                await new Promise(resolve => setTimeout(resolve, 100));
             }
-            console.log('All scripts loaded!');
+            
+            log('✅ Script loading complete!');
+            
+            // Wait a bit more for initialization
+            setTimeout(() => {
+                checkScriptAvailability();
+            }, 1000);
         }
         
-        loadAllScripts();
-    </script>
-
-    <script>
-        function log(message) {
-            const results = document.getElementById('results');
-            results.innerHTML += `<p class="text-sm">${message}</p>`;
+        function checkScriptAvailability() {
+            log('📋 Checking script availability:');
+            log(`- eDocDataCollectionEnhanced: ${typeof window.eDocDataCollectionEnhanced}`);
+            log(`- eDocDatabase: ${typeof window.eDocDatabase}`);
+            log(`- eDocAuth: ${typeof window.eDocAuth}`);
+            log(`- eDocSupabase: ${typeof window.eDocSupabase}`);
+            log(`- EDOC_CONFIG: ${typeof window.EDOC_CONFIG}`);
+            
+            // Check specific functions
+            if (window.eDocDataCollectionEnhanced) {
+                log(`- getEnhancedPaymentDataFromURL: ${typeof window.eDocDataCollectionEnhanced.getEnhancedPaymentDataFromURL}`);
+                log(`- createOrderAfterPayment: ${typeof window.eDocDataCollectionEnhanced.createOrderAfterPayment}`);
+            }
+            
+            if (window.eDocDatabase) {
+                log(`- createOrder: ${typeof window.eDocDatabase.createOrder}`);
+                log(`- getOrders: ${typeof window.eDocDatabase.getOrders}`);
+            }
         }
 
         async function testFunction() {
-            log('Testing getEnhancedPaymentDataFromURL...');
+            log('🧪 Testing getEnhancedPaymentDataFromURL...');
             
             try {
-                // Check if function exists
-                log(`Function exists: ${typeof window.eDocDataCollectionEnhanced?.getEnhancedPaymentDataFromURL}`);
+                // Add test URL parameters if not present
+                if (!window.location.search) {
+                    const testParams = '?email=test@example.com&amount=149&product=Testosterone%20Injections&treatment=injections&session_id=cs_test_123';
+                    window.history.replaceState({}, '', window.location.pathname + testParams);
+                    log('📝 Added test URL parameters');
+                }
                 
                 if (window.eDocDataCollectionEnhanced?.getEnhancedPaymentDataFromURL) {
                     const result = await window.eDocDataCollectionEnhanced.getEnhancedPaymentDataFromURL();
-                    log(`✅ Function works! Result: ${JSON.stringify(result)}`);
+                    log(`✅ Function works! Result: ${JSON.stringify(result, null, 2)}`);
                 } else {
                     log('❌ Function not available');
                 }
             } catch (error) {
                 log(`❌ Error: ${error.message}`);
+                console.error('Full error:', error);
             }
         }
 
         async function testOrderCreation() {
-            log('Testing order creation...');
+            log('🧪 Testing order creation...');
             
             try {
                 // Create test payment data
@@ -103,11 +145,17 @@
                     status: 'completed'
                 };
                 
-                log(`Creating order with data: ${JSON.stringify(testPaymentData)}`);
+                log(`📝 Creating order with data: ${JSON.stringify(testPaymentData, null, 2)}`);
                 
                 if (window.eDocDataCollectionEnhanced?.createOrderAfterPayment) {
                     const result = await window.eDocDataCollectionEnhanced.createOrderAfterPayment(testPaymentData, 'test@example.com');
-                    log(`✅ Order creation result: ${JSON.stringify(result)}`);
+                    
+                    if (result.success) {
+                        log(`✅ Order created successfully!`);
+                        log(`📋 Order details: ${JSON.stringify(result.order, null, 2)}`);
+                    } else {
+                        log(`❌ Order creation failed: ${result.error}`);
+                    }
                 } else {
                     log('❌ createOrderAfterPayment function not available');
                 }
@@ -118,15 +166,29 @@
         }
 
         async function checkDatabase() {
-            log('Checking database connection...');
+            log('🧪 Checking database connection...');
             
             try {
                 if (window.eDocDatabase) {
                     log('✅ eDocDatabase available');
                     
-                    // Try to get orders (this will test the connection)
-                    const ordersResult = await window.eDocDatabase.getOrders();
-                    log(`Database query result: ${JSON.stringify(ordersResult)}`);
+                    if (window.eDocDatabase.getOrders) {
+                        log('✅ getOrders function available');
+                        
+                        // Try to get orders (this will test the connection)
+                        const ordersResult = await window.eDocDatabase.getOrders(5);
+                        
+                        if (ordersResult.success) {
+                            log(`✅ Database query successful! Found ${ordersResult.orders.length} orders`);
+                            if (ordersResult.orders.length > 0) {
+                                log(`📋 Sample order: ${JSON.stringify(ordersResult.orders[0], null, 2)}`);
+                            }
+                        } else {
+                            log(`❌ Database query failed: ${ordersResult.error}`);
+                        }
+                    } else {
+                        log('❌ getOrders function not available');
+                    }
                 } else {
                     log('❌ eDocDatabase not available');
                 }
@@ -136,16 +198,10 @@
             }
         }
 
-        // Initialize
+        // Initialize when DOM is ready
         document.addEventListener('DOMContentLoaded', function() {
-            // Wait a bit for scripts to load
-            setTimeout(() => {
-                log('Page loaded. Scripts available:');
-                log(`- eDocDataCollectionEnhanced: ${typeof window.eDocDataCollectionEnhanced}`);
-                log(`- eDocDatabase: ${typeof window.eDocDatabase}`);
-                log(`- eDocAuth: ${typeof window.eDocAuth}`);
-                log(`- eDocSupabase: ${typeof window.eDocSupabase}`);
-            }, 1000);
+            log('🚀 Page loaded, starting script loading...');
+            loadAllScripts();
         });
     </script>
 </body>
